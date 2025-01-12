@@ -1,0 +1,81 @@
+.heroImage {
+  height: 100vh;
+  width: 100%;
+  background-image: url('./assets/chimera-background.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  color: white;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column; /* Stacks child elements vertically */
+}
+
+.logo {
+  width: 8rem;
+  height: auto;
+  margin: 0.5rem;
+}
+
+.chimera {
+  width: 12rem;
+  height: auto;
+  align-self: center;
+  padding: 0.5rem;
+}
+
+.comparisonView {
+  padding: 5rem;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.comparisonDetail {
+  text-align: center;
+  font-weight: lighter;
+  font-family: 'LuxuryFont', sans-serif;
+  padding-top: 1rem;
+  text-transform: uppercase;
+  opacity: 0.95;
+}
+
+.comparisonImage {
+  border-radius: 1rem;
+  aspect-ratio: 1;
+  object-fit: cover;
+  transform: scale(1);
+  transition: transform 0.4s ease;
+  cursor: pointer;
+}
+
+.comparisonImage:hover {
+  /* Let it expand to natural size (or 100% of container width) */
+  transform: scale(1.05);
+}
+
+.comparisonView > a {
+  width: 18%;
+}
+
+/* Stacking vertically for smaller screens */
+@media (max-width: 768px) {
+  .comparisonView {
+    gap: 5rem;
+  }
+
+  .comparisonView > a {
+    width: 70%;
+  }
+}
+
+.tagline {
+  text-align: center;
+  font-weight: lighter;
+  text-transform: uppercase;
+  padding: 0rem 1rem;
+  font-family: 'LuxuryFont', sans-serif;
+}

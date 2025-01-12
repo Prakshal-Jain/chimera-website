@@ -40,3 +40,10 @@ a {
     color-scheme: dark;
   }
 }
+
+@font-face {
+  font-family: 'LuxuryFont'; /* Name of the font for usage */
+  src: url('./fonts/luxury.woff') format('opentype'); /* Path to the font file */
+  font-weight: normal; /* Optional: Define the weight */
+  font-style: normal; /* Optional: Define the style */
+}
