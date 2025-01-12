@@ -6,7 +6,7 @@ export default function Mission() {
         <div className={styles.content}>
             <h2>Our Mission</h2>
             <div>
-                After interviewing over 10+ dealerships and intensive research, we realized that the experience of buying a supercar isn't luxurious and the customers deserves better.
+                After interviewing over 10+ dealerships and intensive research, we realized that the experience of buying a supercar isn&apos;t luxurious and the customers deserves better.
             </div>
             <div className={styles.comparisonView}>
                 <a href="https://youtu.be/2nMCMTNaC5w?si=DsMDX8lr9oFGH8Tm" target="_blank">
