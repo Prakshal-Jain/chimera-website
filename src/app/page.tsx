@@ -37,7 +37,7 @@ export default function Home() {
                 className={styles.comparisonImage}
               />
               <h3 className={styles.comparisonDetail}>
-                How it's done today
+                How it&apos;s done today
               </h3>
           </a>
 
