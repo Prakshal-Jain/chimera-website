@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  basePath: '/chimera-website',
+  basePath: '',
   output: "export",
   reactStrictMode: true,
 };
