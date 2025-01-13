@@ -1,14 +1,8 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: rgb(248, 245, 240);
+  --foreground: rgb(34, 34, 34);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
 
 html,
 body {
@@ -19,7 +13,7 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: 'LuxuryFont', sans-serif;
+  font-family: 'LuxuryFont';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -42,8 +36,12 @@ a {
 }
 
 @font-face {
-  font-family: 'LuxuryFont'; /* Name of the font for usage */
-  src: url('./fonts/luxury.woff') format('opentype'); /* Path to the font file */
-  font-weight: normal; /* Optional: Define the weight */
-  font-style: normal; /* Optional: Define the style */
+  font-family: 'LuxuryFont';
+  /* Name of the font for usage */
+  src: url('./fonts/Flaticon.woff2') format('woff2');
+  /* Path to the font file */
+  font-weight: normal;
+  /* Optional: Define the weight */
+  font-style: normal;
+  /* Optional: Define the style */
 }

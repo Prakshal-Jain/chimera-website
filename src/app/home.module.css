@@ -28,6 +28,8 @@
   padding: 0.8rem 2rem;
   cursor: pointer;
   transition: background-color 0.4s ease;
+  width: fit-content;
+  align-self: center;
 }
 
 .onboardDealershipButton:hover {
@@ -48,8 +50,7 @@
   text-align: center;
   font-weight: lighter;
   padding-top: 1rem;
-  text-transform: uppercase;
-  opacity: 0.95;
+  opacity: 0.90;
 }
 
 .comparisonImage {
@@ -66,7 +67,7 @@
   transform: scale(1.05);
 }
 
-.comparisonView > a {
+.comparisonView>a {
   width: 18%;
 }
 
@@ -76,7 +77,7 @@
     gap: 5rem;
   }
 
-  .comparisonView > a {
+  .comparisonView>a {
     width: 70%;
   }
 }
@@ -97,6 +98,37 @@
   gap: 2rem;
 }
 
-.content > h2 {
+.content>h2 {
   text-transform: uppercase;
+}
+
+.leftTextAlight {
+  text-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.horizontalLayout {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  align-items: center;
+}
+
+.videoImageContainer {
+  width: 28%;
+  height: auto;
+}
+
+.leftTextAlight>* p {
+  font-size: large;
+}
+
+.leftTextAlight> p {
+  font-size: x-large;
+}
+
+.leftTextAlight>* h2 {
+  color: rgb(142, 109, 69);
 }
