@@ -11,8 +11,6 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
   font-family: 'LuxuryFont';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

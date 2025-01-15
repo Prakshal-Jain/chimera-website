@@ -2,8 +2,8 @@ import styles from "./home.module.css";
 
 export default function OnboardDealershipButton() {
     return (
-        <a className={styles.onboardDealershipButton}>
+        <button className={styles.glassButton}>
             Onboard your Dealership
-        </a>
+        </button>
     )
 }

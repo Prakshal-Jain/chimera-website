@@ -16,9 +16,7 @@ export default function Home() {
             layout='responsive'
           />
         </div>
-
         <h2 className={styles.tagline}>We make the buying experience as exceptional as your car</h2>
-
         <OnboardDealershipButton />
       </main>
 
