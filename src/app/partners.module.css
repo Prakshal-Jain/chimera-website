@@ -1,0 +1,24 @@
+.sectionContainer {
+    background-color: rgb(248, 245, 240);
+    padding: 4rem;
+    text-align: center;
+    font-weight: lighter;
+}
+
+.sectionContainer>h1 {
+    color: rgb(102, 102, 102);
+    text-transform: uppercase;
+}
+
+.partnerImage {
+    width: 10rem;
+}
+
+.partnersContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: 4rem;
+    align-items: center;
+    justify-content: center;
+}

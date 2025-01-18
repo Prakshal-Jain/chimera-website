@@ -2,8 +2,8 @@ import Image from "next/image";
 import styles from "./home.module.css";
 import Mission from "./Mission";
 import DemoPage from "./DemoPage";
-import OnboardDealershipButton from "./OnboardDealershipButton";
-import ReferDealershipButton from "./ReferDealershipButton";
+import GlassButton from "./GlassButton";
+import Partners from "./Partners";
 
 export default function Home() {
   return (
@@ -21,12 +21,14 @@ export default function Home() {
         <h2 className={styles.tagline}>We make the buying experience as exceptional as your car</h2>
 
         <div className={styles.horizontalLayout}>
-          <OnboardDealershipButton />
-          <ReferDealershipButton />
+          <GlassButton label="Onboard your Dealership" />
+          <GlassButton label="Refer a Dealership" />
         </div>
       </main>
 
       <Mission />
+
+      <Partners />
 
       <DemoPage />
     </div>

@@ -1,6 +1,6 @@
 import styles from "./home.module.css";
 import Image from "next/image";
-import OnboardDealershipButton from "./OnboardDealershipButton";
+import GlassButton from "./GlassButton";
 
 export default function Mission() {
     return (
@@ -45,7 +45,7 @@ export default function Mission() {
                 </div>
             </div>
 
-            <OnboardDealershipButton />
+            <GlassButton label="Onboard your Dealership" />
 
 
             {/* <div className={styles.comparisonView}>

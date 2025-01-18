@@ -1,6 +1,5 @@
 .sectionContainer {
-    background-color: rgb(248, 245, 240);
-    color: rgb(102, 102, 102);
+    color: white;
     padding: 4rem;
     text-align: center;
     font-weight: lighter;
@@ -9,6 +8,7 @@
 
 .sectionContainer>h1 {
     text-transform: uppercase;
+    color: #E9C1A7
 }
 
 .demoVideoContainer {
@@ -32,11 +32,16 @@
 .demoText {
     text-align: start;
     font-size: x-large;
-    color: rgb(102, 102, 102);
+    color: white;
 }
 
 .demoText>h2 {
     padding: 0.5rem 0rem;
     color: rgb(142, 109, 69);
     font-size: x-large
+}
+
+.experienceButton {
+    padding: 2rem 0rem;
+    text-align: center;
 }

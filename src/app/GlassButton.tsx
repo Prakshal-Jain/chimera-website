@@ -1,9 +1,11 @@
 import styles from "./home.module.css";
 
-export default function OnboardDealershipButton() {
+export default function GlassButton(
+    { label }: { label: string }
+) {
     return (
         <button className={styles.glassButton}>
-            Onboard your Dealership
+            {label}
         </button>
     )
 }
