@@ -10,7 +10,8 @@
   display: flex;
   flex-direction: column;
   padding: 3rem;
-  gap: 2rem
+  gap: 2rem;
+  align-items: center;
 }
 
 .chimera {
@@ -75,7 +76,7 @@
 }
 
 .content {
-  padding: 2rem;
+  padding: 4rem;
   text-align: center;
   font-weight: lighter;
   display: flex;
@@ -83,12 +84,12 @@
   gap: 2rem;
 }
 
-.content>h2 {
+.content>h1 {
   text-transform: uppercase;
   color: #E9C1A7;
 }
 
-.leftTextAlight {
+.leftTextAlighn {
   text-align: start;
   display: flex;
   flex-direction: column;
@@ -107,16 +108,17 @@
   height: auto;
 }
 
-.leftTextAlight>* p {
+.leftTextAlighn>* p {
   font-size: large;
   color: rgb(173, 173, 173);
+  font-size: x-large
 }
 
-.leftTextAlight> p {
+.leftTextAlighn> p {
   font-size: x-large;
 }
 
-.leftTextAlight>* h2 {
+.leftTextAlighn>* h2 {
   color: rgb(142, 109, 69);
 }
 

@@ -5,10 +5,10 @@ import OnboardDealershipButton from "./OnboardDealershipButton";
 export default function Mission() {
     return (
         <div className={styles.content}>
-            <h2>What Are You Missing Out On?</h2>
+            <h1>What Are You Missing Out On?</h1>
 
             <div className={styles.horizontalLayout}>
-                <div className={styles.leftTextAlight}>
+                <div className={styles.leftTextAlighn}>
                     <p>
                         While nearly all supercar buyers seek personalization, <b>outdated and inaccurate customization tools</b> create significant challenges.
                     </p>

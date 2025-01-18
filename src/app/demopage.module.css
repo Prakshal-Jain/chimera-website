@@ -1,0 +1,42 @@
+.sectionContainer {
+    background-color: rgb(248, 245, 240);
+    color: rgb(102, 102, 102);
+    padding: 4rem;
+    text-align: center;
+    font-weight: lighter;
+
+}
+
+.sectionContainer>h1 {
+    text-transform: uppercase;
+}
+
+.demoVideoContainer {
+    min-width: 30%;
+    height: auto;
+    display: block;
+    padding-top: 2rem;
+}
+
+.demoImage {
+    border-radius: 1rem;
+}
+
+.demoView {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    align-items: center;
+}
+
+.demoText {
+    text-align: start;
+    font-size: x-large;
+    color: rgb(102, 102, 102);
+}
+
+.demoText>h2 {
+    padding: 0.5rem 0rem;
+    color: rgb(142, 109, 69);
+    font-size: x-large
+}
