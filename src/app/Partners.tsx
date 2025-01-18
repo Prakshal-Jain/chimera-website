@@ -1,5 +1,6 @@
 import styles from "./partners.module.css";
 import PartnerImageContainer from './PartnerImageContainer'
+import GlassButton from "./GlassButton";
 
 export default function Partners() {
     return (
@@ -8,6 +9,7 @@ export default function Partners() {
             <div className={styles.partnersContainer}>
                 {partnerList.map(x => <PartnerImageContainer filename={x.filename} name={x.name} key={x.name} />)}
             </div>
+            <GlassButton label="Become a Partner" theme='dark' href="https://docs.google.com/forms/d/e/1FAIpQLSfb2TknAi6i4pGRdb4w_kinUkgvPdKfKfAhqSRJ4V4YmXUugg/viewform?usp=dialog" />
         </div>
     )
 }

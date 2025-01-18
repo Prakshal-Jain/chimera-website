@@ -129,10 +129,10 @@
   border: 0;
   text-decoration: none;
   border-radius: 15px;
-  background-color: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.15);
+  background-color: rgb(248, 245, 240, 0.15);
+  border: 1px solid rgb(248, 245, 240, 0.15);
   backdrop-filter: blur(30px);
-  color: rgba(255,255,255,0.8);
+  color: rgb(248, 245, 240);
   font-size: medium;
   letter-spacing: 0.1rem;
   cursor: pointer;
@@ -145,4 +145,24 @@
 
 .glassButton:hover {
   background-color: rgba(255,255,255,0.25);
+}
+
+.glassButtonDark {
+  display: inline-block;
+  padding: 1rem;
+  border: 0;
+  text-decoration: none;
+  border-radius: 15px;
+  background-color: rgb(171, 138, 98, 0.15);
+  border: 1px solid rgb(171, 138, 98, 0.15);
+  backdrop-filter: blur(30px);
+  color: rgb(142, 109, 69);
+  font-size: medium;
+  letter-spacing: 0.1rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  width: fit-content;
+  align-self: center;
+  transition: background-color 0.4s ease;
+  border-radius: 10rem;
 }
