@@ -6,7 +6,7 @@ export default function Partners() {
         <div className={styles.sectionContainer}>
             <h1>Our Partners</h1>
             <div className={styles.partnersContainer}>
-                {partnerList.map(x => <PartnerImageContainer filename={x.filename} name={x.name} />)}
+                {partnerList.map(x => <PartnerImageContainer filename={x.filename} name={x.name} key={x.name} />)}
             </div>
         </div>
     )
