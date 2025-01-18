@@ -45,7 +45,7 @@ export default function Mission() {
                 </div>
             </div>
 
-            <GlassButton label="Onboard your Dealership" />
+            <GlassButton label="Onboard your Dealership" href="https://docs.google.com/forms/d/e/1FAIpQLSfb2TknAi6i4pGRdb4w_kinUkgvPdKfKfAhqSRJ4V4YmXUugg/viewform?usp=dialog" />
 
 
             {/* <div className={styles.comparisonView}>

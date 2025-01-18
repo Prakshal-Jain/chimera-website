@@ -4,7 +4,7 @@ import PartnerImageContainer from './PartnerImageContainer'
 export default function Partners() {
     return (
         <div className={styles.sectionContainer}>
-            <h1>Our Partners</h1>
+            <h1 id="partners">Our Partners</h1>
             <div className={styles.partnersContainer}>
                 {partnerList.map(x => <PartnerImageContainer filename={x.filename} name={x.name} key={x.name} />)}
             </div>

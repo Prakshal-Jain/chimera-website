@@ -21,8 +21,8 @@ export default function Home() {
         <h2 className={styles.tagline}>We make the buying experience as exceptional as your car</h2>
 
         <div className={styles.horizontalLayout}>
-          <GlassButton label="Onboard your Dealership" />
-          <GlassButton label="Refer a Dealership" />
+          <GlassButton label="Onboard your Dealership" href="https://docs.google.com/forms/d/e/1FAIpQLSfb2TknAi6i4pGRdb4w_kinUkgvPdKfKfAhqSRJ4V4YmXUugg/viewform?usp=dialog" />
+          <GlassButton label="Experience on Vision Pro" href="https://docs.google.com/forms/d/e/1FAIpQLSebesbycQYGcxJN28iUSY2mdOfEo-JpzkbvDO5xFcy0TmYRnw/viewform?usp=dialog" />
         </div>
       </main>
 
