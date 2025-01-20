@@ -114,7 +114,7 @@
   font-size: x-large
 }
 
-.leftTextAlighn> p {
+.leftTextAlighn>p {
   font-size: x-large;
 }
 
@@ -144,7 +144,7 @@
 }
 
 .glassButton:hover {
-  background-color: rgba(255,255,255,0.25);
+  background-color: rgba(255, 255, 255, 0.25);
 }
 
 .glassButtonDark {
@@ -165,4 +165,8 @@
   align-self: center;
   transition: background-color 0.4s ease;
   border-radius: 10rem;
+}
+
+.glassButtonDark:hover {
+  background-color: rgb(171, 138, 98, 0.25);
 }
