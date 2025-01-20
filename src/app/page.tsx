@@ -4,6 +4,7 @@ import Mission from "./Mission";
 import DemoPage from "./DemoPage";
 import GlassButton from "./GlassButton";
 import Partners from "./Partners";
+import Footer from "./Footer";
 
 export default function Home() {
   return (
@@ -31,6 +32,8 @@ export default function Home() {
       <Partners />
 
       <DemoPage />
+
+      <Footer />
     </div>
   );
 }
