@@ -20,31 +20,15 @@ const partnerList = [
         "filename": "partner_logos/lotus.png"
     },
     {
-        "name": "Acura",
-        "filename": "partner_logos/acura.png"
+        "name": "Lamborghini",
+        "filename": "partner_logos/lamborghini.png"
     },
     {
-        "name": "Chrysler",
-        "filename": "partner_logos/chrysler.png"
+        "name": "Ferrari",
+        "filename": "partner_logos/ferrari.png"
     },
     {
-        "name": "Volkswagen",
-        "filename": "partner_logos/volkswagen.png"
+        "name": "Bentley",
+        "filename": "partner_logos/bentley.png"
     },
-    {
-        "name": "Jeep",
-        "filename": "partner_logos/jeep.png"
-    },
-    {
-        "name": "Ford",
-        "filename": "partner_logos/ford.png"
-    },
-    {
-        "name": "Chevrolet",
-        "filename": "partner_logos/chevrolet.png"
-    },
-    {
-        "name": "Dodge",
-        "filename": "partner_logos/dodge.png"
-    }
 ]
