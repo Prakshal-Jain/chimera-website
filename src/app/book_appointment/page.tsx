@@ -1,10 +1,11 @@
 import AppointmentForm from "./appointment-form";
 import Image from "next/image";
+import Link from 'next/link'
 
 export default function AppointmentPage() {
   return (
     <div className="container">
-      <a className="logo-container" href="/">
+      <Link className="logo-container" href="/">
         <div className="chimera-logo">
           <Image
             alt="Chimera Name"
@@ -14,7 +15,7 @@ export default function AppointmentPage() {
             layout='responsive'
           />
         </div>
-      </a>
+      </Link>
       <AppointmentForm />
     </div>
   )
