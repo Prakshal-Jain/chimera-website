@@ -180,7 +180,7 @@ export default function AppointmentForm() {
         const data = await response.json()
         setApiData((prev) => ({ ...prev, timeSlots: data.available_slots || [] }))
 
-        // Reset the selected time if it's no longer available
+        // Reset the selected time if it is no longer available
         if (formData.appointment_time && !data.available_slots.includes(formData.appointment_time)) {
           setFormData((prev) => ({ ...prev, appointment_time: "" }))
         }
@@ -286,7 +286,7 @@ export default function AppointmentForm() {
             <p className="success-message">Your verification code is:</p>
             <div className="verification-code">{verificationCode}</div>
             <p className="success-note">
-              Please keep this code for your records. You'll need it when you arrive at the dealership.
+              Please keep this code for your records. You&apos;ll need it when you arrive at the dealership.
             </p>
 
             <button onClick={resetForm} className="button button-primary mt-6" type="button">
