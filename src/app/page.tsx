@@ -24,7 +24,7 @@ export default function Home() {
 
         <div className={styles.horizontalLayout}>
           <GlassButton label="Onboard your Dealership" href="https://docs.google.com/forms/d/e/1FAIpQLSfb2TknAi6i4pGRdb4w_kinUkgvPdKfKfAhqSRJ4V4YmXUugg/viewform?usp=dialog" />
-          <GlassButton label="Experience on Vision Pro" href="https://docs.google.com/forms/d/e/1FAIpQLSebesbycQYGcxJN28iUSY2mdOfEo-JpzkbvDO5xFcy0TmYRnw/viewform?usp=dialog" />
+          <GlassButton label="Experience on Vision Pro" href="/book_appointment" target='_self' />
         </div>
       </main>
 

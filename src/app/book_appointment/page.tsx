@@ -1,5 +1,22 @@
-import { redirect } from "next/navigation";
+import AppointmentForm from "./appointment-form";
+import Image from "next/image";
 
-export default function Page() {
-  redirect("https://docs.google.com/forms/d/e/1FAIpQLSdmDb1-gkSrAWy1jwKheFOhVwNyp8p7A7HM7WNKZeEWZX8Vtw/viewform?usp=dialog");
+export default function AppointmentPage() {
+  return (
+    <div className="container">
+      <a className="logo-container" href="/">
+        <div className="chimera-logo">
+          <Image
+            alt="Chimera Name"
+            src='chimera-logo.png'
+            width={0}
+            height={0}
+            layout='responsive'
+          />
+        </div>
+      </a>
+      <AppointmentForm />
+    </div>
+  )
 }
+
