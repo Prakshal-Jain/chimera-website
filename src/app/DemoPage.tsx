@@ -13,10 +13,10 @@ export default function DemoPage() {
                         Every customer at your dealership should have a <b>memorable experience</b>. When they encounter Chimera, they&apos;ll share it with friends and colleagues, giving your dealership a <b>competitive advantage</b>. This <b>word-of-mouth</b> generates <b>higher sales</b>, and customers are willing to pay a premium for a more exotic car-buying experience.
                     </p>
                     <div className={styles.experienceButton}>
-                        <GlassButton label="Experience on Vision Pro" href="https://docs.google.com/forms/d/e/1FAIpQLSebesbycQYGcxJN28iUSY2mdOfEo-JpzkbvDO5xFcy0TmYRnw/viewform?usp=dialog" />
+                        <GlassButton label="Experience on Vision Pro" href="/book_appointment" />
                     </div>
                 </div>
-                <a className={styles.demoVideoContainer} target="_blank" href="https://youtu.be/seMerQryaU8">
+                <a className={styles.demoVideoContainer} target="_blank" href="https://youtu.be/VcQD7ZR7XGA?si=GCrGkL5Sg6G5bvrf">
                     <Image
                         alt="Chimera Logo"
                         src='chimera_clip.png'

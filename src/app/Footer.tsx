@@ -19,7 +19,7 @@ export default function Footer() {
                     Email: <a href="mailto:prakshaljain422@gmail.com">chimera.autos@gmail.com</a>
                 </p>
                 <p className={styles.description}>
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSebesbycQYGcxJN28iUSY2mdOfEo-JpzkbvDO5xFcy0TmYRnw/viewform?usp=dialog" target="_blank">Setup the Demo</a>
+                    <a href="/book_appointment" target="_blank">Setup the Demo</a>
                 </p>
                 <p className={styles.description}>
                     &#169; 2025 Chimera Inc. All rights reserved.

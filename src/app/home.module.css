@@ -68,10 +68,16 @@
   }
 }
 
-.tagline {
+.headline {
   text-align: center;
   font-weight: lighter;
   text-transform: uppercase;
+  padding: 0rem 1rem;
+}
+
+.tagline {
+  text-align: center;
+  font-weight: lighter;
   padding: 0rem 1rem;
 }
 

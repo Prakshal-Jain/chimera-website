@@ -5,6 +5,12 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import "./appointment-styles.css"
 
+const PRODUCTION_API_URL = "https://api.chimeraauto.com"
+const DEVELOPMENT_API_URL = "http://localhost:8000"
+
+const IS_PRODUCTION = true
+const API_URL = IS_PRODUCTION ? PRODUCTION_API_URL : DEVELOPMENT_API_URL
+
 interface AppointmentFormData {
   first_name: string
   last_name: string
@@ -68,7 +74,7 @@ export default function AppointmentForm() {
       try {
         // Fetch dealerships
         setIsLoading((prev) => ({ ...prev, dealerships: true }))
-        const dealershipsResponse = await fetch("https://api.chimeraauto.com/dealerships")
+        const dealershipsResponse = await fetch(`${API_URL}/dealerships`)
         if (!dealershipsResponse.ok) {
           throw new Error("Failed to fetch dealerships")
         }
@@ -101,7 +107,7 @@ export default function AppointmentForm() {
           dealership: formData.dealership,
         })
 
-        const response = await fetch(`https://api.chimeraauto.com/car_manufacturers?${queryParams.toString()}`)
+        const response = await fetch(`${API_URL}/car_manufacturers?${queryParams.toString()}`)
         if (!response.ok) {
           throw new Error("Failed to fetch car manufacturers")
         }
@@ -136,7 +142,7 @@ export default function AppointmentForm() {
           manufacturer: formData.car_manufacturer,
         })
 
-        const response = await fetch(`https://api.chimeraauto.com/car_models?${queryParams.toString()}`)
+        const response = await fetch(`${API_URL}/car_models?${queryParams.toString()}`)
         if (!response.ok) {
           throw new Error("Failed to fetch car models")
         }
@@ -172,7 +178,7 @@ export default function AppointmentForm() {
           appointment_date: formData.appointment_date,
         })
 
-        const response = await fetch(`https://api.chimeraauto.com/time-slots?${queryParams.toString()}`)
+        const response = await fetch(`${API_URL}/time-slots?${queryParams.toString()}`)
         if (!response.ok) {
           throw new Error("Failed to fetch available time slots")
         }
@@ -234,7 +240,7 @@ export default function AppointmentForm() {
     setFormError(null)
 
     try {
-      const response = await fetch("https://api.chimeraauto.com/register_appointment", {
+      const response = await fetch(`${API_URL}/register_appointment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

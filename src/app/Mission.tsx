@@ -10,22 +10,11 @@ export default function Mission() {
             <div className={styles.horizontalLayout}>
                 <div className={styles.leftTextAlighn}>
                     <p>
-                        While nearly all supercar buyers seek personalization, <b>outdated and inaccurate customization tools</b> create significant challenges.
+                        Even in 2025, dealerships rely on 2D configurators on outdated monitor screens with low-resolution displays and poor color accuracy to configure cars that fall short of capturing real-world aesthetics, leading to frustration, decision fatigue, inaccurate configurations, repeated dealership visits, and costly order changes. There are over ~792,720 high-end car sales every year in US alone. 85-98% of high-end car buyers personalize their cars. 38-45% of these car buyers back-out, reconfigure, or cancel their orders due to under-confidence in their configuration choices.
                     </p>
-
-                    <div>
-                        <h2>Impact on Customers</h2>
-                        <p>
-                            Customers find it difficult to visualize their ideal cars, resulting in <b>indecision, mismatched expectations, and cancellations</b>.
-                        </p>
-                    </div>
-
-                    <div>
-                        <h2>Loss for Dealerships</h2>
-                        <p>
-                            For dealerships, these inefficiencies lead to <b>financial losses, unsold inventory, and strained relationships</b>, highlighting the urgent need for advanced, immersive visualization solutions.
-                        </p>
-                    </div>
+                    <p>
+                    Chimera solves these issues by delivering a fully immersive configurator with true-to-life colors, lighting, materials, and environments—accessible through the standardized Apple Vision Pro AR/VR headset before manufacturing even begins (often years in advance). Buyers can experience their dream cars in life-size scale, eliminating guesswork and increasing confidence in final orders.
+                    </p>
                 </div>
 
                 <div className={styles.videoImageContainer}>

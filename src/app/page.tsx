@@ -20,6 +20,7 @@ export default function Home() {
           />
         </div>
         
+        <h1 className={styles.tagline}>Hyper-Realistic AR/VR Car Configurator for Luxury Dealerships & Manufacturers</h1>
         <h2 className={styles.tagline}>We make the buying experience as exceptional as your car</h2>
 
         <div className={styles.horizontalLayout}>
