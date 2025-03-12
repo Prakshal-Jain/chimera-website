@@ -19,7 +19,33 @@
     flex-direction: row;
     flex-wrap: wrap;
     column-gap: 4rem;
-    align-items: center;
+    align-items: end;
     justify-content: center;
     padding: 2rem 0rem;
+}
+
+.partnerItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.partnerName {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    color: rgb(102, 102, 102);
+    font-weight: bold;
+}
+
+.moreComingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.moreComingLogo {
+    width: 8rem;
+    opacity: 0.6;
 }
