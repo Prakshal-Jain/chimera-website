@@ -10,6 +10,7 @@ export default function Partners() {
                 {partnerList.map(x => (
                     <div key={x.name} className={styles.partnerItem}>
                         <PartnerImageContainer filename={x.filename} name={x.name} />
+                        <p className={styles.partnerName}>{x.name}</p>
                     </div>
                 ))}
             </div>
