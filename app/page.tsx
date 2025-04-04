@@ -69,7 +69,7 @@ export default function Home() {
               className={styles.galleryImage}
             />
           </div>
-          <div className={styles.galleryItem} style={{ gridRow: "span 2" }}>
+          {/* <div className={styles.galleryItem} style={{ gridRow: "span 2" }}>
             <Image
               src="/gallery/8.jpg"
               alt="Vision Pro experience"
@@ -95,7 +95,7 @@ export default function Home() {
               height={600}
               className={styles.galleryImage}
             />
-          </div>
+          </div> */}
         </div>
       </section>
 
@@ -110,16 +110,21 @@ export default function Home() {
 
       {/* Video Section */}
       <section className={styles.videoSection}>
-        <div className={styles.videoContainer}>
-          <div className={styles.videoWrapper}>
-            <div className={styles.videoPlaceholder}>
-              <div className={styles.playButton}>
-                <Play className={styles.playIcon} />
+        <Link
+          href="https://youtu.be/VcQD7ZR7XGA?si=nP-T6DL5UY57tBXZ"
+          target="_blank"
+          rel="noopener noreferrer">
+          <div className={styles.videoContainer}>
+            <div className={styles.videoWrapper}>
+              <div className={styles.videoPlaceholder}>
+                <div className={styles.playButton}>
+                  <Play className={styles.playIcon} />
+                </div>
+                <p className={styles.videoText}>Experience Chimera</p>
               </div>
-              <p className={styles.videoText}>Experience Chimera</p>
             </div>
           </div>
-        </div>
+        </Link>
       </section>
 
       {/* Partners Section */}
@@ -146,7 +151,7 @@ export default function Home() {
             </div>
           </a>
           <a
-            href="https://www.lamborghinilosgatos.com/"
+            href="https://www.losgatosluxcars.com/"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.partnerLink}
