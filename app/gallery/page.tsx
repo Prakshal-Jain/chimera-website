@@ -7,25 +7,10 @@ import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft, X } from "lucide-react"
 import styles from "./gallery.module.css"
+import { galleryImages } from "./galleryImages"
 
 export default function Gallery() {
     const [selectedImage, setSelectedImage] = useState<number | null>(null)
-
-    // Gallery image data with credits and descriptions
-    const galleryImages = [
-        {
-            src: "/gallery/1.png",
-            alt: "LCLG: Temerario Reveal",
-            credit: "Solaz Pzroductions | Spencer Solaz",
-            description: "Lamborghini Temerario Reveal | Luxury Collections Los Gatos",
-        },
-        {
-            src: "/gallery/4.jpg",
-            alt: "LCLG: Lotus Owners Drive",
-            credit: "Solaz Pzroductions | Spencer Solaz",
-            description: "Lotus Owners Drive | Luxury Collections Los Gatos",
-        },
-    ]
 
     // Close the modal when clicking outside the image or on the close button
     const closeModal = () => {

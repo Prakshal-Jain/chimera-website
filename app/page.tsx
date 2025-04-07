@@ -26,6 +26,9 @@ export default function Home() {
           <Link href="/configuration" className={styles.navLink}>
             See Configurations
           </Link>
+          <Link href="/gallery" className={styles.navLink}>
+            Gallery
+          </Link>
           <Link href="/contact" className={styles.navLink}>
             Contact
           </Link>
