@@ -12,12 +12,10 @@ import { galleryImages } from "./galleryImages"
 export default function Gallery() {
     const [selectedImage, setSelectedImage] = useState<number | null>(null)
 
-    // Close the modal when clicking outside the image or on the close button
     const closeModal = () => {
         setSelectedImage(null)
     }
 
-    // Prevent clicks on the image from closing the modal
     const handleModalImageClick = (e: React.MouseEvent) => {
         e.stopPropagation()
     }
