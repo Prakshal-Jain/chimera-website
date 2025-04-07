@@ -97,6 +97,13 @@ export default function Home() {
             />
           </div> */}
         </div>
+
+        <div className={styles.partnerButton}>
+          <Link href="/gallery" className={styles.button}>
+            View Full Gallery
+            <ArrowRight className={styles.buttonIcon} />
+          </Link>
+        </div>
       </section>
 
       {/* Quote Section */}
