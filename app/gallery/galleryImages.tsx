@@ -2,7 +2,7 @@ export const galleryImages = [
     {
         src: "/gallery/1.png",
         alt: "LCLG: Temerario Reveal",
-        credit: "Solaz Pzroductions | Spencer Solaz",
+        credit: "Prakshal Jain",
         description: "Lamborghini Temerario Reveal | Luxury Collections Los Gatos",
     },
     {
@@ -20,7 +20,7 @@ export const galleryImages = [
     {
         src: "/gallery/3.png",
         alt: "LCLG: Lotus Owners Drive",
-        credit: "Solaz Pzroductions | Spencer Solaz",
+        credit: "Prakshal Jain",
         description: "Lotus Owners Drive | Luxury Collections Los Gatos",
     },
     {
