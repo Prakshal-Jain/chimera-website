@@ -78,13 +78,19 @@ export const galleryImages = [
         description: "Lamborghini Temerario Reveal | Luxury Collections Los Gatos",
     },
     {
+        src: "/gallery/16.jpg",
+        alt: "LCLG: Temerario Reveal",
+        credit: "Solaz Pzroductions | Spencer Solaz",
+        description: "Lamborghini Temerario Reveal | Luxury Collections Los Gatos",
+    },
+    {
         src: "/gallery/11.jpg",
         alt: "LCLG: Lotus Owners Drive",
         credit: "Solaz Pzroductions | Spencer Solaz",
         description: "Lotus Owners Drive | Luxury Collections Los Gatos",
     },
     {
-        src: "/gallery/16.jpg",
+        src: "/gallery/17.jpg",
         alt: "LCLG: Temerario Reveal",
         credit: "Solaz Pzroductions | Spencer Solaz",
         description: "Lamborghini Temerario Reveal | Luxury Collections Los Gatos",
