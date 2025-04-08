@@ -18,16 +18,22 @@ export const galleryImages = [
         description: "Lamborghini Temerario Reveal | Luxury Collections Los Gatos",
     },
     {
-        src: "/gallery/3.png",
-        alt: "LCLG: Lotus Owners Drive",
-        credit: "Prakshal Jain",
-        description: "Lotus Owners Drive | Luxury Collections Los Gatos",
+        src: "/gallery/19.png",
+        alt: "Lotus Gate Lotus Club | Cars and Coffee",
+        credit: "Kyle Snell",
+        description: "Lotus Gate Lotus Club | Cars and Coffee",
     },
     {
         src: "/gallery/2.png",
         alt: "Prakshal Jain with Frank Casanova",
         credit: "Prakshal Jain",
         description: "Prakshal Jain (Founder of Chimera) with Frank Casanova (Former Senior Director leading product-marketing efforts for the Vision Pro at Apple)"
+    },
+    {
+        src: "/gallery/3.png",
+        alt: "LCLG: Lotus Owners Drive",
+        credit: "Prakshal Jain",
+        description: "Lotus Owners Drive | Luxury Collections Los Gatos",
     },
     {
         src: "/gallery/8.jpg",
@@ -58,6 +64,12 @@ export const galleryImages = [
         alt: "LCLG: Temerario Reveal",
         credit: "Solaz Productions | Spencer Solaz",
         description: "Lamborghini Temerario Reveal | Luxury Collections Los Gatos",
+    },
+    {
+        src: "/gallery/18.png",
+        alt: "Lotus Gate Lotus Club | Cars and Coffee",
+        credit: "Kyle Snell",
+        description: "Lotus Gate Lotus Club | Cars and Coffee",
     },
     {
         src: "/gallery/9.jpg",
@@ -94,5 +106,11 @@ export const galleryImages = [
         alt: "LCLG: Temerario Reveal",
         credit: "Solaz Productions | Spencer Solaz",
         description: "Lamborghini Temerario Reveal | Luxury Collections Los Gatos",
+    },
+    {
+        src: "/gallery/20.png",
+        alt: "Golden Gate Lotus Club | Cars and Coffee",
+        credit: "Kyle Snell",
+        description: "Golden Gate Lotus Club | Cars and Coffee",
     },
 ]

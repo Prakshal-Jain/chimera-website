@@ -17,26 +17,6 @@
     margin-bottom: 2rem;
 }
 
-.backLink {
-    display: inline-flex;
-    align-items: center;
-    color: #333;
-    text-decoration: none;
-    margin-bottom: 1.5rem;
-    transition: color 0.2s ease;
-    font-size: 0.9rem;
-}
-
-.backLink:hover {
-    color: #666;
-}
-
-.backIcon {
-    width: 1rem;
-    height: 1rem;
-    margin-right: 0.5rem;
-}
-
 .title {
     font-family: var(--font-serif);
     font-size: 2.5rem;

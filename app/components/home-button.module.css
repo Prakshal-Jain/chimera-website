@@ -1,0 +1,19 @@
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    color: #333;
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+    transition: color 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.backLink:hover {
+    color: #666;
+}
+
+.backIcon {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+}

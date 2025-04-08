@@ -8,6 +8,7 @@ import Link from "next/link"
 import { ArrowLeft, X } from "lucide-react"
 import styles from "./gallery.module.css"
 import { galleryImages } from "./galleryImages"
+import BackHome from "../components/BackHome"
 
 export default function Gallery() {
     const [selectedImage, setSelectedImage] = useState<number | null>(null)
@@ -24,10 +25,7 @@ export default function Gallery() {
         <div className={styles.container}>
             <div className={styles.content}>
                 <div className={styles.header}>
-                    <Link href="/" className={styles.backLink}>
-                        <ArrowLeft className={styles.backIcon} />
-                        Back to Home
-                    </Link>
+                    <BackHome />
                     <h1 className={styles.title}>Gallery</h1>
                 </div>
 
