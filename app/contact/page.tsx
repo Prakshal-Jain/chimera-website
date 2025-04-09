@@ -2,21 +2,13 @@ import Link from "next/link"
 import Image from "next/image"
 import { Mail, Phone, ArrowLeft, ExternalLink } from "lucide-react"
 import styles from "./contact.module.css"
+import HeaderBackButtonTitle from "../components/HeaderBackButtonTitle"
 
 export default function Contact() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <Link href="/" className={styles.backLink}>
-          <ArrowLeft className={styles.backIcon} />
-          Back to Home
-        </Link>
-
-        <div className={styles.logoContainer}>
-          <Image src="/chimera-logo.png" alt="Chimera Logo" width={400} height={133} className={styles.logo} />
-        </div>
-
-        <h1 className={styles.title}>Contact Us</h1>
+        <HeaderBackButtonTitle title="Contact" />
 
         <div className={styles.contactCard}>
           <div className={styles.contactInfo}>
