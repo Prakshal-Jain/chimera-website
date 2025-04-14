@@ -220,6 +220,7 @@ export default function Home() {
                 Buyers can experience their dream cars in life-size scale, eliminating guesswork and increasing
                 confidence in final orders.
               </p>
+              <div className={styles.patentBadge}>Patent Pending</div>
             </div>
           </div>
         </div>
