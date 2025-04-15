@@ -6,6 +6,7 @@ import "../appointment-styles.css"
 import { useState } from "react"
 import { API_URL } from "../variables"
 import Image from "next/image";
+import Link from "next/link"
 
 interface ConfigItem {
     name: string
@@ -164,9 +165,11 @@ export default function ConfigurationForm() {
 
                     {activeTab === "interior" && (
                         <div className="tab-panel">
-                            {configData.interior.map((item, index) => (
+                            {configData.interior ? configData.interior.map((item, index) => (
                                 <ConfigurationItem key={index} item={item} />
-                            ))}
+                            )) : <div>No interior configuration exist yet. Please contact us at <b><Link href="mailto:chimera.autos@gmail.com" className="link">
+                                chimera.autos@gmail.com
+                            </Link></b></div>}
                         </div>
                     )}
 

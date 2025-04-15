@@ -552,3 +552,12 @@ input[type="date"]::-moz-calendar-picker-indicator {
   color: var(--text-color);
   font-size: 0.9rem;
 }
+
+.link {
+  color: #333;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: #666;
+}
