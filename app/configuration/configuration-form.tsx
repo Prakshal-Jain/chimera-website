@@ -560,7 +560,10 @@ function ConfigurationItem({
                         <div className="config-edit-container">
                             <div className="dropdown-container" ref={dropdownRef}>
                                 <div className="dropdown-trigger" onClick={() => setDropdownOpen(!dropdownOpen)}>
-                                    <span>{editingOption?.label}</span>
+                                    <span>
+                                        {editingOption?.label}
+                                        {editingOption?.isDefault && <span className="default-badge">Default</span>}
+                                    </span>
                                     {hasMultipleSections && item.section_options[editState.selectedSectionIndex].section_name && (
                                         <span className="section-tag">
                                             {item.section_options[editState.selectedSectionIndex].section_name}
@@ -602,7 +605,10 @@ function ConfigurationItem({
                                                             />
                                                         </div>
                                                         <div className="option-details">
-                                                            <span className="option-label">{item.option.label}</span>
+                                                            <span className="option-label">
+                                                                {item.option.label}
+                                                                {item.option.isDefault && <span className="default-badge">Default</span>}
+                                                            </span>
                                                             {item.section_name && hasMultipleSections && (
                                                                 <span className="option-section">{item.section_name}</span>
                                                             )}
@@ -640,7 +646,10 @@ function ConfigurationItem({
                     ) : (
                         <div className="config-display">
                             <div className="option-info">
-                                <span>{option.label}</span>
+                                <span>
+                                    {option.label}
+                                    {option.isDefault && <span className="default-badge">Default</span>}
+                                </span>
                                 {section_name && <div className="section-name">{section_name}</div>}
                             </div>
                             <button className="edit-button" onClick={() => onEdit(categoryType, index)}>

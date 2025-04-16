@@ -260,7 +260,6 @@ input[type="date"]::-moz-calendar-picker-indicator {
     opacity: 0;
     transform: translateY(-10px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -875,4 +874,40 @@ input[type="date"]::-moz-calendar-picker-indicator {
 
 .link:hover {
   color: #666;
+}
+
+/* Add styles for the default badge */
+.default-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 500;
+  background-color: rgba(171, 138, 98, 0.15);
+  color: rgba(171, 138, 98, 1);
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.dropdown-option .default-badge {
+  font-size: 0.6rem;
+  padding: 0.1rem 0.35rem;
+}
+
+.config-display .default-badge {
+  margin-left: 0.5rem;
+}
+
+.dropdown-trigger .default-badge {
+  margin-left: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .default-badge {
+    font-size: 0.6rem;
+    padding: 0.1rem 0.3rem;
+    margin-left: 0.3rem;
+  }
 }
