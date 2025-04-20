@@ -131,5 +131,4 @@ export const galleryImages = [
         credit: "Ray Gaeta",
         description: "Ferrari Beverly Hills",
     },
-
 ]
