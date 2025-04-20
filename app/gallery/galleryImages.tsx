@@ -113,4 +113,23 @@ export const galleryImages = [
         credit: "Kyle Snell",
         description: "Golden Gate Lotus Club | Cars and Coffee",
     },
+    {
+        src: "/gallery/21.jpeg",
+        alt: "Lamborghini Beverly Hills",
+        credit: "Ray Gaeta",
+        description: "Lamborghini Beverly Hills",
+    },
+    {
+        src: "/gallery/22.jpeg",
+        alt: "Porsche Beverly Hills",
+        credit: "Ray Gaeta",
+        description: "Porsche Beverly Hills",
+    },
+    {
+        src: "/gallery/23.jpeg",
+        alt: "Ferrari Beverly Hills",
+        credit: "Ray Gaeta",
+        description: "Ferrari Beverly Hills",
+    },
+
 ]
