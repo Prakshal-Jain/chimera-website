@@ -1,4 +1,4 @@
-const IS_PRODUCTION = false
+const IS_PRODUCTION = true
 const PRODUCTION_API_URL = "https://api.chimeraauto.com"
 const DEVELOPMENT_API_URL = "http://localhost:8000"
 
