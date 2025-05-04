@@ -31,10 +31,23 @@ export const galleryImages = [
     },
     {
         src: "/gallery/3.png",
-        alt: "LCLG: Lotus Owners Drive",
+        alt: "Prakshal Jain showcasing Chimera at F1 Watch Party | Aston Martin Los Gatos",
         credit: "Prakshal Jain",
-        description: "Lotus Owners Drive | Luxury Collections Los Gatos",
+        description: "Prakshal Jain (Founder of Chimera) showcasing Chimera at F1 Watch Party | Aston Martin Los Gatos"
     },
+    {
+        src: "/gallery/26.png",
+        alt: "Prakshal Jain showcasing Chimera at F1 Watch Party | Aston Martin Los Gatos",
+        credit: "Prakshal Jain",
+        description: "Prakshal Jain (Founder of Chimera) showcasing Chimera at F1 Watch Party | Aston Martin Los Gatos"
+    },
+    {
+        src: "/gallery/25.png",
+        alt: "Prakshal Jain showcasing Chimera at F1 Watch Party | Aston Martin Los Gatos",
+        credit: "Prakshal Jain",
+        description: "Prakshal Jain (Founder of Chimera) showcasing Chimera at F1 Watch Party | Aston Martin Los Gatos"
+    },
+
     {
         src: "/gallery/8.jpg",
         alt: "LCLG: Lotus Owners Drive",
@@ -48,6 +61,12 @@ export const galleryImages = [
         description: "Lamborghini Temerario Reveal | Luxury Collections Los Gatos",
     },
     {
+        src: "/gallery/24.png",
+        alt: "LCLG: Lotus Owners Drive",
+        credit: "Prakshal Jain",
+        description: "Lotus Owners Drive | Luxury Collections Los Gatos",
+    },
+    {
         src: "/gallery/6.jpg",
         alt: "LCLG: Lotus Owners Drive",
         credit: "Solaz Productions | Spencer Solaz",
@@ -58,6 +77,12 @@ export const galleryImages = [
         alt: "LCLG: Lotus Owners Drive",
         credit: "Solaz Productions | Spencer Solaz",
         description: "Lotus Owners Drive | Luxury Collections Los Gatos",
+    },
+    {
+        src: "/gallery/27.png",
+        alt: "Prakshal Jain showcasing Chimera at F1 Watch Party | Aston Martin Los Gatos",
+        credit: "Prakshal Jain",
+        description: "Prakshal Jain (Founder of Chimera) showcasing Chimera at F1 Watch Party | Aston Martin Los Gatos"
     },
     {
         src: "/gallery/15.jpg",
