@@ -26,9 +26,9 @@ export default function Home() {
           <Link href="/configuration" className={styles.navLink}>
             See Configurations
           </Link>
-          <Link href="/gallery" className={styles.navLink}>
+          {/* <Link href="/gallery" className={styles.navLink}>
             Gallery
-          </Link>
+          </Link> */}
           <Link href="/events" className={styles.navLink}>
             Events
           </Link>
@@ -46,7 +46,7 @@ export default function Home() {
       </section>
 
       {/* Gallery Section */}
-      <section className={styles.gallerySection}>
+      {/* <section className={styles.gallerySection}>
         <div className={styles.galleryGrid}>
           <div className={styles.galleryItem} style={{ gridRow: "span 2" }}>
             <Image
@@ -75,33 +75,6 @@ export default function Home() {
               className={styles.galleryImage}
             />
           </div>
-          {/* <div className={styles.galleryItem} style={{ gridRow: "span 2" }}>
-            <Image
-              src="/gallery/8.jpg"
-              alt="Vision Pro experience"
-              width={600}
-              height={800}
-              className={styles.galleryImage}
-            />
-          </div>
-          <div className={styles.galleryItem}>
-            <Image
-              src="/gallery/3.png"
-              alt="Luxury car interior"
-              width={960}
-              height={540}
-              className={styles.galleryImage}
-            />
-          </div>
-          <div className={styles.galleryItem}>
-            <Image
-              src="/gallery/5.jpg"
-              alt="Configuration process"
-              width={800}
-              height={600}
-              className={styles.galleryImage}
-            />
-          </div> */}
         </div>
 
         <div className={styles.partnerButton}>
@@ -110,7 +83,7 @@ export default function Home() {
             <ArrowRight className={styles.buttonIcon} />
           </Link>
         </div>
-      </section>
+      </section> */}
 
       {/* Quote Section */}
       <section className={styles.quoteSection}>
