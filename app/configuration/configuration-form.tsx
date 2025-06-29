@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from "react"
 import { API_URL } from "../variables"
 import Image from "next/image"
 import Link from "next/link"
-import { Edit2, Save, X, Search, ChevronDown, AlertCircle } from "lucide-react"
+import { Edit2, Save, X, Search, ChevronDown, AlertCircle, Wifi, WifiOff } from "lucide-react"
 
 // Update the interfaces to match the new data structure
 interface ConfigurationOptions {
@@ -64,6 +64,19 @@ interface SaveStatus {
     error: string | null
 }
 
+interface WebSocketMessage {
+    type: string
+    verification_code: string
+    data?: any
+    timestamp: string
+}
+
+interface WebSocketStatus {
+    connected: boolean
+    connecting: boolean
+    error: string | null
+}
+
 const formatDate = (isoString: string) => {
     const date = new Date(isoString)
     return date.toLocaleDateString("en-US", {
@@ -88,6 +101,180 @@ export default function ConfigurationForm() {
         success: null,
         error: null,
     })
+    
+    // WebSocket state
+    const [wsStatus, setWsStatus] = useState<WebSocketStatus>({
+        connected: false,
+        connecting: false,
+        error: null
+    })
+    const wsRef = useRef<WebSocket | null>(null)
+    const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const pingIntervalRef = useRef<NodeJS.Timeout | null>(null)
+
+    // WebSocket connection management
+    const connectWebSocket = () => {
+        if (!configData?.verification_code || wsRef.current?.readyState === WebSocket.OPEN) {
+            return
+        }
+
+        setWsStatus(prev => ({ ...prev, connecting: true, error: null }))
+
+        try {
+            // Convert HTTP URL to WebSocket URL
+            const wsUrl = API_URL.replace(/^http/, 'ws')
+            const ws = new WebSocket(`${wsUrl}?verification_code=${configData.verification_code}`)
+            
+            ws.onopen = () => {
+                console.log("🔌 WebSocket connected")
+                setWsStatus({ connected: true, connecting: false, error: null })
+                
+                // Start ping interval to keep connection alive
+                pingIntervalRef.current = setInterval(() => {
+                    if (ws.readyState === WebSocket.OPEN) {
+                        ws.send(JSON.stringify({ type: "ping" }))
+                    }
+                }, 30000) // Ping every 30 seconds
+            }
+
+            ws.onmessage = (event) => {
+                try {
+                    const message: WebSocketMessage = JSON.parse(event.data)
+                    console.log("📨 WebSocket message received:", message.type)
+                    
+                    switch (message.type) {
+                        case "connection_established":
+                            console.log("✅ WebSocket connection established")
+                            break
+                        case "pong":
+                            console.log("🏓 WebSocket pong received")
+                            break
+                        case "configuration_updated":
+                            handleRemoteConfigurationUpdate(message.data)
+                            break
+                        default:
+                            console.log("⚠️ Unknown WebSocket message type:", message.type)
+                    }
+                } catch (error) {
+                    console.error("❌ Error parsing WebSocket message:", error)
+                }
+            }
+
+            ws.onclose = (event) => {
+                console.log("🔌 WebSocket disconnected:", event.code, event.reason)
+                setWsStatus({ connected: false, connecting: false, error: null })
+                
+                // Clear ping interval
+                if (pingIntervalRef.current) {
+                    clearInterval(pingIntervalRef.current)
+                    pingIntervalRef.current = null
+                }
+                
+                // Attempt to reconnect after 5 seconds
+                if (event.code !== 1000) { // Don't reconnect if closed normally
+                    reconnectTimeoutRef.current = setTimeout(() => {
+                        if (configData?.verification_code) {
+                            connectWebSocket()
+                        }
+                    }, 5000)
+                }
+            }
+
+            ws.onerror = (error) => {
+                console.error("❌ WebSocket error:", error)
+                setWsStatus(prev => ({ ...prev, error: "Connection error" }))
+            }
+
+            wsRef.current = ws
+        } catch (error) {
+            console.error("❌ Error creating WebSocket connection:", error)
+            setWsStatus({ connected: false, connecting: false, error: "Failed to connect" })
+        }
+    }
+
+    const disconnectWebSocket = () => {
+        if (wsRef.current) {
+            wsRef.current.close(1000, "Component unmounting")
+            wsRef.current = null
+        }
+        
+        if (pingIntervalRef.current) {
+            clearInterval(pingIntervalRef.current)
+            pingIntervalRef.current = null
+        }
+        
+        if (reconnectTimeoutRef.current) {
+            clearTimeout(reconnectTimeoutRef.current)
+            reconnectTimeoutRef.current = null
+        }
+        
+        setWsStatus({ connected: false, connecting: false, error: null })
+    }
+
+    const handleRemoteConfigurationUpdate = (updateData: any) => {
+        console.log("🔄 Received remote configuration update:", updateData)
+        
+        // Only update if we're not currently editing
+        if (editState) {
+            console.log("⚠️ Ignoring remote update while editing")
+            return
+        }
+        
+        // Update local configuration data
+        setConfigData(prevData => {
+            if (!prevData) return prevData
+            
+            const updatedData = { ...prevData }
+            const { configuration_area, metadata } = updateData
+            
+            if (configuration_area === "exterior" || configuration_area === "interior") {
+                const configIndex = metadata.configuration_type_index
+                const sectionIndex = metadata.section_index
+                const optionIndex = metadata.option_index
+                
+                const configArea = configuration_area as keyof ConfigItem
+                
+                if (updatedData.configure[configArea] && 
+                    updatedData.configure[configArea][configIndex]) {
+                    // Reset all options in the section
+                    updatedData.configure[configArea][configIndex].section_options.forEach((section: ConfigurationSectionOptions, sIdx: number) => {
+                        section.options.forEach((option: ConfigurationOptions, oIdx: number) => {
+                            option.isSelected = (sIdx === sectionIndex && oIdx === optionIndex)
+                        })
+                    })
+                }
+            }
+            
+            return updatedData
+        })
+        
+        // Show notification
+        setSaveStatus({
+            loading: false,
+            success: true,
+            error: null
+        })
+        
+        // Clear success message after 3 seconds
+        setTimeout(() => {
+            setSaveStatus({
+                loading: false,
+                success: null,
+                error: null
+            })
+        }, 3000)
+    }
+
+    // Connect WebSocket when configData is loaded
+    useEffect(() => {
+        if (configData?.verification_code) {
+            connectWebSocket()
+        }
+        
+        return () => {
+            disconnectWebSocket()
+        }
+    }, [configData?.verification_code])
 
     // Reset save status after 3 seconds
     useEffect(() => {
@@ -303,9 +490,29 @@ export default function ConfigurationForm() {
     return (
         <div className="card">
             <div className="card-header">
-                <h2 className="card-title-center">
-                    {configData.manufacturer} {configData.model_name}
-                </h2>
+                <div className="header-content">
+                    <h2 className="card-title-center">
+                        {configData.manufacturer} {configData.model_name}
+                    </h2>
+                    <div className="websocket-status">
+                        {wsStatus.connected ? (
+                            <div className="status status-connected">
+                                <Wifi size={16} />
+                                <span>Connected</span>
+                            </div>
+                        ) : wsStatus.connecting ? (
+                            <div className="status status-connecting">
+                                <Wifi size={16} />
+                                <span>Connecting...</span>
+                            </div>
+                        ) : (
+                            <div className="status status-disconnected">
+                                <WifiOff size={16} />
+                                <span>Offline</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
 
             <div className="card-content">
@@ -313,6 +520,20 @@ export default function ConfigurationForm() {
                     <div className="error-message-banner">
                         <AlertCircle size={16} />
                         <span>{saveStatus.error}</span>
+                    </div>
+                )}
+
+                {wsStatus.error && (
+                    <div className="error-message-banner">
+                        <WifiOff size={16} />
+                        <span>Connection error: {wsStatus.error}</span>
+                    </div>
+                )}
+
+                {saveStatus.success && (
+                    <div className="success-message-banner">
+                        <Wifi size={16} />
+                        <span>Configuration updated successfully!</span>
                     </div>
                 )}
 
