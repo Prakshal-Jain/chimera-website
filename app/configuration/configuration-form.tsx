@@ -183,15 +183,17 @@ export default function ConfigurationForm() {
         try {
             // Prepare data for server
             const serverData = {
-                verification_code: configData.verification_code,
                 configuration_area: categoryType,
-                configuration_type_index: editState.entityIndex,
-                section_index: editState.selectedSectionIndex,
-                option_index: editState.selectedOptionIndex,
+                metadata: {
+                    configuration_type_index: editState.entityIndex,
+                    section_index: editState.selectedSectionIndex,
+                    option_index: editState.selectedOptionIndex,
+                }
             }
 
             // Make POST request to update configuration
-            const response = await fetch(`${API_URL}/update-configuration?verification_code=${code}`, {
+            // verification_code should be in query params, not in body
+            const response = await fetch(`${API_URL}/update-configuration?verification_code=${configData.verification_code}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -202,7 +204,7 @@ export default function ConfigurationForm() {
             if (!response.ok) {
                 // Handle HTTP error responses
                 const errorData = await response.json().catch(() => null)
-                throw new Error(errorData?.message || `Server returned ${response.status}: ${response.statusText}`)
+                throw new Error(errorData?.error || errorData?.message || `Server returned ${response.status}: ${response.statusText}`)
             }
 
             // Update local state after successful server update
