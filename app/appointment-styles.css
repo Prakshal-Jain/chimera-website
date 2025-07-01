@@ -972,3 +972,23 @@ input[type="date"]::-moz-calendar-picker-indicator {
   font-size: 0.9rem;
   margin-bottom: 1rem;
 }
+
+
+.button-outline-red {
+  border: 2px solid #ff383c;
+  color: #ff383c;
+  background: transparent;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(185,28,28,0.04);
+}
+.button-outline-red:hover:not(:disabled) {
+  background: #b91c1c10;
+  color: #a11212;
+  box-shadow: 0 4px 16px rgba(185,28,28,0.10);
+}
+.button-outline-red:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

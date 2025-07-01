@@ -7,7 +7,8 @@ import { useState, useEffect, useRef } from "react"
 import { API_URL } from "../variables"
 import Image from "next/image"
 import Link from "next/link"
-import { Edit2, Save, X, Search, ChevronDown, AlertCircle, Wifi, WifiOff } from "lucide-react"
+import { Edit2, Save, X, Search, ChevronDown, AlertCircle, Wifi, WifiOff, Check } from "lucide-react"
+import ConfirmationDialog from "@/app/components/confirmation-dialog"
 
 // Update the interfaces to match the new data structure
 interface ConfigurationOptions {
@@ -101,7 +102,7 @@ export default function ConfigurationForm() {
         success: null,
         error: null,
     })
-    
+
     // WebSocket state
     const [wsStatus, setWsStatus] = useState<WebSocketStatus>({
         connected: false,
@@ -111,6 +112,16 @@ export default function ConfigurationForm() {
     const wsRef = useRef<WebSocket | null>(null)
     const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
     const pingIntervalRef = useRef<NodeJS.Timeout | null>(null)
+
+    // Reset Configurations state
+    const [resetStatus, setResetStatus] = useState<SaveStatus>({
+        loading: false,
+        success: null,
+        error: null,
+    })
+
+    // Reset Dialog state
+    const [resetDialogOpen, setResetDialogOpen] = useState(false)
 
     // WebSocket connection management
     const connectWebSocket = () => {
@@ -124,11 +135,11 @@ export default function ConfigurationForm() {
             // Convert HTTP URL to WebSocket URL
             const wsUrl = API_URL.replace(/^http/, 'ws')
             const ws = new WebSocket(`${wsUrl}?verification_code=${configData.verification_code}`)
-            
+
             ws.onopen = () => {
                 console.log("🔌 WebSocket connected")
                 setWsStatus({ connected: true, connecting: false, error: null })
-                
+
                 // Start ping interval to keep connection alive
                 pingIntervalRef.current = setInterval(() => {
                     if (ws.readyState === WebSocket.OPEN) {
@@ -141,7 +152,7 @@ export default function ConfigurationForm() {
                 try {
                     const message: WebSocketMessage = JSON.parse(event.data)
                     console.log("📨 WebSocket message received:", message.type)
-                    
+
                     switch (message.type) {
                         case "connection_established":
                             console.log("✅ WebSocket connection established")
@@ -163,13 +174,13 @@ export default function ConfigurationForm() {
             ws.onclose = (event) => {
                 console.log("🔌 WebSocket disconnected:", event.code, event.reason)
                 setWsStatus({ connected: false, connecting: false, error: null })
-                
+
                 // Clear ping interval
                 if (pingIntervalRef.current) {
                     clearInterval(pingIntervalRef.current)
                     pingIntervalRef.current = null
                 }
-                
+
                 // Attempt to reconnect after 5 seconds
                 if (event.code !== 1000) { // Don't reconnect if closed normally
                     reconnectTimeoutRef.current = setTimeout(() => {
@@ -197,44 +208,44 @@ export default function ConfigurationForm() {
             wsRef.current.close(1000, "Component unmounting")
             wsRef.current = null
         }
-        
+
         if (pingIntervalRef.current) {
             clearInterval(pingIntervalRef.current)
             pingIntervalRef.current = null
         }
-        
+
         if (reconnectTimeoutRef.current) {
             clearTimeout(reconnectTimeoutRef.current)
             reconnectTimeoutRef.current = null
         }
-        
+
         setWsStatus({ connected: false, connecting: false, error: null })
     }
 
     const handleRemoteConfigurationUpdate = (updateData: any) => {
         console.log("🔄 Received remote configuration update:", updateData)
-        
+
         // Only update if we're not currently editing
         if (editState) {
             console.log("⚠️ Ignoring remote update while editing")
             return
         }
-        
+
         // Update local configuration data
         setConfigData(prevData => {
             if (!prevData) return prevData
-            
+
             const updatedData = { ...prevData }
             const { configuration_area, metadata } = updateData
-            
+
             if (configuration_area === "exterior" || configuration_area === "interior") {
                 const configIndex = metadata.configuration_type_index
                 const sectionIndex = metadata.section_index
                 const optionIndex = metadata.option_index
-                
+
                 const configArea = configuration_area as keyof ConfigItem
-                
-                if (updatedData.configure[configArea] && 
+
+                if (updatedData.configure[configArea] &&
                     updatedData.configure[configArea][configIndex]) {
                     // Reset all options in the section
                     updatedData.configure[configArea][configIndex].section_options.forEach((section: ConfigurationSectionOptions, sIdx: number) => {
@@ -244,17 +255,17 @@ export default function ConfigurationForm() {
                     })
                 }
             }
-            
+
             return updatedData
         })
-        
+
         // Show notification
         setSaveStatus({
             loading: false,
             success: true,
             error: null
         })
-        
+
         // Clear success message after 3 seconds
         setTimeout(() => {
             setSaveStatus({
@@ -270,7 +281,7 @@ export default function ConfigurationForm() {
         if (configData?.verification_code) {
             connectWebSocket()
         }
-        
+
         return () => {
             disconnectWebSocket()
         }
@@ -452,6 +463,64 @@ export default function ConfigurationForm() {
         })
     }
 
+    const handleResetConfigurations = async () => {
+        if (!configData?.verification_code) return
+        setResetStatus({ loading: true, success: null, error: null })
+        try {
+            const response = await fetch(`${API_URL}/reset_default_configurations?verification_code=${configData.verification_code}`)
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null)
+                throw new Error(errorData?.error || errorData?.message || `Server returned ${response.status}: ${response.statusText}`)
+            }
+            const data = await response.json()
+            const newConfigData = { ...configData, configure: data }
+            setConfigData(newConfigData)
+            setResetStatus({ loading: false, success: true, error: null })
+            // Optionally, show success for a few seconds
+            setTimeout(() => setResetStatus({ loading: false, success: null, error: null }), 3000)
+        } catch (err) {
+            setResetStatus({
+                loading: false,
+                success: false,
+                error: err instanceof Error ? err.message : 'Failed to reset configurations',
+            })
+            setTimeout(() => setResetStatus({ loading: false, success: null, error: null }), 3000)
+        }
+    }
+
+    // Helper to get unified status message
+    function getUnifiedStatus() {
+        // Priority: error > success > loading
+        if (error) {
+            return { type: 'error', message: error };
+        }
+        if (saveStatus.error) {
+            return { type: 'error', message: saveStatus.error };
+        }
+        if (resetStatus.error) {
+            return { type: 'error', message: resetStatus.error };
+        }
+        if (wsStatus.error) {
+            return { type: 'error', message: `Connection error: ${wsStatus.error}` };
+        }
+        if (saveStatus.success) {
+            return { type: 'success', message: 'Configuration updated successfully!' };
+        }
+        if (resetStatus.success) {
+            return { type: 'success', message: 'Configurations reset to default!' };
+        }
+        if (saveStatus.loading) {
+            return { type: 'info', message: 'Saving...' };
+        }
+        if (resetStatus.loading) {
+            return { type: 'info', message: 'Resetting configurations...' };
+        }
+        if (wsStatus.connecting) {
+            return { type: 'info', message: 'Connecting to server...' };
+        }
+        return null;
+    }
+
     if (!configData) {
         return (
             <div className="card">
@@ -508,7 +577,6 @@ export default function ConfigurationForm() {
                         ) : (
                             <div className="status status-disconnected">
                                 <WifiOff size={16} />
-                                <span>Offline</span>
                             </div>
                         )}
                     </div>
@@ -516,26 +584,35 @@ export default function ConfigurationForm() {
             </div>
 
             <div className="card-content">
-                {saveStatus.error && (
-                    <div className="error-message-banner">
-                        <AlertCircle size={16} />
-                        <span>{saveStatus.error}</span>
-                    </div>
-                )}
-
-                {wsStatus.error && (
-                    <div className="error-message-banner">
-                        <WifiOff size={16} />
-                        <span>Connection error: {wsStatus.error}</span>
-                    </div>
-                )}
-
-                {saveStatus.success && (
-                    <div className="success-message-banner">
-                        <Wifi size={16} />
-                        <span>Configuration updated successfully!</span>
-                    </div>
-                )}
+                {/* Unified status banner */}
+                {(() => {
+                    const status = getUnifiedStatus();
+                    if (!status) return null;
+                    if (status.type === 'error') {
+                        return (
+                            <div className="error-message-banner unified-banner">
+                                <AlertCircle size={16} />
+                                <span>{status.message}</span>
+                            </div>
+                        );
+                    }
+                    if (status.type === 'success') {
+                        return (
+                            <div className="success-message-banner unified-banner">
+                                <Check size={16} />
+                                <span>{status.message}</span>
+                            </div>
+                        );
+                    }
+                    if (status.type === 'info') {
+                        return (
+                            <div className="info-message-banner unified-banner">
+                                <Wifi size={16} />
+                                <span>{status.message}</span>
+                            </div>
+                        );
+                    }
+                })()}
 
                 <div className="customer-details-section">
                     <div className="details-container">
@@ -626,6 +703,35 @@ export default function ConfigurationForm() {
                             )}
                         </div>
                     )}
+
+
+                    <button
+                        className="button button-outline-red button-full mt-8"
+                        onClick={() => setResetDialogOpen(true)}
+                        disabled={resetStatus.loading}
+                        type="button"
+                    >
+                        {resetStatus.loading ? (
+                            <span className="spinner" />
+                        ) : (
+                            <>Reset Configurations</>
+                        )}
+                    </button>
+
+                    <ConfirmationDialog
+                        isOpen={resetDialogOpen}
+                        onClose={() => setResetDialogOpen(false)}
+                        onConfirm={async () => {
+                            setResetDialogOpen(false)
+                            await handleResetConfigurations()
+                        }}
+                        title="Reset Configurations"
+                        message="Are you sure? You will lose all progress."
+                        confirmText="Reset"
+                        cancelText="Cancel"
+                        variant="danger"
+                        isLoading={resetStatus.loading}
+                    />
 
                     {configData.previous_configurations && configData.previous_configurations.length > 0 && (
                         <div className="history-section">
