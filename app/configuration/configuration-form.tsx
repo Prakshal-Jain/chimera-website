@@ -225,6 +225,12 @@ export default function ConfigurationForm() {
     const handleRemoteConfigurationUpdate = (updateData: any) => {
         console.log("🔄 Received remote configuration update:", updateData)
 
+        // Ignore updates from web client since we already handled them
+        if (updateData.client_type === 'web-client') {
+            console.log("⚠️ Ignoring update from web client")
+            return
+        }
+
         // Only update if we're not currently editing
         if (editState) {
             console.log("⚠️ Ignoring remote update while editing")
@@ -386,7 +392,8 @@ export default function ConfigurationForm() {
                     configuration_type_index: editState.entityIndex,
                     section_index: editState.selectedSectionIndex,
                     option_index: editState.selectedOptionIndex,
-                }
+                },
+                client_type: 'web-client' // Add client type identifier
             }
 
             // Make POST request to update configuration
