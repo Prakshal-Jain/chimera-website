@@ -41,7 +41,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className={styles.hero}>
         <h1 className={styles.heroTitle}>
-          Hyper-Realistic AR/VR Car Configurator for Luxury Dealerships, Manufacturers & Dreamers
+          Hyper-Realistic AR/VR Configurator for Luxury Car Dealerships
         </h1>
       </section>
 
@@ -115,16 +115,18 @@ export default function Home() {
       {/* Quote Section */}
       <section className={styles.quoteSection}>
         <div className={styles.quoteContainer}>
-          <blockquote className={styles.quote}>"Everything you can imagine is real."</blockquote>
-          <cite className={styles.quoteAuthor}>— Pablo Picasso</cite>
-          <div className={styles.quoteUnderline}></div>
+          <blockquote className={styles.quote}>The graphics are so real, I kept reaching out to
+            grab the steering wheel. This is the true
+            meaning of ‘what you see is what you get.’</blockquote>
+          <cite className={styles.quoteAuthor}>— Sales Manager at Boardwalk Lotus Redwood City</cite>
+          <div className={styles.quoteUnderline} />
         </div>
       </section>
 
       {/* Video Section */}
       <section className={styles.videoSection}>
         <Link
-          href="https://youtu.be/VcQD7ZR7XGA?si=nP-T6DL5UY57tBXZ"
+          href="https://youtu.be/kmJDGhu0llo"
           target="_blank"
           rel="noopener noreferrer">
           <div className={styles.videoContainer}>
@@ -133,7 +135,7 @@ export default function Home() {
                 <div className={styles.playButton}>
                   <Play className={styles.playIcon} />
                 </div>
-                <p className={styles.videoText}>Experience Chimera</p>
+                <p className={styles.videoText}>Watch Demo</p>
               </div>
             </div>
           </div>
@@ -223,7 +225,7 @@ export default function Home() {
                 Buyers can experience their dream cars in life-size scale, eliminating guesswork and increasing
                 confidence in final orders.
               </p>
-              <div className={styles.patentBadge}>Patent Pending</div>
+              <div className={styles.patentBadge}>Patent Pending (#63/832,817)</div>
             </div>
           </div>
         </div>

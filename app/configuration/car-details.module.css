@@ -1,0 +1,346 @@
+.carDetailsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Search Section */
+.searchSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.searchInputContainer {
+    width: 100%;
+}
+
+.searchInput {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    gap: 0.75rem;
+    transition: border-color 0.2s ease;
+    min-height: 3.5rem;
+    /* Ensure minimum height */
+}
+
+.searchInput:focus-within {
+    border-color: rgba(171, 138, 98, 0.5);
+    box-shadow: 0 0 0 3px rgba(171, 138, 98, 0.1);
+}
+
+.searchField {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    color: #333;
+    background: transparent;
+    resize: none;
+    /* Disable manual resize */
+    overflow: hidden;
+    /* Hide scrollbar */
+    min-height: 1.5rem;
+    /* Minimum height for single line */
+    max-height: 8rem;
+    /* Maximum height before scrolling */
+    line-height: 1.5;
+    font-family: inherit;
+    padding-top: 0.125rem;
+    /* Add small padding to center text vertically */
+}
+
+.searchField::placeholder {
+    color: #999;
+}
+
+/* When textarea grows beyond max-height, show scrollbar */
+.searchField:focus {
+    overflow-y: auto;
+}
+
+.sendButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: rgba(171, 138, 98, 0.9);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+    align-self: flex-end;
+    /* Align to bottom of container */
+}
+
+.sendButton:hover:not(:disabled) {
+    background-color: rgba(171, 138, 98, 1);
+}
+
+.sendButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.sendIcon {
+    width: 1rem;
+    height: 1rem;
+    color: white;
+}
+
+/* Sample Questions */
+.sampleQuestions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.questionButton {
+    text-align: left;
+    padding: 0.75rem 0;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    background: none;
+    color: #555;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.questionButton:hover {
+    color: rgba(171, 138, 98, 0.8);
+}
+
+.questionButton:last-child {
+    border-bottom: none;
+}
+
+/* AI Response */
+.aiResponseContainer {
+    margin-top: 1rem;
+}
+
+.searchingIndicator {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    background-color: rgba(171, 138, 98, 0.05);
+    border: 2px dashed rgba(171, 138, 98, 0.3);
+    border-radius: 8px;
+    color: #666;
+}
+
+.searchingSpinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(171, 138, 98, 0.2);
+    border-radius: 50%;
+    border-top-color: rgba(171, 138, 98, 0.8);
+    animation: spin 1s linear infinite;
+}
+
+.aiResponse {
+    padding: 1.5rem;
+    background-color: rgba(171, 138, 98, 0.05);
+    border: 2px dashed rgba(171, 138, 98, 0.3);
+    border-radius: 8px;
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Specifications Section */
+.specificationsSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.sectionTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.specsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.specCard {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+    /* Removed hover effects */
+}
+
+.specValue {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.specLabel {
+    font-size: 0.875rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Overview Section */
+.overviewSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.overviewContent {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.overviewText {
+    color: #555;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* Loading States */
+.loadingContainer,
+.errorContainer,
+.emptyContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    min-height: 300px;
+}
+
+.loadingContent,
+.errorContent,
+.emptyContent {
+    text-align: center;
+    max-width: 400px;
+}
+
+.loadingSpinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid rgba(171, 138, 98, 0.2);
+    border-radius: 50%;
+    border-top-color: rgba(171, 138, 98, 0.8);
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1.5rem;
+}
+
+.loadingTitle,
+.errorTitle,
+.emptyTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.75rem;
+}
+
+.loadingText,
+.errorMessage,
+.emptyText {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.errorIcon,
+.emptyIcon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.errorHelp {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.errorLink {
+    color: rgba(171, 138, 98, 1);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.errorLink:hover {
+    color: rgba(171, 138, 98, 0.8);
+    text-decoration: underline;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .specsGrid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .specCard {
+        padding: 1rem;
+    }
+
+    .searchInput {
+        padding: 0.6rem 0.8rem;
+    }
+
+    .sendButton {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .sendIcon {
+        width: 0.875rem;
+        height: 0.875rem;
+    }
+
+    .loadingContainer,
+    .errorContainer,
+    .emptyContainer {
+        padding: 3rem 1rem;
+        min-height: 250px;
+    }
+
+    .loadingTitle,
+    .errorTitle,
+    .emptyTitle {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .carDetailsContainer {
+        gap: 1.5rem;
+    }
+
+    .specsGrid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .sectionTitle {
+        font-size: 1.125rem;
+    }
+}

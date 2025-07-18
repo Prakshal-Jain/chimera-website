@@ -366,9 +366,10 @@ input[type="date"]::-moz-calendar-picker-indicator {
 }
 
 /* Tabs */
+/* Tabs */
 .tabs-header {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 1px;
   margin-bottom: 2rem;
   border-bottom: 1px solid #eee;

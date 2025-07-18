@@ -123,7 +123,7 @@
   background-image: url('./assets/demo.jpg');
   background-size: cover;
   background-position: center;
-  filter: blur(12px);
+  filter: blur(8px);
   z-index: -1;
   /* send it behind the content */
 }
