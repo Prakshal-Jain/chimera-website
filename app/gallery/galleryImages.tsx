@@ -156,4 +156,10 @@ export const galleryImages = [
         credit: "Ray Gaeta",
         description: "Ferrari Beverly Hills",
     },
+    {
+        src: "/gallery/28.png",
+        alt: "Viewing configurations in AR",
+        credit: "",
+        description: "Viewing configurations in AR",
+    },
 ]
