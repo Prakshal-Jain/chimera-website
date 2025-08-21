@@ -1,6 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
-import { Mail, Phone, ArrowLeft, ExternalLink } from "lucide-react"
+import { Mail, Phone, Building, ExternalLink } from "lucide-react"
 import styles from "./contact.module.css"
 import HeaderBackButtonTitle from "../components/HeaderBackButtonTitle"
 
@@ -30,6 +30,15 @@ export default function Contact() {
               <a href="tel:7167300312" className={styles.contactValue}>
                 (716) 730-0312
               </a>
+            </div>
+
+            <div className={styles.contactItem}>
+              <div className={styles.contactLabel}>
+                <Building className={styles.contactIcon} />
+                <span>Address:</span>
+              </div>
+              710 Lakeway Drive, Suite 200<br />
+              Sunnyvale, CA 94085
             </div>
           </div>
 

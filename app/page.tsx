@@ -234,8 +234,12 @@ export default function Home() {
       {/* Footer */}
       <footer className={styles.footer}>
         <div className={styles.footerContent}>
-          <div className={styles.footerCopyright}>
-            <p>© {new Date().getFullYear()} Chimera Inc. All rights reserved.</p>
+          <div className={styles.footerAddress}>
+            <p>
+              710 Lakeway Drive, Suite 200
+              <br />
+              Sunnyvale, CA 94085
+            </p>
           </div>
           <div className={styles.footerContact}>
             <a href="mailto:chimera.autos@gmail.com" className={styles.footerLink}>
@@ -247,6 +251,10 @@ export default function Home() {
               (716) 730-0312
             </a>
           </div>
+        </div>
+
+        <div className={styles.footerCopyright}>
+          <p>© {new Date().getFullYear()} Chimera Inc. All rights reserved.</p>
         </div>
       </footer>
     </div>
