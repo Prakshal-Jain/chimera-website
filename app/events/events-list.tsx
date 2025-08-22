@@ -143,8 +143,8 @@ export default function EventsList() {
         <p className={styles.errorMessage}>{error}</p>
         <p className={styles.errorHelp}>
           Please try again later or contact us at{" "}
-          <Link href="mailto:chimera.autos@gmail.com" className={styles.link}>
-            chimera.autos@gmail.com
+          <Link href="mailto:founder@chimeraauto.com" className={styles.link}>
+            founder@chimeraauto.com
           </Link>
         </p>
       </div>
@@ -157,8 +157,8 @@ export default function EventsList() {
         <p className={styles.emptyMessage}>No events data available.</p>
         <p className={styles.emptyHelp}>
           Please try again later or contact us at{" "}
-          <Link href="mailto:chimera.autos@gmail.com" className={styles.link}>
-            chimera.autos@gmail.com
+          <Link href="mailto:founder@chimeraauto.com" className={styles.link}>
+            founder@chimeraauto.com
           </Link>{" "}
           for more information.
         </p>

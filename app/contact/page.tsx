@@ -17,8 +17,8 @@ export default function Contact() {
                 <Mail className={styles.contactIcon} />
                 <span>Email:</span>
               </div>
-              <a href="mailto:chimera.autos@gmail.com" className={styles.contactValue}>
-                chimera.autos@gmail.com
+              <a href="mailto:founder@chimeraauto.com" className={styles.contactValue}>
+                founder@chimeraauto.com
               </a>
             </div>
 

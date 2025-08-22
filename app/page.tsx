@@ -242,9 +242,9 @@ export default function Home() {
             </p>
           </div>
           <div className={styles.footerContact}>
-            <a href="mailto:chimera.autos@gmail.com" className={styles.footerLink}>
+            <a href="mailto:founder@chimeraauto.com" className={styles.footerLink}>
               <Mail className={styles.footerIcon} />
-              chimera.autos@gmail.com
+              founder@chimeraauto.com
             </a>
             <a href="tel:7167300312" className={styles.footerLink}>
               <Phone className={styles.footerIcon} />

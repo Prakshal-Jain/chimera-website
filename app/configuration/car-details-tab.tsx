@@ -127,8 +127,8 @@ export default function CarDetailsTab({
                     <p className={styles.errorMessage}>{error}</p>
                     <p className={styles.errorHelp}>
                         Please try refreshing the page or contact us at{" "}
-                        <a href="mailto:chimera.autos@gmail.com" className={styles.errorLink}>
-                            chimera.autos@gmail.com
+                        <a href="mailto:founder@chimeraauto.com" className={styles.errorLink}>
+                            founder@chimeraauto.com
                         </a>
                     </p>
                 </div>

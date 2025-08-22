@@ -469,8 +469,8 @@ export default function ConfigurationForm() {
                 <div>
                   No interior configuration exist yet. Please contact us at{" "}
                   <b>
-                    <Link href="mailto:chimera.autos@gmail.com" className="link">
-                      chimera.autos@gmail.com
+                    <Link href="mailto:founder@chimeraauto.com" className="link">
+                      founder@chimeraauto.com
                     </Link>
                   </b>
                 </div>
