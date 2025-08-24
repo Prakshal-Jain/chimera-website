@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, ExternalLink, Mail, Phone, Play } from "lucide-react"
+import { ArrowRight, ExternalLink, Mail, Phone, Play, CheckCircle, Sparkles, TrendingUp, Award } from "lucide-react"
 import styles from "./page.module.css"
 
 export default function Home() {
@@ -40,9 +40,164 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className={styles.hero}>
-        <h1 className={styles.heroTitle}>
-          Hyper-Realistic AR/VR Configurator for Luxury Car Dealerships
-        </h1>
+        <h1 className={styles.heroTitle}>Hyper-Realistic AR/VR Car Configurator for Luxury Dealerships</h1>
+        <p className={styles.heroSubtitle}>
+          Increase sales conversion and customer satisfaction with immersive car customization that builds complete
+          buying confidence
+        </p>
+
+        <div className={styles.appleVerifiedBadge}>
+          <div className={styles.badgeContent}>
+            <Image
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-riOfDC7BGc08r4dKMbE9dcMFi4H4Xb.png"
+              alt="Apple Logo"
+              width={20}
+              height={20}
+              className={styles.appleLogo}
+            />
+            <span className={styles.badgeText}>Verified Business</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Video Section */}
+      <section className={styles.videoSection}>
+        <Link href="https://youtu.be/kmJDGhu0llo" target="_blank" rel="noopener noreferrer">
+          <div className={styles.videoContainer}>
+            <div className={styles.videoWrapper}>
+              <div className={styles.videoPlaceholder}>
+                <div className={styles.playButton}>
+                  <Play className={styles.playIcon} />
+                </div>
+                <p className={styles.videoText}>Watch Demo</p>
+              </div>
+            </div>
+          </div>
+        </Link>
+        <p className={styles.videoNote}>
+          This screen recording can't capture the full depth and emotion — only the headset experience reveals the true
+          magic.
+        </p>
+        <div className={styles.videoCallToAction}>
+          <Link href="/book_appointment" className={styles.videoButton}>
+            Book Appointment to Experience It
+            <ArrowRight className={styles.buttonIcon} />
+          </Link>
+        </div>
+      </section>
+
+      {/* Quote Section */}
+      <section className={styles.quoteSection}>
+        <div className={styles.quoteContainer}>
+          <blockquote className={styles.quote}>
+            "The graphics are so real, I kept reaching out to grab the steering wheel. This is the true meaning of 'what
+            you see is what you get.'"
+          </blockquote>
+          <cite className={styles.quoteAuthor}>— Kyle Snell, Sales Manager at Boardwalk Lotus Redwood City</cite>
+          <div className={styles.quoteUnderline} />
+        </div>
+      </section>
+
+      {/* Problem & Solution Section */}
+      <section className={styles.problemSolutionSection}>
+        <div className={styles.problemSolutionGrid}>
+          <div className={styles.card}>
+            <h2 className={styles.cardTitle}>The Problem with 2D Configurators</h2>
+            <div className={styles.cardContent}>
+              <p>
+                Luxury customers deserve more than flat screens and outdated interfaces when configuring their dream
+                cars.
+              </p>
+              <ul className={styles.problemList}>
+                <li>Traditional 2D configurators fail to capture true colors, materials, and lighting</li>
+                <li>Customers struggle to visualize their final specification, leading to uncertainty</li>
+                <li>Slow, fragmented experiences diminish the luxury buying journey</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className={styles.card}>
+            <h2 className={styles.cardTitle}>Photorealistic AR/VR Solution</h2>
+            <div className={styles.cardContent}>
+              <p>
+                Chimera delivers photorealistic AR/VR experiences that let customers truly see, feel, and connect with
+                their configured vehicle before it's built.
+              </p>
+              <div className={styles.solutionFeatures}>
+                <div className={styles.feature}>
+                  <div className={styles.featureIconContainer}>
+                    <TrendingUp className={styles.featureIcon} />
+                  </div>
+                  <h4 className={styles.featureTitle}>Drive New Customer Acquisition</h4>
+                </div>
+                <div className={styles.feature}>
+                  <div className={styles.featureIconContainer}>
+                    <Sparkles className={styles.featureIcon} />
+                  </div>
+                  <h4 className={styles.featureTitle}>Elevate Showroom Experiences</h4>
+                </div>
+                <div className={styles.feature}>
+                  <div className={styles.featureIconContainer}>
+                    <CheckCircle className={styles.featureIcon} />
+                  </div>
+                  <h4 className={styles.featureTitle}>Increase Configuration Confidence</h4>
+                </div>
+                <div className={styles.feature}>
+                  <div className={styles.featureIconContainer}>
+                    <Award className={styles.featureIcon} />
+                  </div>
+                  <h4 className={styles.featureTitle}>Boost Customer Satisfaction</h4>
+                </div>
+              </div>
+              <div className={styles.patentBadge}>Patent Pending (#63/832,817)</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* AI Features Section */}
+      <section className={styles.aiSection}>
+        <h2 className={styles.sectionTitle}>AI Features</h2>
+        <div className={styles.aiGrid}>
+          <div className={styles.aiFeature}>
+            <h3>Voice-Powered Customization</h3>
+            <p>Simply speak your preferences and watch your dream car come to life</p>
+          </div>
+          <div className={styles.aiFeature}>
+            <h3>AI Sales Assistant</h3>
+            <p>Intelligent guidance that understands customer preferences and suggests perfect combinations</p>
+          </div>
+          <div className={styles.aiFeature}>
+            <h3>Personal Dashboard</h3>
+            <p>Save, compare, and refine configurations across multiple sessions</p>
+          </div>
+          <div className={styles.aiFeature}>
+            <h3>Dealership Analytics</h3>
+            <p>Deep insights into customer preferences and configuration trends</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Traction Section */}
+      <section className={styles.tractionSection}>
+        <h2 className={styles.sectionTitle}>Trusted by Luxury Leaders and OEMs</h2>
+        <div className={styles.tractionGrid}>
+          <div className={styles.tractionItem}>
+            <div className={styles.tractionNumber}>20+</div>
+            <div className={styles.tractionLabel}>Premium Dealerships</div>
+            <p>Leading luxury automotive retailers trust Chimera to elevate their customer experience</p>
+          </div>
+          <div className={styles.tractionItem}>
+            <div className={styles.tractionNumber}>7</div>
+            <div className={styles.tractionLabel}>Exclusive Showcases</div>
+            <p>Featured at premier automotive events including Lamborghini reveals and F1 experiences</p>
+          </div>
+          <div className={styles.tractionItem}>
+            <div className={styles.tractionNumber}>4</div>
+            <div className={styles.tractionLabel}>Active Partnerships</div>
+            <p>Working directly with top-tier dealerships to redefine luxury car configuration</p>
+          </div>
+        </div>
       </section>
 
       {/* Gallery Section */}
@@ -75,71 +230,45 @@ export default function Home() {
               className={styles.galleryImage}
             />
           </div>
-          {/* <div className={styles.galleryItem} style={{ gridRow: "span 2" }}>
-            <Image
-              src="/gallery/8.jpg"
-              alt="Vision Pro experience"
-              width={600}
-              height={800}
-              className={styles.galleryImage}
-            />
-          </div>
-          <div className={styles.galleryItem}>
-            <Image
-              src="/gallery/3.png"
-              alt="Luxury car interior"
-              width={960}
-              height={540}
-              className={styles.galleryImage}
-            />
-          </div>
-          <div className={styles.galleryItem}>
-            <Image
-              src="/gallery/5.jpg"
-              alt="Configuration process"
-              width={800}
-              height={600}
-              className={styles.galleryImage}
-            />
-          </div> */}
         </div>
 
         <div className={styles.partnerButton}>
-          <Link href="/gallery" className={styles.button}>
+          <Link href="/gallery" className={styles.videoButton}>
             View Full Gallery
             <ArrowRight className={styles.buttonIcon} />
           </Link>
         </div>
       </section>
 
-      {/* Quote Section */}
-      <section className={styles.quoteSection}>
-        <div className={styles.quoteContainer}>
-          <blockquote className={styles.quote}>The graphics are so real, I kept reaching out to
-            grab the steering wheel. This is the true
-            meaning of ‘what you see is what you get.’</blockquote>
-          <cite className={styles.quoteAuthor}>— Sales Manager at Boardwalk Lotus Redwood City</cite>
-          <div className={styles.quoteUnderline} />
-        </div>
-      </section>
-
-      {/* Video Section */}
-      <section className={styles.videoSection}>
-        <Link
-          href="https://youtu.be/kmJDGhu0llo"
-          target="_blank"
-          rel="noopener noreferrer">
-          <div className={styles.videoContainer}>
-            <div className={styles.videoWrapper}>
-              <div className={styles.videoPlaceholder}>
-                <div className={styles.playButton}>
-                  <Play className={styles.playIcon} />
-                </div>
-                <p className={styles.videoText}>Watch Demo</p>
-              </div>
-            </div>
+      {/* Competitive Advantage Section */}
+      <section className={styles.advantageSection}>
+        <h2 className={styles.sectionTitle}>Why Chimera Leads</h2>
+        <div className={styles.advantageGrid}>
+          <div className={styles.advantageItem}>
+            <h3>Seamless Integration</h3>
+            <p>Deploy instantly without complex development or ongoing maintenance requirements</p>
           </div>
-        </Link>
+          <div className={styles.advantageItem}>
+            <h3>Universal Compatibility</h3>
+            <p>Works flawlessly across all luxury automotive brands and model lines</p>
+          </div>
+          <div className={styles.advantageItem}>
+            <h3>Photorealistic Quality</h3>
+            <p>Industry-leading visual fidelity that captures every detail, texture, and reflection</p>
+          </div>
+          <div className={styles.advantageItem}>
+            <h3>AI-Enhanced Experience</h3>
+            <p>Intelligent features that adapt to customer preferences and make buying process smoooth</p>
+          </div>
+          <div className={styles.advantageItem}>
+            <h3>Market Leadership</h3>
+            <p>First-to-market advantage with established industry partnerships</p>
+          </div>
+          <div className={styles.advantageItem}>
+            <h3>Rapid Deployment</h3>
+            <p>Get up and running in minutes, not months, with comprehensive training included</p>
+          </div>
+        </div>
       </section>
 
       {/* Partners Section */}
@@ -184,49 +313,62 @@ export default function Home() {
               <h3 className={styles.partnerName}>Lamborghini - Luxury Collection Los Gatos</h3>
             </div>
           </a>
+          <a
+            href="https://www.lamborghininewportbeach.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.partnerLink}
+          >
+            <div className={styles.partner}>
+              <div className={styles.partnerLogoContainer}>
+                <Image
+                  src="/lambonb.png"
+                  alt="Lamborghini Newport Beach Logo"
+                  width={200}
+                  height={100}
+                  className={styles.partnerLogo}
+                />
+              </div>
+              <h3 className={styles.partnerName}>Lamborghini Newport Beach</h3>
+            </div>
+          </a>
         </div>
         <div className={styles.partnerButton}>
-          <Link href="https://docs.google.com/forms/d/e/1FAIpQLSfb2TknAi6i4pGRdb4w_kinUkgvPdKfKfAhqSRJ4V4YmXUugg/viewform?usp=dialog" target="_blank" className={styles.button}>
+          <Link
+            href="https://docs.google.com/forms/d/e/1FAIpQLSfb2TknAi6i4pGRdb4w_kinUkgvPdKfKfAhqSRJ4V4YmXUugg/viewform?usp=dialog"
+            target="_blank"
+            className={styles.videoButton}
+          >
             Become a Partner
             <ArrowRight className={styles.buttonIcon} />
           </Link>
         </div>
       </section>
 
-      {/* Problem & Solution Section */}
-      <section className={styles.problemSolutionSection}>
-        <div className={styles.problemSolutionGrid}>
-          <div className={styles.card}>
-            <h2 className={styles.cardTitle}>The Problem</h2>
-            <div className={styles.cardContent}>
-              <p>
-                Even in 2025, dealerships rely on 2D configurators on outdated monitor screens with low-resolution
-                displays and poor color accuracy to configure cars that fall short of capturing real-world aesthetics,
-                leading to frustration, decision fatigue, inaccurate configurations, repeated dealership visits, and
-                costly order changes.
-              </p>
-              <p>
-                There are over ~792,720 high-end car sales every year in US alone. 85-98% of high-end car buyers
-                personalize their cars. 38-45% of these car buyers back-out, reconfigure, or cancel their orders due to
-                under-confidence in their configuration choices.
-              </p>
-            </div>
+      {/* Future Vision Section */}
+      <section className={styles.visionSection}>
+        <div className={styles.visionGrid}>
+          <div className={styles.visionContent}>
+            <h2 className={styles.visionSectionTitle}>Beyond Automotive</h2>
+            <p className={styles.visionText}>
+              While automotive is our foundation, Chimera's immersive technology extends far beyond cars. We're
+              pioneering the future of luxury product configuration across aviation, marine, real estate, timepieces,
+              and other premium industries.
+            </p>
+            <p className={styles.visionSubtext}>
+              The same customers who configure million-dollar supercars also customize private jets, luxury yachts,
+              exclusive real estate properties, and premium timepieces. Our platform scales seamlessly across these
+              interconnected luxury markets.
+            </p>
           </div>
-
-          <div className={styles.card}>
-            <h2 className={styles.cardTitle}>Our Solution</h2>
-            <div className={styles.cardContent}>
-              <p>
-                Chimera solves these issues by delivering a fully immersive configurator with true-to-life colors,
-                lighting, materials, and environments—accessible through the standardized Apple Vision Pro AR/VR headset
-                before manufacturing even begins (often years in advance).
-              </p>
-              <p>
-                Buyers can experience their dream cars in life-size scale, eliminating guesswork and increasing
-                confidence in final orders.
-              </p>
-              <div className={styles.patentBadge}>Patent Pending (#63/832,817)</div>
-            </div>
+          <div className={styles.visionImageContainer}>
+            <Image
+              src="/vision-image.png"
+              alt="Luxury products collage showing cars, yachts, private jets, and timepieces"
+              width={1000}
+              height={750}
+              className={styles.visionImage}
+            />
           </div>
         </div>
       </section>
@@ -241,10 +383,19 @@ export default function Home() {
               Sunnyvale, CA 94085
             </p>
           </div>
+          <div className={styles.footerLogoContainer}>
+            <Image
+              src="/chimera-icon.png"
+              alt="Chimera Logo"
+              width={80}
+              height={80}
+              className={styles.footerLogo}
+            />
+          </div>
           <div className={styles.footerContact}>
-            <a href="mailto:founder@chimeraauto.com" className={styles.footerLink}>
+            <a href="mailto:prakshaljain422@gmail.com" className={styles.footerLink}>
               <Mail className={styles.footerIcon} />
-              founder@chimeraauto.com
+              prakshaljain422@gmail.com
             </a>
             <a href="tel:7167300312" className={styles.footerLink}>
               <Phone className={styles.footerIcon} />
@@ -260,4 +411,3 @@ export default function Home() {
     </div>
   )
 }
-
