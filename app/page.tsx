@@ -40,7 +40,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className={styles.hero}>
-        <h1 className={styles.heroTitle}>Hyper-Realistic AR/VR Car Configurator for Luxury Dealerships</h1>
+        <h1 className={styles.heroTitle}>Hyper-Realistic AR/VR Configurator for Luxury Dealerships</h1>
         <p className={styles.heroSubtitle}>
           Increase sales conversion and customer satisfaction with immersive car customization that builds complete
           buying confidence
@@ -393,9 +393,9 @@ export default function Home() {
             />
           </div>
           <div className={styles.footerContact}>
-            <a href="mailto:prakshaljain422@gmail.com" className={styles.footerLink}>
+            <a href="mailto:founder@chimeraauto.com" className={styles.footerLink}>
               <Mail className={styles.footerIcon} />
-              prakshaljain422@gmail.com
+              founder@chimeraauto.com
             </a>
             <a href="tel:7167300312" className={styles.footerLink}>
               <Phone className={styles.footerIcon} />
