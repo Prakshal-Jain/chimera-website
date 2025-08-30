@@ -1,0 +1,983 @@
+.container {
+    min-height: 100vh;
+    background-color: #f8f5f0;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1;
+    padding: 2rem 1rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    color: #333;
+    text-decoration: none;
+    margin-bottom: 2rem;
+    transition: color 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.backLink:hover {
+    color: #666;
+}
+
+.backIcon {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+}
+
+/* Guide Homepage Styles */
+.header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.logoContainer {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.logo {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+}
+
+.title {
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+    font-weight: 300;
+}
+
+.subtitle {
+    font-size: 1.125rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Timeline Styles */
+.timeline {
+    position: relative;
+    margin: 3rem 0;
+}
+
+.timelineItem {
+    display: flex;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.timelineMarker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 2rem;
+    flex-shrink: 0;
+}
+
+.markerDot {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    background-color: #d4af37;
+    color: white;
+}
+
+.phaseNumber {
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+.timelineLine {
+    width: 2px;
+    height: 4rem;
+    background-color: #e5e7eb;
+    margin-top: 1rem;
+}
+
+.timelineContent {
+    flex: 1;
+    padding-top: 0.5rem;
+}
+
+.phaseLink {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.phaseCard {
+    background-color: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.phaseLink:hover .phaseCard {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.phaseHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.phaseTitle {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: #333;
+    margin: 0;
+    font-weight: 400;
+}
+
+.arrowIcon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #d4af37;
+    transition: transform 0.2s ease;
+}
+
+.phaseLink:hover .arrowIcon {
+    transform: translateX(4px);
+}
+
+.phaseDescription {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+/* Help Section */
+.helpSection {
+    margin-top: 4rem;
+}
+
+.helpCard {
+    background-color: white;
+    border-radius: 1rem;
+    padding: 2.5rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.helpTitle {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 2rem;
+    font-weight: 400;
+}
+
+.contactOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.contactButton {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background-color: #d4af37;
+    color: white;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    min-width: 200px;
+    justify-content: center;
+}
+
+.contactButtonPassive {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border: 0.1rem solid #d4af37;
+    color: black;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: border 0.2s ease;
+    min-width: 200px;
+    justify-content: center;
+}
+
+.contactButton:hover {
+    background-color: #c19b26;
+}
+
+.contactButtonPassive:hover {
+    border: 0.1rem solid #c19b26;
+}
+
+.contactIcon {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+}
+
+/* Page-specific Styles */
+.pageHeader {
+    margin-bottom: 3rem;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+
+.breadcrumbLink {
+    color: #666;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.breadcrumbLink:hover {
+    color: #333;
+}
+
+.breadcrumbSeparator {
+    margin: 0 0.5rem;
+    color: #999;
+}
+
+.breadcrumbCurrent {
+    color: #333;
+    font-weight: 500;
+}
+
+.pageTitle {
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+    font-weight: 300;
+}
+
+.pageSubtitle {
+    font-size: 1.125rem;
+    color: #666;
+    line-height: 1.6;
+    max-width: 700px;
+}
+
+/* Steps Styles */
+.stepsContainer {
+    margin: 3rem 0;
+}
+
+.step {
+    background-color: white;
+    border-radius: 1rem;
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.stepHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.stepNumber {
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: #d4af37;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.125rem;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.stepTitle {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: #333;
+    margin: 0;
+    font-weight: 400;
+}
+
+.stepContent {
+    margin-left: 3.5rem;
+}
+
+.stepDescription {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.linkBox {
+    background-color: #f8f5f0;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.linkContent {
+    display: flex;
+    align-items: center;
+}
+
+.linkIcon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #d4af37;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.linkText {
+    display: flex;
+    flex-direction: column;
+}
+
+.linkLabel {
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+}
+
+.linkUrl {
+    color: #d4af37;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.linkUrl:hover {
+    color: #c19b26;
+}
+
+.importantNote {
+    background-color: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    display: flex;
+    align-items: flex-start;
+}
+
+.noteIcon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #ef4444;
+    margin-right: 1rem;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+}
+
+.noteContent {
+    flex: 1;
+}
+
+.noteTitle {
+    font-weight: 600;
+    color: #ef4444;
+    margin: 0 0 0.5rem 0;
+}
+
+.noteText {
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.infoList {
+    margin: 1.5rem 0;
+}
+
+.infoItem {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.infoIcon {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #10b981;
+    margin-right: 1rem;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+}
+
+.screenshotPlaceholder {
+    background-color: #f8f5f0;
+    border: 2px dashed #d1d5db;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    margin: 1.5rem 0;
+    text-align: center;
+}
+
+.placeholderContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.placeholderImage {
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.placeholderIcon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.placeholderText {
+    color: #666;
+    font-style: italic;
+    margin: 0;
+}
+
+.finalStep {
+    background-color: rgba(16, 185, 129, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.finalStepContent {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.handingOverIcon {
+    width: 3rem;
+    height: 3rem;
+    color: #10b981;
+    margin-bottom: 1rem;
+}
+
+.finalStepTitle {
+    font-weight: 600;
+    color: #10b981;
+    margin: 0 0 0.5rem 0;
+}
+
+.finalStepText {
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Passcode Box */
+.passcodeBox {
+    background-color: #f8f5f0;
+    border: 2px solid #d4af37;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    text-align: center;
+}
+
+.passcodeContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.passcodeLabel {
+    font-size: 0.875rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.passcodeValue {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #d4af37;
+    font-family: monospace;
+    letter-spacing: 0.2em;
+}
+
+/* Sub Steps */
+.subSteps {
+    margin: 1.5rem 0;
+}
+
+.subStep {
+    margin-bottom: 2rem;
+    padding-left: 1rem;
+    border-left: 3px solid #e5e7eb;
+}
+
+.subStepTitle {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 1rem 0;
+}
+
+/* Timer Note */
+.timerNote {
+    background-color: rgba(59, 130, 246, 0.05);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.timerContent {
+    text-align: center;
+}
+
+.timerTitle {
+    font-weight: 600;
+    color: #3b82f6;
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+}
+
+.timerText {
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Navigation Footer */
+.navigationFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.navButton {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background-color: transparent;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.navButton:hover {
+    background-color: #333;
+    color: white;
+    border-color: #333;
+}
+
+.nextButton {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background-color: #d4af37;
+    color: white;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.nextButton:hover {
+    background-color: #c19b26;
+}
+
+.navIcon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.navButton .navIcon {
+    margin-right: 0.5rem;
+}
+
+.nextButton .navIcon {
+    margin-left: 0.5rem;
+}
+
+.nextSection {
+    text-align: right;
+}
+
+.nextLabel {
+    display: block;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.nextTitle {
+    font-weight: 500;
+}
+
+/* Footer */
+.footer {
+    background-color: #f0f0f0;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    margin-top: 3rem;
+}
+
+.footerText {
+    font-size: 0.875rem;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Additional Resources Section */
+.additionalResources {
+    background-color: white;
+    border-radius: 1rem;
+    padding: 2.5rem;
+    margin: 3rem 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.resourcesTitle {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: #333;
+    margin: 0 0 2rem 0;
+    font-weight: 400;
+    text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .content {
+        padding: 1.5rem 1rem;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .pageTitle {
+        font-size: 2rem;
+    }
+
+    .timelineMarker {
+        margin-right: 1rem;
+    }
+
+    .markerDot {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .stepContent {
+        margin-left: 0;
+        margin-top: 1rem;
+    }
+
+    .stepHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .stepNumber {
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+
+    .navigationFooter {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+    }
+
+    .nextSection {
+        text-align: center;
+    }
+
+    .linkContent {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .linkIcon {
+        margin-bottom: 0.5rem;
+        margin-right: 0;
+    }
+
+    .contactOptions {
+        gap: 0.75rem;
+    }
+
+    .contactButton {
+        min-width: 180px;
+    }
+}
+
+@media (max-width: 640px) {
+    .phaseHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .arrowIcon {
+        margin-top: 0.5rem;
+    }
+
+    .importantNote,
+    .finalStep {
+        flex-direction: column;
+    }
+
+    .noteIcon {
+        margin-bottom: 0.5rem;
+        margin-right: 0;
+    }
+
+    .contactOptions {
+        gap: 0.5rem;
+    }
+
+    .contactButton {
+        min-width: 160px;
+        font-size: 0.875rem;
+    }
+}
+
+/* Button Icons */
+.buttonIcon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 0.25rem;
+    border-radius: 0.25rem;
+}
+
+/* Video Embed Styles */
+.videoEmbed {
+    margin: 1.5rem 0;
+    background-color: #f8f5f0;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+}
+
+.videoTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 1rem 0;
+    text-align: center;
+}
+
+.videoWrapper {
+    position: relative;
+    padding-bottom: 56.25%;
+    /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.videoIframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 0.5rem;
+}
+
+/* Responsive video adjustments */
+@media (max-width: 768px) {
+    .videoEmbed {
+        padding: 1rem;
+    }
+
+    .videoTitle {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .videoEmbed {
+        margin: 1rem 0;
+        padding: 0.75rem;
+    }
+
+    .videoTitle {
+        font-size: 0.85rem;
+        margin-bottom: 0.75rem;
+    }
+}
+
+/* Goals Section */
+.goalsSection {
+    margin: 2rem 0 3rem 0;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+  }
+  
+  .sectionTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  .goalsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .goalCard {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .goalCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .goalIcon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+  
+  .goalIconSvg {
+    width: 24px;
+    height: 24px;
+    color: white;
+  }
+  
+  .goalTitle {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+  }
+  
+  .goalDescription {
+    font-size: 0.875rem;
+    color: #64748b;
+    line-height: 1.5;
+  }
+  
+  /* Gestures List */
+  .gesturesList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  
+  .gestureItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+  }
+  
+  .gestureIcon {
+    width: 20px;
+    height: 20px;
+    color: #3b82f6;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  
+  .gestureText {
+    font-size: 0.875rem;
+    color: #374151;
+    line-height: 1.5;
+  }
+  
+  /* Calibration Steps */
+  .calibrationSteps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .calibrationStep {
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+  }
+  
+  .calibrationTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 1rem;
+  }
+  
+  @media (max-width: 768px) {
+    .goalsGrid {
+      grid-template-columns: 1fr;
+    }
+  
+    .gestureItem {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  
+    .gestureIcon {
+      align-self: flex-start;
+    }
+  }
+  

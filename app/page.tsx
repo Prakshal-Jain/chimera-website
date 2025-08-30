@@ -32,6 +32,9 @@ export default function Home() {
           <Link href="/events" className={styles.navLink}>
             Events
           </Link>
+          <Link href="/guide" className={styles.navLink}>
+            Guide
+          </Link>
           <Link href="/contact" className={styles.navLink}>
             Contact
           </Link>
