@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import "../appointment-styles.css"
 import { API_URL } from "../variables"
 
@@ -62,8 +63,11 @@ export default function AppointmentForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [verificationCode, setVerificationCode] = useState<string | null>(null)
   const [formError, setFormError] = useState<string | null>(null)
+  const [isDealershipFromUrl, setIsDealershipFromUrl] = useState(false)
 
-  // Fetch dealerships on component mount
+  const searchParams = useSearchParams()
+
+  // Fetch dealerships on component mount and handle URL parameter
   useEffect(() => {
     const fetchDealerships = async () => {
       try {
@@ -75,6 +79,13 @@ export default function AppointmentForm() {
         }
         const dealershipsData = await dealershipsResponse.json()
         setApiData((prev) => ({ ...prev, dealerships: dealershipsData }))
+
+        // Check if dealership is provided in URL and is valid
+        const urlDealership = searchParams.get('dealership')
+        if (urlDealership && dealershipsData.includes(urlDealership)) {
+          setFormData((prev) => ({ ...prev, dealership: urlDealership }))
+          setIsDealershipFromUrl(true)
+        }
       } catch (error) {
         console.error("Error fetching dealerships:", error)
         setErrors((prev) => ({ ...prev, dealerships: "Failed to load dealerships" }))
@@ -84,7 +95,7 @@ export default function AppointmentForm() {
     }
 
     fetchDealerships()
-  }, [])
+  }, [searchParams])
 
   // Fetch car manufacturers when dealership changes
   useEffect(() => {
@@ -199,6 +210,11 @@ export default function AppointmentForm() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
 
+    // Prevent changing dealership if it's set from URL
+    if (name === "dealership" && isDealershipFromUrl) {
+      return
+    }
+
     // Reset dependent fields when parent field changes
     if (name === "dealership") {
       setFormData((prev) => ({
@@ -259,11 +275,14 @@ export default function AppointmentForm() {
   }
 
   const resetForm = () => {
+    const urlDealership = searchParams.get('dealership')
+    const isValidUrlDealership = !!(urlDealership && apiData.dealerships.includes(urlDealership))
+    
     setFormData({
       first_name: "",
       last_name: "",
       email: "",
-      dealership: "",
+      dealership: isValidUrlDealership ? urlDealership! : "",
       phone: "",
       car_manufacturer: "",
       car_model: "",
@@ -272,6 +291,7 @@ export default function AppointmentForm() {
     })
     setVerificationCode(null)
     setFormError(null)
+    setIsDealershipFromUrl(isValidUrlDealership)
   }
 
   if (verificationCode) {
@@ -382,7 +402,7 @@ export default function AppointmentForm() {
               value={formData.dealership}
               onChange={handleInputChange}
               required
-              disabled={isLoading.dealerships}
+              disabled={isLoading.dealerships || isDealershipFromUrl}
             >
               <option value="">Select dealership</option>
               {apiData.dealerships.map((dealership) => (
