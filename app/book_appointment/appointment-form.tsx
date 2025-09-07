@@ -5,7 +5,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import "../appointment-styles.css"
-import { API_URL, ENABLE_VISION_ASSESSMENT } from "../variables"
+import { API_URL } from "../variables"
 
 interface AppointmentFormData {
   first_name: string
@@ -26,12 +26,7 @@ interface ApiData {
   timeSlots: string[]
 }
 
-interface AppointmentFormProps {
-  onNext: (data: AppointmentFormData) => void
-  onDirectSubmit?: (data: AppointmentFormData) => void
-}
-
-export default function AppointmentForm({ onNext, onDirectSubmit }: AppointmentFormProps) {
+export default function AppointmentForm() {
   const [formData, setFormData] = useState<AppointmentFormData>({
     first_name: "",
     last_name: "",
@@ -65,6 +60,9 @@ export default function AppointmentForm({ onNext, onDirectSubmit }: AppointmentF
     timeSlots: "",
   })
 
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [verificationCode, setVerificationCode] = useState<string | null>(null)
+  const [formError, setFormError] = useState<string | null>(null)
   const [isDealershipFromUrl, setIsDealershipFromUrl] = useState(false)
 
   const searchParams = useSearchParams()
@@ -83,7 +81,7 @@ export default function AppointmentForm({ onNext, onDirectSubmit }: AppointmentF
         setApiData((prev) => ({ ...prev, dealerships: dealershipsData }))
 
         // Check if dealership is provided in URL and is valid
-        const urlDealership = searchParams.get("dealership")
+        const urlDealership = searchParams.get('dealership')
         if (urlDealership && dealershipsData.includes(urlDealership)) {
           setFormData((prev) => ({ ...prev, dealership: urlDealership }))
           setIsDealershipFromUrl(true)
@@ -247,35 +245,84 @@ export default function AppointmentForm({ onNext, onDirectSubmit }: AppointmentF
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (ENABLE_VISION_ASSESSMENT) {
-      onNext(formData)
-    } else {
-      onDirectSubmit?.(formData)
+    setIsSubmitting(true)
+    setFormError(null)
+
+    try {
+      const response = await fetch(`${API_URL}/register_appointment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setVerificationCode(data.verification_code)
+      } else {
+        setFormError("Failed to register appointment. Please try again.")
+      }
+    } catch (err) {
+      setFormError("An error occurred. Please try again later.")
+      console.error("Error submitting form:", err)
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
-  const isFormValid = () => {
+  const resetForm = () => {
+    const urlDealership = searchParams.get('dealership')
+    const isValidUrlDealership = !!(urlDealership && apiData.dealerships.includes(urlDealership))
+    
+    setFormData({
+      first_name: "",
+      last_name: "",
+      email: "",
+      dealership: isValidUrlDealership ? urlDealership! : "",
+      phone: "",
+      car_manufacturer: "",
+      car_model: "",
+      appointment_date: "",
+      appointment_time: "",
+    })
+    setVerificationCode(null)
+    setFormError(null)
+    setIsDealershipFromUrl(isValidUrlDealership)
+  }
+
+  if (verificationCode) {
     return (
-      formData.first_name &&
-      formData.last_name &&
-      formData.email &&
-      formData.dealership &&
-      formData.phone &&
-      formData.car_manufacturer &&
-      formData.car_model &&
-      formData.appointment_date &&
-      formData.appointment_time
+      <div className="card">
+        <div className="card-header">
+          <h2 className="card-title">Appointment Confirmed!</h2>
+          <p className="card-description">Your appointment has been successfully scheduled</p>
+        </div>
+        <div className="card-content">
+          <div className="success-container">
+            <div className="success-icon">✓</div>
+            <p className="success-message">Your verification code is:</p>
+            <div className="verification-code">{verificationCode}</div>
+            <p className="success-note">
+              Please keep this code for your records. You&apos;ll need it when you arrive at the dealership.
+            </p>
+
+            <button onClick={resetForm} className="button button-primary mt-6" type="button">
+              Book Another Appointment
+            </button>
+          </div>
+        </div>
+      </div>
     )
   }
 
   return (
     <div className="card">
       <div className="card-header">
-        <p className="card-title">
-          {ENABLE_VISION_ASSESSMENT ? "Step 1 of 2: Appointment Details" : "Appointment Details"}
-        </p>
+        <h2 className="card-title">Schedule an Immersive Configuration Appointment</h2>
       </div>
       <div className="card-content">
         <form onSubmit={handleSubmit} className="form">
@@ -471,8 +518,10 @@ export default function AppointmentForm({ onNext, onDirectSubmit }: AppointmentF
             </div>
           </div>
 
-          <button type="submit" className="button button-primary button-full" disabled={!isFormValid()}>
-            {ENABLE_VISION_ASSESSMENT ? "Continue to Vision Assessment" : "Book Appointment"}
+          {formError && <div className="error-message">{formError}</div>}
+
+          <button type="submit" className="button button-primary button-full" disabled={isSubmitting}>
+            {isSubmitting ? "Submitting..." : "Schedule Appointment"}
           </button>
         </form>
       </div>
