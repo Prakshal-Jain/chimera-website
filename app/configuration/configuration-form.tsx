@@ -251,9 +251,12 @@ export default function ConfigurationForm() {
       const serverData = {
         verification_code: configData.verification_code,
         configuration_area: categoryType,
-        configuration_type_index: editState.entityIndex,
-        section_index: editState.selectedSectionIndex,
-        option_index: editState.selectedOptionIndex,
+        metadata: {
+          configuration_type_index: editState.entityIndex,
+          section_index: editState.selectedSectionIndex,
+          option_index: editState.selectedOptionIndex,
+          option_metadata: null,
+        }
       }
 
       // Make POST request to update configuration
