@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Image from "next/image"
 import { Download, Smartphone, AlertTriangle, Play, Loader2 } from "lucide-react"
@@ -27,7 +27,7 @@ interface ARViewData {
     filename: string
 }
 
-export default function ARViewPage() {
+function ARViewContent() {
     const searchParams = useSearchParams()
     const [isIOS, setIsIOS] = useState<boolean | null>(null)
     const [isARCapable, setIsARCapable] = useState<boolean | null>(null)
@@ -400,5 +400,29 @@ export default function ARViewPage() {
                 </main>
             </div>
         </div>
+    )
+}
+
+function ARViewFallback() {
+    return (
+        <div className={styles.container}>
+            <div className={styles.content}>
+                <HeaderBackButtonTitle title="AR Experience" />
+                <main className={styles.main}>
+                    <div className={styles.loadingContainer}>
+                        <Loader2 className={styles.loadingIcon} />
+                        <p>Loading your AR experience...</p>
+                    </div>
+                </main>
+            </div>
+        </div>
+    )
+}
+
+export default function ARViewPage() {
+    return (
+        <Suspense fallback={<ARViewFallback />}>
+            <ARViewContent />
+        </Suspense>
     )
 }
