@@ -49,16 +49,26 @@ export default function Home() {
           buying confidence
         </p>
 
-        <div className={styles.appleVerifiedBadge}>
+        <div className={styles.badgesContainer}>
           <div className={styles.badgeContent}>
             <Image
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-riOfDC7BGc08r4dKMbE9dcMFi4H4Xb.png"
+              src="/apple-logo.png"
               alt="Apple Logo"
               width={20}
               height={20}
-              className={styles.appleLogo}
+              className={styles.badgeLogo}
             />
             <span className={styles.badgeText}>Verified Business</span>
+          </div>
+          <div className={styles.badgeContent}>
+            <Image
+              src="/nvidia-logo.png"
+              alt="NVIDIA Logo"
+              width={20}
+              height={20}
+              className={styles.badgeLogo}
+            />
+            <span className={styles.badgeText}><b>NVIDIA</b> Inception Program</span>
           </div>
         </div>
       </section>
@@ -408,7 +418,12 @@ export default function Home() {
         </div>
 
         <div className={styles.footerCopyright}>
-          <p>© {new Date().getFullYear()} Chimera Inc. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} Chimera Inc. All rights reserved. |{" "}
+            <Link href="/privacy-policy" className={styles.privacyLink}>
+              Privacy Policy
+            </Link>
+          </p>
         </div>
       </footer>
     </div>
