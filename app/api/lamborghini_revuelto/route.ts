@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 
+// This route needs to be dynamic because it checks user agent
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     // Check if the request is from an iOS device
