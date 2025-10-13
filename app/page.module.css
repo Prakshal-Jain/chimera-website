@@ -129,6 +129,52 @@
   z-index: 1;
 }
 
+/* Scroll Down Arrow */
+.scrollDownArrow {
+  position: absolute;
+  bottom: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  animation: floatArrow 2s ease-in-out infinite;
+}
+
+.scrollDownArrow:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.arrowIcon {
+  width: 24px;
+  height: 24px;
+  color: rgba(255, 255, 255, 0.8);
+  transition: color 0.3s ease;
+}
+
+.scrollDownArrow:hover .arrowIcon {
+  color: rgba(255, 255, 255, 1);
+}
+
+@keyframes floatArrow {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-10px);
+  }
+}
+
 /* Watch Demo CTA */
 .watchDemoCTA {
   position: absolute;
@@ -193,6 +239,130 @@
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
+/* What Makes Us Different Section */
+.differenceSection {
+  padding: 4rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.differenceSectionTitle {
+  font-family: var(--font-serif);
+  font-size: 3.5rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 3.5rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+.differenceGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+.differenceCard {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding: 2.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  align-items: center;
+}
+
+.differenceCard:hover {
+  border-color: rgba(212, 175, 55, 0.25);
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+}
+
+.differenceContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.differenceCardTitle {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.differenceCardText {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+.differenceButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.75rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  align-self: flex-start;
+  text-transform: uppercase;
+}
+
+.differenceButton:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: white;
+}
+
+.differenceButton .buttonIcon {
+  width: 1rem;
+  height: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.differenceButton:hover .buttonIcon {
+  transform: translateX(3px);
+}
+
+.differenceImageContainer {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.differenceImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.differenceCard:hover .differenceImage {
+  transform: scale(1.05);
+}
+
+/* Hero Subtitle Wrapper */
 .heroSubtitleWrapper {
   margin-bottom: 3rem;
 }
@@ -1036,6 +1206,17 @@
     display: none;
   }
 
+  .scrollDownArrow {
+    bottom: 2rem;
+    width: 40px;
+    height: 40px;
+  }
+
+  .arrowIcon {
+    width: 20px;
+    height: 20px;
+  }
+
   .sectionTitle {
     font-size: 1.85rem;
     margin-bottom: 2rem;
@@ -1207,6 +1388,37 @@
   .visionSection {
     padding: 2.5rem 1.5rem;
   }
+
+  .differenceSection {
+    padding: 3rem 1.5rem;
+  }
+
+  .differenceSectionTitle {
+    font-size: 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .differenceCard {
+    padding: 2rem 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .differenceCardTitle {
+    font-size: 1.35rem;
+  }
+
+  .differenceCardText {
+    font-size: 1rem;
+  }
+
+  .differenceButton {
+    font-size: 0.8rem;
+    padding: 0.75rem 1.5rem;
+  }
+
+  .differenceImageContainer {
+    min-height: 250px;
+  }
 }
 
 /* Tablet & Desktop Responsive */
@@ -1270,6 +1482,11 @@
   .visionSectionTitle {
     text-align: left;
   }
+
+  .differenceCard {
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -1287,5 +1504,13 @@
 
   .heroSubtitle {
     font-size: 1.85rem;
+  }
+
+  .differenceCard {
+    gap: 4rem;
+  }
+
+  .differenceImageContainer {
+    min-height: 400px;
   }
 }

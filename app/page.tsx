@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, ExternalLink, Mail, Phone, CheckCircle, Sparkles, TrendingUp, Award, Play } from "lucide-react"
+import { ArrowRight, ExternalLink, Mail, Phone, CheckCircle, Sparkles, TrendingUp, Award, Play, ChevronDown } from "lucide-react"
 import styles from "./page.module.css"
 
 export default function Home() {
@@ -16,6 +16,13 @@ export default function Home() {
     }, 3000)
     return () => clearInterval(interval)
   }, [])
+
+  const scrollToContent = () => {
+    const differenceSection = document.getElementById("difference-section")
+    if (differenceSection) {
+      differenceSection.scrollIntoView({ behavior: "smooth" })
+    }
+  }
 
   return (
     <div className={styles.container}>
@@ -75,7 +82,9 @@ export default function Home() {
           <div className={styles.badgesContainer}>
             <div className={styles.badgeContent}>
               <Image src="/apple-logo.png" alt="Apple Logo" width={20} height={20} className={styles.badgeLogo} />
-              <span className={styles.badgeText}><b>Apple</b> Verified Business</span>
+              <span className={styles.badgeText}>
+                <b>Apple</b> Verified Business
+              </span>
             </div>
             <div className={styles.badgeContent}>
               <Image src="/nvidia-logo.png" alt="NVIDIA Logo" width={20} height={20} className={styles.badgeLogo} />
@@ -86,8 +95,8 @@ export default function Home() {
           </div>
 
           <p className={styles.heroTagline}>
-            Increase sales conversion and customer satisfaction with immersive car customization that builds complete
-            buying confidence
+            Increase sales conversion and customer satisfaction with immersive experiences that builds complete buying
+            confidence
           </p>
 
           <div className={styles.heroCTA}>
@@ -101,6 +110,70 @@ export default function Home() {
               <Play className={styles.watchDemoIcon} />
               <span>Watch Demo</span>
             </Link>
+          </div>
+        </div>
+
+        <button onClick={scrollToContent} className={styles.scrollDownArrow} aria-label="Scroll to content">
+          <ChevronDown className={styles.arrowIcon} />
+        </button>
+      </section>
+
+
+      <section id="difference-section" className={styles.differenceSection}>
+        <h2 className={styles.differenceSectionTitle}>What are you doing differently than your competition?</h2>
+        <div className={styles.differenceGrid}>
+          <div className={styles.differenceCard}>
+            <div className={styles.differenceContent}>
+              <h3 className={styles.differenceCardTitle}>EVENT & SHOWROOM EXPERIENCES</h3>
+              <p className={styles.differenceCardText}>
+                Everyone posts on social media. Everyone spends big budgets on pastries, flowers, and fancy setups that
+                your customers forget the moment they walk out the door.
+              </p>
+              <p className={styles.differenceCardText}>
+                <b>Use your budget wisely. Give them an experience they'll never forget</b> — something they'll talk about with
+                their friends and colleagues. That's how you create a real competitive edge.
+              </p>
+              <Link href="/events" className={styles.differenceButton}>
+                <span>TRY CHIMERA — AN UNFORGETTABLE EXPERIENCE</span>
+                <ArrowRight className={styles.buttonIcon} />
+              </Link>
+            </div>
+            <div className={styles.differenceImageContainer}>
+              <Image
+                src="/gallery/1.png"
+                alt="Event and showroom experiences"
+                width={600}
+                height={400}
+                className={styles.differenceImage}
+              />
+            </div>
+          </div>
+
+          <div className={styles.differenceCard}>
+            <div className={styles.differenceContent}>
+              <h3 className={styles.differenceCardTitle}>TURN ONLINE BROWSERS INTO BUYERS</h3>
+              <p className={styles.differenceCardText}>
+                Take your store inventory global. With Chimera, potential buyers can place new or used vehicles right in
+                their driveway or garage using just their phone. It feels like magic.
+              </p>
+              <p className={styles.differenceCardText}>
+                We handle the full integration, so your sales cycle speeds up, customers make more confident decisions,
+                and you stand out from the rest.
+              </p>
+              <Link href="/ar-view" className={styles.differenceButton}>
+                <span>PLACE A CAR IN YOUR WORLD</span>
+                <ArrowRight className={styles.buttonIcon} />
+              </Link>
+            </div>
+            <div className={styles.differenceImageContainer}>
+              <Image
+                src="/gallery/29.png"
+                alt="AR car placement experience"
+                width={600}
+                height={400}
+                className={styles.differenceImage}
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -206,7 +279,7 @@ export default function Home() {
             <p>Leading luxury retailers trust Chimera to elevate their customer experience</p>
           </div>
           <div className={styles.tractionItem}>
-            <div className={styles.tractionNumber}>7</div>
+            <div className={styles.tractionNumber}>9+</div>
             <div className={styles.tractionLabel}>Exclusive Showcases</div>
             <p>Featured at premier events including Lamborghini reveals and F1 experiences</p>
           </div>
@@ -232,7 +305,7 @@ export default function Home() {
           </div>
           <div className={styles.galleryItem}>
             <Image
-              src="/gallery/1.png"
+              src="/gallery/30.png"
               alt="AR/VR car experience"
               width={800}
               height={600}
