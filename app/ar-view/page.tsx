@@ -306,6 +306,19 @@ function ARViewContent() {
                                 </div>
                             </a>
                         </div>
+                        
+                        {/* Demo AR Experience Link */}
+                        <div className={styles.demoLinkContainer} style={{ marginTop: '2rem', textAlign: 'center' }}>
+                            <p style={{ marginBottom: '1rem', color: '#666' }}>Try our demo AR experience:</p>
+                            <a 
+                                href="/ar-view/lamborghini_revuelto" 
+                                className={styles.downloadButton}
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}
+                            >
+                                <Download className={styles.downloadIcon} />
+                                Lamborghini Revuelto AR Demo
+                            </a>
+                        </div>
                     </section>
 
                     {/* AR Locations Section */}

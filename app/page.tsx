@@ -1,9 +1,22 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, ExternalLink, Mail, Phone, Play, CheckCircle, Sparkles, TrendingUp, Award } from "lucide-react"
+import { ArrowRight, ExternalLink, Mail, Phone, CheckCircle, Sparkles, TrendingUp, Award, Play } from "lucide-react"
 import styles from "./page.module.css"
 
 export default function Home() {
+  const [currentWord, setCurrentWord] = useState(0)
+  const words = ["Cars", "Jets", "Yachts", "Jewelry", "Watches"]
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentWord((prev) => (prev + 1) % words.length)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <div className={styles.container}>
       {/* Header */}
@@ -41,61 +54,54 @@ export default function Home() {
         </nav>
       </header>
 
-      {/* Hero Section */}
-      <section className={styles.hero}>
-        <h1 className={styles.heroTitle}>Hyper-Realistic AR/VR Configurator for Luxury Dealerships</h1>
-        <p className={styles.heroSubtitle}>
-          Increase sales conversion and customer satisfaction with immersive car customization that builds complete
-          buying confidence
-        </p>
+      {/* Hero Section with Video Background */}
+      <section className={styles.heroSection}>
+        <video autoPlay loop muted playsInline className={styles.heroVideo}>
+          <source src="/chimera-demo.mp4" type="video/mp4" />
+        </video>
+        <div className={styles.heroOverlay} />
 
-        <div className={styles.badgesContainer}>
-          <div className={styles.badgeContent}>
-            <Image
-              src="/apple-logo.png"
-              alt="Apple Logo"
-              width={20}
-              height={20}
-              className={styles.badgeLogo}
-            />
-            <span className={styles.badgeText}>Verified Business</span>
+        <div className={styles.heroContent}>
+          <h1 className={styles.heroTitle}>Shopify for luxury brands</h1>
+          <div className={styles.heroSubtitleWrapper}>
+            <p className={styles.heroSubtitle}>AI driven immersive experiences for</p>
+            <p className={styles.heroSubtitle}>
+              <span className={styles.animatedWord} key={currentWord}>
+                {words[currentWord]}
+              </span>
+            </p>
           </div>
-          <div className={styles.badgeContent}>
-            <Image
-              src="/nvidia-logo.png"
-              alt="NVIDIA Logo"
-              width={20}
-              height={20}
-              className={styles.badgeLogo}
-            />
-            <span className={styles.badgeText}><b>NVIDIA</b> Inception Program</span>
-          </div>
-        </div>
-      </section>
 
-      {/* Video Section */}
-      <section className={styles.videoSection}>
-        <Link href="https://youtu.be/IqDw3HJs1Js" target="_blank" rel="noopener noreferrer">
-          <div className={styles.videoContainer}>
-            <div className={styles.videoWrapper}>
-              <div className={styles.videoPlaceholder}>
-                <div className={styles.playButton}>
-                  <Play className={styles.playIcon} />
-                </div>
-                <p className={styles.videoText}>Watch Demo</p>
-              </div>
+          <div className={styles.badgesContainer}>
+            <div className={styles.badgeContent}>
+              <Image src="/apple-logo.png" alt="Apple Logo" width={20} height={20} className={styles.badgeLogo} />
+              <span className={styles.badgeText}><b>Apple</b> Verified Business</span>
+            </div>
+            <div className={styles.badgeContent}>
+              <Image src="/nvidia-logo.png" alt="NVIDIA Logo" width={20} height={20} className={styles.badgeLogo} />
+              <span className={styles.badgeText}>
+                <b>NVIDIA</b> Inception Program
+              </span>
             </div>
           </div>
-        </Link>
-        <p className={styles.videoNote}>
-          This screen recording can't capture the full depth and emotion — only the headset experience reveals the true
-          magic.
-        </p>
-        <div className={styles.videoCallToAction}>
-          <Link href="/book_appointment" className={styles.videoButton}>
-            Book Appointment to Experience It
-            <ArrowRight className={styles.buttonIcon} />
-          </Link>
+
+          <p className={styles.heroTagline}>
+            Increase sales conversion and customer satisfaction with immersive car customization that builds complete
+            buying confidence
+          </p>
+
+          <div className={styles.heroCTA}>
+            {/* Watch Demo CTA */}
+            <Link
+              href="https://youtu.be/IqDw3HJs1Js"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.primaryButton}
+            >
+              <Play className={styles.watchDemoIcon} />
+              <span>Watch Demo</span>
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -115,11 +121,11 @@ export default function Home() {
       <section className={styles.problemSolutionSection}>
         <div className={styles.problemSolutionGrid}>
           <div className={styles.card}>
-            <h2 className={styles.cardTitle}>The Problem with 2D Configurators</h2>
+            <h2 className={styles.cardTitle}>The Problem with Traditional Commerce</h2>
             <div className={styles.cardContent}>
               <p>
                 Luxury customers deserve more than flat screens and outdated interfaces when configuring their dream
-                cars.
+                purchases.
               </p>
               <ul className={styles.problemList}>
                 <li>Traditional 2D configurators fail to capture true colors, materials, and lighting</li>
@@ -134,7 +140,7 @@ export default function Home() {
             <div className={styles.cardContent}>
               <p>
                 Chimera delivers photorealistic AR/VR experiences that let customers truly see, feel, and connect with
-                their configured vehicle before it's built.
+                their configured products before purchase.
               </p>
               <div className={styles.solutionFeatures}>
                 <div className={styles.feature}>
@@ -147,7 +153,7 @@ export default function Home() {
                   <div className={styles.featureIconContainer}>
                     <Sparkles className={styles.featureIcon} />
                   </div>
-                  <h4 className={styles.featureTitle}>Elevate Showroom Experiences</h4>
+                  <h4 className={styles.featureTitle}>Elevate Brand Experiences</h4>
                 </div>
                 <div className={styles.feature}>
                   <div className={styles.featureIconContainer}>
@@ -162,7 +168,6 @@ export default function Home() {
                   <h4 className={styles.featureTitle}>Boost Customer Satisfaction</h4>
                 </div>
               </div>
-              <div className={styles.patentBadge}>Patent Pending (#63/832,817)</div>
             </div>
           </div>
         </div>
@@ -174,7 +179,7 @@ export default function Home() {
         <div className={styles.aiGrid}>
           <div className={styles.aiFeature}>
             <h3>Voice-Powered Customization</h3>
-            <p>Simply speak your preferences and watch your dream car come to life</p>
+            <p>Simply speak your preferences and watch your dream product come to life</p>
           </div>
           <div className={styles.aiFeature}>
             <h3>AI Sales Assistant</h3>
@@ -185,7 +190,7 @@ export default function Home() {
             <p>Save, compare, and refine configurations across multiple sessions</p>
           </div>
           <div className={styles.aiFeature}>
-            <h3>Dealership Analytics</h3>
+            <h3>Brand Analytics</h3>
             <p>Deep insights into customer preferences and configuration trends</p>
           </div>
         </div>
@@ -193,22 +198,22 @@ export default function Home() {
 
       {/* Traction Section */}
       <section className={styles.tractionSection}>
-        <h2 className={styles.sectionTitle}>Trusted by Luxury Leaders and OEMs</h2>
+        <h2 className={styles.sectionTitle}>Trusted by Luxury Leaders</h2>
         <div className={styles.tractionGrid}>
           <div className={styles.tractionItem}>
             <div className={styles.tractionNumber}>20+</div>
-            <div className={styles.tractionLabel}>Premium Dealerships</div>
-            <p>Leading luxury automotive retailers trust Chimera to elevate their customer experience</p>
+            <div className={styles.tractionLabel}>Premium Brands</div>
+            <p>Leading luxury retailers trust Chimera to elevate their customer experience</p>
           </div>
           <div className={styles.tractionItem}>
             <div className={styles.tractionNumber}>7</div>
             <div className={styles.tractionLabel}>Exclusive Showcases</div>
-            <p>Featured at premier automotive events including Lamborghini reveals and F1 experiences</p>
+            <p>Featured at premier events including Lamborghini reveals and F1 experiences</p>
           </div>
           <div className={styles.tractionItem}>
             <div className={styles.tractionNumber}>4</div>
             <div className={styles.tractionLabel}>Active Partnerships</div>
-            <p>Working directly with top-tier dealerships to redefine luxury car configuration</p>
+            <p>Working directly with top-tier brands to redefine luxury commerce</p>
           </div>
         </div>
       </section>
@@ -246,8 +251,8 @@ export default function Home() {
         </div>
 
         <div className={styles.partnerButton}>
-          <Link href="/gallery" className={styles.videoButton}>
-            View Full Gallery
+          <Link href="/gallery" className={styles.primaryButton}>
+            <span>View Full Gallery</span>
             <ArrowRight className={styles.buttonIcon} />
           </Link>
         </div>
@@ -263,7 +268,7 @@ export default function Home() {
           </div>
           <div className={styles.advantageItem}>
             <h3>Universal Compatibility</h3>
-            <p>Works flawlessly across all luxury automotive brands and model lines</p>
+            <p>Works flawlessly across all luxury brands and product categories</p>
           </div>
           <div className={styles.advantageItem}>
             <h3>Photorealistic Quality</h3>
@@ -271,7 +276,7 @@ export default function Home() {
           </div>
           <div className={styles.advantageItem}>
             <h3>AI-Enhanced Experience</h3>
-            <p>Intelligent features that adapt to customer preferences and make buying process smoooth</p>
+            <p>Intelligent features that adapt to customer preferences and streamline the buying process</p>
           </div>
           <div className={styles.advantageItem}>
             <h3>Market Leadership</h3>
@@ -350,9 +355,9 @@ export default function Home() {
           <Link
             href="https://docs.google.com/forms/d/e/1FAIpQLSfb2TknAi6i4pGRdb4w_kinUkgvPdKfKfAhqSRJ4V4YmXUugg/viewform?usp=dialog"
             target="_blank"
-            className={styles.videoButton}
+            className={styles.primaryButton}
           >
-            Become a Partner
+            <span>Become a Partner</span>
             <ArrowRight className={styles.buttonIcon} />
           </Link>
         </div>
@@ -397,13 +402,7 @@ export default function Home() {
             </p>
           </div>
           <div className={styles.footerLogoContainer}>
-            <Image
-              src="/chimera-icon.png"
-              alt="Chimera Logo"
-              width={80}
-              height={80}
-              className={styles.footerLogo}
-            />
+            <Image src="/chimera-icon.png" alt="Chimera Logo" width={80} height={80} className={styles.footerLogo} />
           </div>
           <div className={styles.footerContact}>
             <a href="mailto:founder@chimeraauto.com" className={styles.footerLink}>
