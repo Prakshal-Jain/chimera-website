@@ -75,7 +75,7 @@ export default function Home() {
 
       {/* Video Section */}
       <section className={styles.videoSection}>
-        <Link href="https://youtu.be/kmJDGhu0llo" target="_blank" rel="noopener noreferrer">
+        <Link href="https://youtu.be/IqDw3HJs1Js" target="_blank" rel="noopener noreferrer">
           <div className={styles.videoContainer}>
             <div className={styles.videoWrapper}>
               <div className={styles.videoPlaceholder}>
