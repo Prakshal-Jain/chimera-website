@@ -130,8 +130,8 @@ export default function Home() {
                 your customers forget the moment they walk out the door.
               </p>
               <p className={styles.differenceCardText}>
-                <b>Use your budget wisely. Give them an experience they'll never forget</b> — something they'll talk about with
-                their friends and colleagues. That's how you create a real competitive edge.
+                <b>Use your budget wisely. Give your <span className={styles.highlightedText}>customers an experience</span> they'll never forget</b> — something they'll talk about with
+                their friends and colleagues, <span className={styles.highlightedText}>generating leads</span>. That's how you create a real competitive edge.
               </p>
               <Link href="/events" className={styles.differenceButton}>
                 <span>TRY CHIMERA — AN UNFORGETTABLE EXPERIENCE</span>
@@ -151,15 +151,27 @@ export default function Home() {
 
           <div className={styles.differenceCard}>
             <div className={styles.differenceContent}>
-              <h3 className={styles.differenceCardTitle}>TURN ONLINE BROWSERS INTO BUYERS</h3>
+              <h3 className={styles.differenceCardTitle}>TURN ONLINE TRAFFIC INTO BUYERS</h3>
               <p className={styles.differenceCardText}>
-                Take your store inventory global. With Chimera, potential buyers can place new or used vehicles right in
-                their driveway or garage using just their phone. It feels like magic.
+                Take your store inventory global. With Chimera, potential buyers can place new or used vehicles in life-size right in
+                their driveway or garage using just their phone in Augmented Reality. It feels like magic.
               </p>
               <p className={styles.differenceCardText}>
-                We handle the full integration, so your sales cycle speeds up, customers make more confident decisions,
-                and you stand out from the rest.
+                We handle the full integration, so your:
               </p>
+              <ul className={styles.differenceCardList}>
+                <li>Geographic reach expands</li>
+                <li>Lead-to-sale conversion rate increases</li>
+                <li>Sales cycle shortens</li>
+                <li>Inventory moves faster</li>
+                <li>Digital-to-store traffic grows</li>
+              </ul>
+
+
+              <p className={styles.differenceCardText}>
+                helping your brand stand out while turning browsers into buyers.
+              </p>
+
               <Link href="/ar-view" className={styles.differenceButton}>
                 <span>PLACE A CAR IN YOUR WORLD</span>
                 <ArrowRight className={styles.buttonIcon} />
@@ -271,7 +283,7 @@ export default function Home() {
 
       {/* Traction Section */}
       <section className={styles.tractionSection}>
-        <h2 className={styles.sectionTitle}>Trusted by Luxury Leaders</h2>
+        <h2 className={styles.sectionTitle}>Trusted by Luxury Brands</h2>
         <div className={styles.tractionGrid}>
           <div className={styles.tractionItem}>
             <div className={styles.tractionNumber}>20+</div>

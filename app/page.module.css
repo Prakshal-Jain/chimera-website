@@ -165,6 +165,11 @@
   color: rgba(255, 255, 255, 1);
 }
 
+.highlightedText {
+  color: #d4af37;
+  font-weight: bold;
+}
+
 @keyframes floatArrow {
   0%,
   100% {
@@ -360,6 +365,12 @@
 
 .differenceCard:hover .differenceImage {
   transform: scale(1.05);
+}
+
+.differenceCardList {
+  margin-left: 1rem;
+  color: #d4af37;
+  line-height: 2rem;
 }
 
 /* Hero Subtitle Wrapper */
