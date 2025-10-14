@@ -167,7 +167,6 @@ export default function Home() {
                 <li>Digital-to-store traffic grows</li>
               </ul>
 
-
               <p className={styles.differenceCardText}>
                 helping your brand stand out.
               </p>
