@@ -169,7 +169,7 @@ export default function Home() {
 
 
               <p className={styles.differenceCardText}>
-                helping your brand stand out while turning browsers into buyers.
+                helping your brand stand out.
               </p>
 
               <Link href="/ar-view" className={styles.differenceButton}>
