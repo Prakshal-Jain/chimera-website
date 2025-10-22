@@ -69,15 +69,13 @@ export default function Home() {
         <div className={styles.heroOverlay} />
 
         <div className={styles.heroContent}>
-          <h1 className={styles.heroTitle}>Shopify for luxury brands</h1>
-          <div className={styles.heroSubtitleWrapper}>
-            <p className={styles.heroSubtitle}>AI driven immersive experiences for</p>
-            <p className={styles.heroSubtitle}>
-              <span className={styles.animatedWord} key={currentWord}>
-                {words[currentWord]}
-              </span>
-            </p>
-          </div>
+          <h1 className={styles.heroTitle}>
+            AI driven immersive experiences for
+            <br />
+            <span className={styles.animatedWord} key={currentWord}>
+              {words[currentWord]}
+            </span>
+          </h1>
 
           <div className={styles.badgesContainer}>
             <div className={styles.badgeContent}>
@@ -117,7 +115,6 @@ export default function Home() {
           <ChevronDown className={styles.arrowIcon} />
         </button>
       </section>
-
 
       <section id="difference-section" className={styles.differenceSection}>
         <h2 className={styles.differenceSectionTitle}>What are you doing differently than your competition?</h2>
