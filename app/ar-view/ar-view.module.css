@@ -1,7 +1,8 @@
 .container {
     min-height: 100vh;
     background-color: #f8f9fa;
-    padding: 2rem 4rem;
+    /* Increased top padding from 2rem to 4rem */
+    padding: 2rem;
   }
   
   .content {
@@ -10,15 +11,9 @@
     padding: 0 2rem;
   }
   
-  .main {
-    /* Increased top padding for more space at the top of the page */
-    padding-bottom: 4rem;
-  }
-  
   /* Hero Section */
   .heroSection {
     text-align: center;
-    /* Reduced padding since we removed subtitle */
     padding: 2rem 0 3rem;
   }
   
@@ -26,7 +21,6 @@
     font-size: 3.5rem;
     font-weight: 700;
     color: #2c3e50;
-    /* Increased bottom margin since subtitle is removed */
     line-height: 1.2;
     letter-spacing: -0.02em;
   }
@@ -144,14 +138,24 @@
   .warningContent p {
     font-size: 1rem;
     color: #495057;
-    /* Removed bottom margin since link is gone */
     margin: 0;
     line-height: 1.6;
   }
   
-  /* Models Section */
-  .modelsSection {
-    padding: 4rem 0;
+  /* Added showcase image styles */
+  .showcaseImageContainer {
+    width: 400px;
+    aspect-ratio: 1;
+    margin: 0 auto 4rem;
+    text-align: center;
+  }
+  
+  .showcaseImage {
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   
   .modelsGrid {
@@ -179,7 +183,6 @@
     font-size: 1.75rem;
     font-weight: 700;
     color: #2c3e50;
-    /* Reduced bottom margin since description is removed */
     margin: 0 0 1.5rem 0;
     text-align: center;
     line-height: 1.3;
@@ -232,7 +235,6 @@
     padding: 1rem;
     border-radius: 1rem;
     border: 2px solid #e9ecef;
-    /* Removed bottom margin since qrNote is gone */
     margin-bottom: 0;
   }
   
@@ -261,6 +263,10 @@
       font-size: 2.5rem;
     }
   
+    .showcaseImageContainer {
+      margin-bottom: 3rem;
+    }
+  
     .modelsGrid {
       grid-template-columns: 1fr;
     }
@@ -278,6 +284,10 @@
   
     .heroTitle {
       font-size: 2rem;
+    }
+  
+    .showcaseImageContainer {
+      margin-bottom: 2rem;
     }
   
     .modelCard {
