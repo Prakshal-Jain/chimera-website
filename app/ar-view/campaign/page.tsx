@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
-import { useParams, useRouter } from "next/navigation"
-import { Smartphone, AlertCircle, MapPin, Wifi, Monitor, Check, Loader2 } from "lucide-react"
+import { useSearchParams, useRouter } from "next/navigation"
+import { Smartphone, AlertCircle, Loader2, Check } from "lucide-react"
 import styles from "../ar-view.module.css"
 import { API_URL } from "../../variables"
 
@@ -54,9 +54,9 @@ interface UserMetadata {
 }
 
 export default function CampaignARViewPage() {
-  const params = useParams()
+  const searchParams = useSearchParams()
   const router = useRouter()
-  const campaignCode = (params.campaignCode as string)?.toUpperCase()
+  const campaignCode = searchParams.get("code")?.toUpperCase() || ""
 
   const [isIOS, setIsIOS] = useState<boolean | null>(null)
   const [campaign, setCampaign] = useState<CampaignData | null>(null)
