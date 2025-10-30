@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, Suspense } from "react"
 import Image from "next/image"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Smartphone, AlertCircle, Loader2, Check } from "lucide-react"
@@ -53,7 +53,7 @@ interface UserMetadata {
   additional_metadata?: any
 }
 
-export default function CampaignARViewPage() {
+function CampaignARViewContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const campaignCode = searchParams.get("code")?.toUpperCase() || ""
@@ -434,6 +434,30 @@ export default function CampaignARViewPage() {
         </main>
       </div>
     </div>
+  )
+}
+
+export default function CampaignARViewPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className={styles.container}>
+          <div className={styles.content}>
+            <main>
+              <section className={styles.heroSection}>
+                <h1 className={styles.heroTitle}>Loading AR Experience...</h1>
+                <div className={styles.loadingCard}>
+                  <Loader2 className={styles.loadingSpinner} />
+                  <p>Preparing your experience...</p>
+                </div>
+              </section>
+            </main>
+          </div>
+        </div>
+      }
+    >
+      <CampaignARViewContent />
+    </Suspense>
   )
 }
 
