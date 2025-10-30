@@ -28,6 +28,7 @@
   /* Loading Card */
   .loadingCard {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 1rem;
@@ -61,6 +62,45 @@
     margin: 0;
     color: #1976d2;
     font-weight: 500;
+  }
+
+  .metadataSteps {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .metadataStep {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    color: #1976d2;
+  }
+
+  .stepComplete {
+    width: 20px;
+    height: 20px;
+    color: #2e7d32;
+    flex-shrink: 0;
+  }
+
+  .stepLoading {
+    width: 20px;
+    height: 20px;
+    color: #1976d2;
+    flex-shrink: 0;
+    animation: spin 1s linear infinite;
+  }
+
+  .heroSubtitle {
+    font-size: 1.25rem;
+    color: #666;
+    margin-bottom: 2rem;
+    font-weight: 400;
   }
   
   /* Error Card */
