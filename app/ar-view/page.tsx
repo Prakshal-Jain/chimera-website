@@ -14,6 +14,7 @@ interface ARFile {
   url: string
   qrCodeUrl: string
   qrCodeFilename: string
+  campaignCode?: string | null
   created: string
   lastModified: string
 }
@@ -40,6 +41,10 @@ interface UserMetadata {
   latitude?: number
   longitude?: number
   location_accuracy?: number
+  city?: string
+  region?: string
+  country?: string
+  postal?: string
   location_error?: string
   screen_width?: number
   screen_height?: number
@@ -118,31 +123,37 @@ function ARExperienceContent() {
     setMetadataSteps((prev) => ({ ...prev, screen: true }))
   }, [campaignCode])
 
-  // Collect geolocation (campaign mode only)
+  // Collect approximate geolocation via IP (campaign mode only)
   useEffect(() => {
     if (!campaignCode) return
 
-    if (!navigator.geolocation) {
-      setMetadataSteps((prev) => ({ ...prev, location: true }))
-      return
+    // Get approximate location from IP address - no user permission needed
+    const fetchApproxLocation = async () => {
+      try {
+        const response = await fetch('https://ipapi.co/json/')
+        if (response.ok) {
+          const data = await response.json()
+          setMetadata((prev) => ({
+            ...prev,
+            latitude: data.latitude,
+            longitude: data.longitude,
+            location_accuracy: data.accuracy || 5000, // IP-based is typically 5-10km accuracy
+            city: data.city,
+            region: data.region,
+            country: data.country_name,
+            postal: data.postal,
+          }))
+        } else {
+          setMetadata((prev) => ({ ...prev, location_error: 'IP geolocation service unavailable' }))
+        }
+      } catch (error) {
+        setMetadata((prev) => ({ ...prev, location_error: 'Failed to get approximate location' }))
+      } finally {
+        setMetadataSteps((prev) => ({ ...prev, location: true }))
+      }
     }
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setMetadata((prev) => ({
-          ...prev,
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          location_accuracy: position.coords.accuracy,
-        }))
-        setMetadataSteps((prev) => ({ ...prev, location: true }))
-      },
-      (error) => {
-        setMetadata((prev) => ({ ...prev, location_error: error.message }))
-        setMetadataSteps((prev) => ({ ...prev, location: true }))
-      },
-      { timeout: 10000, maximumAge: 60000 }
-    )
+    fetchApproxLocation()
   }, [campaignCode])
 
   // Fetch data based on mode
@@ -430,7 +441,8 @@ function ARExperienceContent() {
 
                     {isIOS && (
                       <div className={styles.iosContent}>
-                        <a href={file.url} rel="ar" className={styles.arButton}>
+                        {/* Use campaign URL if available, otherwise direct USDZ link */}
+                        <a href={file.url} rel={file.campaignCode ? undefined : "ar"} className={styles.arButton}>
                           <Smartphone className={styles.buttonIcon} />
                           View in AR
                         </a>
