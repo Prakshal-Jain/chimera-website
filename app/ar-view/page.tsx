@@ -58,12 +58,14 @@ interface UserMetadata {
   action: "redirect_to_ar" | "show_qr_code" | "error"
   error_message?: string
   additional_metadata?: any
+  metadata_code?: string
 }
 
 function ARExperienceContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const campaignCode = searchParams.get("campaign_code")?.toUpperCase()
+  const metadataCode = searchParams.get("metadata")?.toUpperCase()
 
   const [isIOS, setIsIOS] = useState<boolean | null>(null)
   const [arData, setArData] = useState<ARData | null>(null)
@@ -238,6 +240,7 @@ function ARExperienceContent() {
         action: "redirect_to_ar",
         time_on_page: timeOnPage,
         session_id: sessionIdRef.current,
+        metadata_code: metadataCode || undefined,
       }
       await logCampaignAccess(successMetadata)
       window.location.href = campaign.model_url
@@ -249,6 +252,7 @@ function ARExperienceContent() {
         action: "show_qr_code",
         time_on_page: timeOnPage,
         session_id: sessionIdRef.current,
+        metadata_code: metadataCode || undefined,
       }
       await logCampaignAccess(failureMetadata)
     }

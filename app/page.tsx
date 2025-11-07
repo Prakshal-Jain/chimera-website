@@ -310,6 +310,9 @@ export default function Home() {
               height={800}
               className={styles.galleryImage}
             />
+            <div className={styles.galleryOverlay}>
+              <p className={styles.galleryDescription}>Chimera Showcase at Lotus Emira Owners Drive | Luxury Collections Los Gatos</p>
+            </div>
           </div>
           <div className={styles.galleryItem}>
             <Image
@@ -319,6 +322,9 @@ export default function Home() {
               height={600}
               className={styles.galleryImage}
             />
+            <div className={styles.galleryOverlay}>
+              <p className={styles.galleryDescription}>Chimera at Aston Martin Valhalla Launch Event</p>
+            </div>
           </div>
           <div className={styles.galleryItem}>
             <Image
@@ -328,6 +334,9 @@ export default function Home() {
               height={700}
               className={styles.galleryImage}
             />
+            <div className={styles.galleryOverlay}>
+              <p className={styles.galleryDescription}>PJ (Founder, Chimera) with Frank Casanova, Former Senior Director of Vision Pro at Apple</p>
+            </div>
           </div>
         </div>
 

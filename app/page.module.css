@@ -819,11 +819,13 @@
 }
 
 .galleryItem {
+  position: relative;
   border-radius: 1.25rem;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .galleryItem:hover {
@@ -835,11 +837,49 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s ease;
+  transition: all 0.5s ease;
 }
 
 .galleryItem:hover .galleryImage {
-  transform: scale(1.05);
+  transform: scale(1.08);
+  filter: blur(8px) brightness(0.6);
+}
+
+.galleryOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.galleryItem:hover .galleryOverlay {
+  opacity: 1;
+}
+
+.galleryDescription {
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.5;
+  letter-spacing: 0.3px;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+  margin: 0;
+  transform: translateY(10px);
+  transition: transform 0.4s ease;
+}
+
+.galleryItem:hover .galleryDescription {
+  transform: translateY(0);
 }
 
 .partnerButton {
@@ -1390,6 +1430,15 @@
   .advantageSection,
   .partnersSection {
     padding: 2.5rem 1.5rem;
+  }
+
+  .galleryDescription {
+    font-size: 0.95rem;
+    padding: 0 1rem;
+  }
+
+  .galleryOverlay {
+    padding: 1.5rem;
   }
 
   .quoteSection {
