@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -28,7 +28,7 @@ interface CampaignResponse {
   }
 }
 
-export default function CreateCampaignPage() {
+function CreateCampaignForm() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [dealerships, setDealerships] = useState<string[]>([])
@@ -381,5 +381,19 @@ export default function CreateCampaignPage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+export default function CreateCampaignPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a]">
+          <Loader2 className="h-8 w-8 animate-spin text-[#d4af37]" />
+        </div>
+      }
+    >
+      <CreateCampaignForm />
+    </Suspense>
   )
 }
