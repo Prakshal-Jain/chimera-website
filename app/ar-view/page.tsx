@@ -67,6 +67,18 @@ function ARExperienceContent() {
   const campaignCode = searchParams.get("campaign_code")?.toUpperCase()
   const metadataCode = searchParams.get("metadata")?.toUpperCase()
 
+  // Extract all additional query parameters (excluding campaign_code and metadata)
+  const additionalQueryParams = useRef<Record<string, string>>({})
+  if (typeof window !== "undefined") {
+    const params: Record<string, string> = {}
+    searchParams.forEach((value, key) => {
+      if (key !== "campaign_code" && key !== "metadata") {
+        params[key] = value
+      }
+    })
+    additionalQueryParams.current = params
+  }
+
   const [isIOS, setIsIOS] = useState<boolean | null>(null)
   const [arData, setArData] = useState<ARData | null>(null)
   const [campaign, setCampaign] = useState<CampaignData | null>(null)
@@ -231,6 +243,11 @@ function ARExperienceContent() {
 
     const timeOnPage = Date.now() - pageLoadTimeRef.current
 
+    // Prepare additional metadata from query parameters
+    const additionalMetadata = Object.keys(additionalQueryParams.current).length > 0 
+      ? additionalQueryParams.current 
+      : undefined
+
     if (isIOS && campaign.model_url) {
       hasRedirectedRef.current = true
       const successMetadata: UserMetadata = {
@@ -241,6 +258,7 @@ function ARExperienceContent() {
         time_on_page: timeOnPage,
         session_id: sessionIdRef.current,
         metadata_code: metadataCode || undefined,
+        additional_metadata: additionalMetadata,
       }
       await logCampaignAccess(successMetadata)
       window.location.href = campaign.model_url
@@ -253,6 +271,7 @@ function ARExperienceContent() {
         time_on_page: timeOnPage,
         session_id: sessionIdRef.current,
         metadata_code: metadataCode || undefined,
+        additional_metadata: additionalMetadata,
       }
       await logCampaignAccess(failureMetadata)
     }
@@ -291,26 +310,6 @@ function ARExperienceContent() {
               <h1 className={styles.heroTitle}>Preparing your AR experience...</h1>
               <div className={styles.loadingCard}>
                 <Loader2 className={styles.loadingSpinner} />
-                <div className={styles.metadataSteps}>
-                  <div className={styles.metadataStep}>
-                    {metadataSteps.device ? <Check className={styles.stepComplete} /> : <Loader2 className={styles.stepLoading} />}
-                    <span>Detecting device</span>
-                  </div>
-                  <div className={styles.metadataStep}>
-                    {metadataSteps.screen ? <Check className={styles.stepComplete} /> : <Loader2 className={styles.stepLoading} />}
-                    <span>Reading display info</span>
-                  </div>
-                  <div className={styles.metadataStep}>
-                    {metadataSteps.location ? <Check className={styles.stepComplete} /> : <Loader2 className={styles.stepLoading} />}
-                    <span>Getting location</span>
-                  </div>
-                  {isLoading && (
-                    <div className={styles.metadataStep}>
-                      <Loader2 className={styles.stepLoading} />
-                      <span>Loading campaign</span>
-                    </div>
-                  )}
-                </div>
               </div>
             </section>
           </main>
