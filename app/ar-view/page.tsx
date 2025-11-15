@@ -102,6 +102,7 @@ function ARExperienceContent() {
   const pageLoadTimeRef = useRef<number>(Date.now())
   const hasLoggedRef = useRef(false)
   const hasRedirectedRef = useRef(false)
+  const arStartTimeRef = useRef<number | null>(null)
 
   // Detect iOS device
   useEffect(() => {
@@ -186,6 +187,56 @@ function ARExperienceContent() {
     }
 
     fetchApproxLocation()
+  }, [campaignCode])
+
+  // Track AR Quick Look engagement using Page Visibility API
+  useEffect(() => {
+    if (!campaignCode) return
+
+    const handleVisibilityChange = async () => {
+      if (document.hidden && !arStartTimeRef.current) {
+        arStartTimeRef.current = Date.now()
+        
+        try {
+          await fetch(`${API_URL}/ar-view/track/ar-start`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              session_id: sessionIdRef.current,
+              ar_start_time: new Date().toISOString()
+            })
+          })
+        } catch (error) {
+          // Silent fail
+        }
+        
+      } else if (!document.hidden && arStartTimeRef.current) {
+        const arEndTime = Date.now()
+        const engagementTime = arEndTime - arStartTimeRef.current
+        
+        try {
+          await fetch(`${API_URL}/ar-view/track/ar-end`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              session_id: sessionIdRef.current,
+              ar_end_time: new Date().toISOString(),
+              engagement_time: engagementTime
+            })
+          })
+        } catch (error) {
+          // Silent fail
+        }
+        
+        arStartTimeRef.current = null
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
   }, [campaignCode])
 
   // Fetch data based on mode
@@ -324,7 +375,8 @@ function ARExperienceContent() {
         additional_metadata: additionalMetadata,
       }
       await logCampaignAccess(successMetadata)
-      window.location.href = campaign.model_url
+      const urlWithSession = `${campaign.model_url}&session_id=${sessionIdRef.current}`
+      window.location.href = urlWithSession
     } else {
       const failureMetadata: UserMetadata = {
         ...metadata,
