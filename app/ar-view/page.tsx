@@ -7,6 +7,7 @@ import { Smartphone, AlertCircle, Loader2, Check } from "lucide-react"
 import HeaderBackButtonTitle from "../components/HeaderBackButtonTitle"
 import styles from "./ar-view.module.css"
 import { API_URL } from "../variables"
+import QRCode from "qrcode"
 
 interface ARFile {
   filename: string
@@ -91,6 +92,8 @@ function ARExperienceContent() {
     location: false,
     screen: false,
   })
+  const [dynamicQRCode, setDynamicQRCode] = useState<string | null>(null)
+  const [isQRCodeGenerating, setIsQRCodeGenerating] = useState(false)
 
   const sessionIdRef = useRef<string>(
     typeof window !== "undefined" ? `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}` : ""
@@ -198,6 +201,52 @@ function ARExperienceContent() {
     handleARViewDecision()
   }, [isCollectingMetadata, isLoading, campaign, isIOS, campaignCode])
 
+  // Generate dynamic QR code with all metadata for campaign mode
+  useEffect(() => {
+    if (!campaignCode || !campaign || isIOS === null) return
+
+    const generateDynamicQR = async () => {
+      setIsQRCodeGenerating(true)
+      try {
+        // Build URL with all query parameters
+        let qrUrl = `https://chimeraauto.com/ar-view?campaign_code=${campaignCode}`
+        
+        // Add metadata code if present
+        if (metadataCode) {
+          qrUrl += `&metadata=${metadataCode}`
+        }
+        
+        // Add any additional query parameters
+        if (Object.keys(additionalQueryParams.current).length > 0) {
+          Object.entries(additionalQueryParams.current).forEach(([key, value]) => {
+            qrUrl += `&${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+          })
+        }
+
+        // Generate QR code as data URL
+        const qrDataUrl = await QRCode.toDataURL(qrUrl, {
+          errorCorrectionLevel: 'H',
+          margin: 2,
+          width: 512,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+          }
+        })
+
+        setDynamicQRCode(qrDataUrl)
+      } catch (err) {
+        console.error('Error generating dynamic QR code:', err)
+        // Fallback to backend QR code if dynamic generation fails
+        setDynamicQRCode(null)
+      } finally {
+        setIsQRCodeGenerating(false)
+      }
+    }
+
+    generateDynamicQR()
+  }, [campaignCode, campaign, isIOS, metadataCode])
+
   const fetchARData = async () => {
     setIsLoading(true)
     setError(null)
@@ -212,7 +261,6 @@ function ARExperienceContent() {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to fetch AR data"
       setError(errorMessage)
-      console.error("Error fetching AR data:", err)
     } finally {
       setIsLoading(false)
     }
@@ -300,14 +348,14 @@ function ARExperienceContent() {
       .join(" ")
   }
 
-  // Campaign mode: Loading metadata
-  if (campaignCode && (isCollectingMetadata || isLoading)) {
+  // Campaign mode: Loading campaign data only (not blocking for metadata)
+  if (campaignCode && isLoading) {
     return (
       <div className={styles.container}>
         <div className={styles.content}>
           <main>
             <section className={styles.heroSection}>
-              <h1 className={styles.heroTitle}>Preparing your AR experience...</h1>
+              <h1 className={styles.heroTitle}>Loading AR experience...</h1>
               <div className={styles.loadingCard}>
                 <Loader2 className={styles.loadingSpinner} />
               </div>
@@ -385,7 +433,18 @@ function ARExperienceContent() {
                       Scan this QR code with your iPhone, iPad, or Apple Vision Pro to view in AR
                     </p>
                     <div className={styles.qrCodeContainer}>
-                      <Image src={campaign.qr_code_url} alt={`QR code for ${getCarName(campaign.car_model)}`} width={300} height={300} className={styles.qrCode} />
+                      {isQRCodeGenerating || isCollectingMetadata ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '300px', gap: '1rem' }}>
+                          <Loader2 className={styles.loadingSpinner} style={{ width: '48px', height: '48px' }} />
+                          <p style={{ fontSize: '0.875rem', color: '#666' }}>
+                            {isCollectingMetadata ? 'Preparing personalized QR code...' : 'Generating QR code...'}
+                          </p>
+                        </div>
+                      ) : dynamicQRCode ? (
+                        <Image src={dynamicQRCode} alt={`QR code for ${getCarName(campaign.car_model)}`} width={300} height={300} className={styles.qrCode} />
+                      ) : (
+                        <Image src={campaign.qr_code_url} alt={`QR code for ${getCarName(campaign.car_model)}`} width={300} height={300} className={styles.qrCode} />
+                      )}
                     </div>
                   </div>
                 </div>
