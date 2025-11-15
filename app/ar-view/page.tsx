@@ -94,6 +94,7 @@ function ARExperienceContent() {
   })
   const [dynamicQRCode, setDynamicQRCode] = useState<string | null>(null)
   const [isQRCodeGenerating, setIsQRCodeGenerating] = useState(false)
+  const [minLoadTimeElapsed, setMinLoadTimeElapsed] = useState(false)
 
   const sessionIdRef = useRef<string>(
     typeof window !== "undefined" ? `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}` : ""
@@ -122,6 +123,20 @@ function ARExperienceContent() {
       setMetadata((prev) => ({ ...prev, ...deviceMetadata }))
       setMetadataSteps((prev) => ({ ...prev, device: true }))
     }
+  }, [campaignCode])
+
+  // Ensure minimum loading time of 3 seconds (campaign mode only)
+  useEffect(() => {
+    if (!campaignCode) {
+      setMinLoadTimeElapsed(true)
+      return
+    }
+
+    const timer = setTimeout(() => {
+      setMinLoadTimeElapsed(true)
+    }, 2000)
+
+    return () => clearTimeout(timer)
   }, [campaignCode])
 
   // Collect screen information (campaign mode only)
@@ -349,15 +364,25 @@ function ARExperienceContent() {
   }
 
   // Campaign mode: Loading campaign data only (not blocking for metadata)
-  if (campaignCode && isLoading) {
+  if (campaignCode && (isLoading || !minLoadTimeElapsed)) {
     return (
       <div className={styles.container}>
         <div className={styles.content}>
           <main>
             <section className={styles.heroSection}>
-              <h1 className={styles.heroTitle}>Loading AR experience...</h1>
+              <div className={styles.loadingImageContainer}>
+                <Image 
+                  src="/ar-view-click.jpeg" 
+                  alt="AR View" 
+                  width={300} 
+                  height={300} 
+                  className={styles.loadingImage}
+                  priority
+                />
+              </div>
               <div className={styles.loadingCard}>
                 <Loader2 className={styles.loadingSpinner} />
+                <p>Redirecting to AR experience...</p>
               </div>
             </section>
           </main>

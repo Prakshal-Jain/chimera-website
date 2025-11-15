@@ -25,6 +25,21 @@
     letter-spacing: -0.02em;
   }
   
+  /* Loading Image Container */
+  .loadingImageContainer {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto 2rem;
+    text-align: center;
+  }
+
+  .loadingImage {
+    width: 100%;
+    height: auto;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  }
+
   /* Loading Card */
   .loadingCard {
     display: flex;
@@ -32,11 +47,9 @@
     align-items: center;
     justify-content: center;
     gap: 1rem;
-    background: #e3f2fd;
-    border: 1px solid #bbdefb;
     border-radius: 1rem;
-    padding: 2rem;
-    margin: 2rem auto;
+    padding: 1rem;
+    margin: 1rem auto;
     max-width: 400px;
   }
   
@@ -302,6 +315,11 @@
     .heroTitle {
       font-size: 2.5rem;
     }
+
+    .loadingImageContainer {
+      max-width: 100%;
+      margin-bottom: 1.5rem;
+    }
   
     .showcaseImageContainer {
       margin-bottom: 3rem;
@@ -324,6 +342,10 @@
   
     .heroTitle {
       font-size: 2rem;
+    }
+
+    .loadingImageContainer {
+      margin-bottom: 1rem;
     }
   
     .showcaseImageContainer {
