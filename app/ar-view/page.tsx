@@ -375,7 +375,8 @@ function ARExperienceContent() {
         additional_metadata: additionalMetadata,
       }
       await logCampaignAccess(successMetadata)
-      const urlWithSession = `${campaign.model_url}&session_id=${sessionIdRef.current}`
+      const separator = campaign.model_url.includes('?') ? '&' : '?'
+      const urlWithSession = `${campaign.model_url}${separator}session_id=${sessionIdRef.current}`
       window.location.href = urlWithSession
     } else {
       const failureMetadata: UserMetadata = {
