@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, ExternalLink, Mail, Phone, CheckCircle, Sparkles, TrendingUp, Award, Play, ChevronDown } from "lucide-react"
+import { ArrowRight, ExternalLink, Mail, Phone, CheckCircle, Sparkles, TrendingUp, Award, Play, ChevronDown, Menu, X } from "lucide-react"
 import styles from "./page.module.css"
 
 export default function Home() {
   const [currentWord, setCurrentWord] = useState(0)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const words = ["Cars", "Jets", "Yachts", "Jewelry", "Watches"]
 
   useEffect(() => {
@@ -28,11 +29,20 @@ export default function Home() {
     <div className={styles.container}>
       {/* Header */}
       <header className={styles.header}>
-        <div className={styles.logoContainer}>
-          <Image src="/chimera-logo.png" alt="Chimera Logo" width={600} height={200} className={styles.logo} priority />
+        <div className={styles.headerTop}>
+          <div className={styles.logoContainer}>
+            <Image src="/chimera-logo.png" alt="Chimera Logo" width={600} height={200} className={styles.logo} priority />
+          </div>
+          <button
+            className={styles.mobileMenuButton}
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
-        <nav className={styles.nav}>
-          <Link href="/book_appointment" className={styles.navLink}>
+        <nav className={`${styles.nav} ${isMobileMenuOpen ? styles.navOpen : ""}`}>
+          <Link href="/book_appointment" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>
             Book Appointment
           </Link>
           <Link
@@ -40,22 +50,23 @@ export default function Home() {
             className={styles.navLink}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => setIsMobileMenuOpen(false)}
           >
             Become Partner <ExternalLink className={styles.icon} />
           </Link>
-          <Link href="/configuration" className={styles.navLink}>
+          <Link href="/configuration" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>
             See Configurations
           </Link>
-          <Link href="/gallery" className={styles.navLink}>
+          <Link href="/gallery" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>
             Gallery
           </Link>
-          <Link href="/events" className={styles.navLink}>
+          <Link href="/events" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>
             Events
           </Link>
-          <Link href="/guide" className={styles.navLink}>
+          <Link href="/guide" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>
             Guide
           </Link>
-          <Link href="/contact" className={styles.navLink}>
+          <Link href="/contact" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>
             Contact
           </Link>
         </nav>
@@ -412,13 +423,13 @@ export default function Home() {
               <div className={styles.partnerLogoContainer}>
                 <Image
                   src="/lamborghini-logo.png"
-                  alt="Lamborghini - Luxury Collection Los Gatos Logo"
+                  alt="Luxury Collection Los Gatos Logo"
                   width={200}
                   height={100}
                   className={styles.partnerLogo}
                 />
               </div>
-              <h3 className={styles.partnerName}>Lamborghini - Luxury Collection Los Gatos</h3>
+              <h3 className={styles.partnerName}>Luxury Collection Los Gatos</h3>
             </div>
           </a>
           <a
@@ -438,6 +449,25 @@ export default function Home() {
                 />
               </div>
               <h3 className={styles.partnerName}>Lamborghini Newport Beach</h3>
+            </div>
+          </a>
+          <a
+            href="https://www.ferrariofrm.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.partnerLink}
+          >
+            <div className={styles.partner}>
+              <div className={styles.partnerLogoContainer}>
+                <Image
+                  src="/ferrari.png"
+                  alt="Ferrari of Rancho Mirage Logo"
+                  width={200}
+                  height={100}
+                  className={styles.partnerLogo}
+                />
+              </div>
+              <h3 className={styles.partnerName}>Ferrari of Rancho Mirage</h3>
             </div>
           </a>
         </div>
