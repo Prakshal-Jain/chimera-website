@@ -1,32 +1,10 @@
 "use client"
 
 import { useState, useEffect, Suspense } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Loader2,
-  ArrowLeft,
-  Download,
-  Copy,
-  CheckCircle2,
-  ExternalLink,
-  Calendar,
-  Building2,
-  Car,
-  Hash,
-  Trash2,
-  Eye,
-  Users,
-  AlertCircle,
-  Smartphone,
-  TrendingUp,
-  FileText,
-  BarChart3,
-  PieChart,
-  Activity,
-  Clock,
-} from "lucide-react"
+import { Loader2, ArrowLeft, Download, Copy, CheckCircle2, ExternalLink, Calendar, Building2, Car, Hash, Trash2, Eye, Users, AlertCircle, Smartphone, TrendingUp, FileText, BarChart3, PieChart, Activity, Clock } from 'lucide-react'
 import { API_URL } from "@/app/variables"
 import {
   AlertDialog,
@@ -38,6 +16,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { AnalyticsSection } from "./analytics-section"
+
 
 interface CampaignDetails {
   _id: string
@@ -275,13 +255,54 @@ function CampaignDashboard() {
     csvRows.push(`Views with Additional Metadata,${analytics.summary.views_with_additional_metadata}`)
     csvRows.push("")
 
-    // Customer Breakdown
+    // Customer Breakdown with Engagement Metrics
     if (analytics.customer_breakdown.length > 0) {
       csvRows.push("CUSTOMER BREAKDOWN")
-      csvRows.push("Customer ID,Type,Total Views,Successful AR Views,Last Viewed")
+      csvRows.push("Customer ID,Type,Total Views,Successful AR Views,Last Viewed,Unique Sessions,Engagement Time (min),AR Success Rate (%),Engagement Score,Buying Intent,Additional Metadata")
       analytics.customer_breakdown.forEach((customer) => {
+        // Get customer logs to extract metadata
+        const customerLogs = analytics.logs.filter(
+          (log: any) => log.customer_metadata?.metadata_value === customer.metadata_value
+        )
+        
+        // Calculate unique sessions
+        const timestamps = customerLogs.map((log: any) => new Date(log.timestamp).getTime()).sort((a, b) => a - b)
+        let uniqueSessions = timestamps.length > 0 ? 1 : 0
+        for (let i = 1; i < timestamps.length; i++) {
+          if (timestamps[i] - timestamps[i - 1] > 3600000) {
+            uniqueSessions++
+          }
+        }
+        
+        // Calculate engagement time
+        const engagementTime = timestamps.length > 1 ? (timestamps[timestamps.length - 1] - timestamps[0]) / 60000 : 0
+        
+        // Calculate AR success rate
+        const arSuccessRate = customer.total_views > 0 ? (customer.successful_ar_views / customer.total_views) * 100 : 0
+        
+        // Calculate engagement score
+        const viewScore = Math.min((customer.total_views / 10) * 30, 30)
+        const arScore = (arSuccessRate / 100) * 25
+        const sessionScore = Math.min((uniqueSessions / 5) * 25, 25)
+        const timeScore = Math.min((engagementTime / 60) * 20, 20)
+        const engagementScore = Math.round(viewScore + arScore + sessionScore + timeScore)
+        
+        // Determine buying intent
+        let buyingIntent = "Low"
+        if (engagementScore >= 70) buyingIntent = "High"
+        else if (engagementScore >= 40) buyingIntent = "Medium"
+        
+        // Collect all additional metadata
+        const allMetadata: Record<string, any> = {}
+        customerLogs.forEach((log: any) => {
+          if (log.additional_metadata) {
+            Object.assign(allMetadata, log.additional_metadata)
+          }
+        })
+        const metadataStr = Object.keys(allMetadata).length > 0 ? JSON.stringify(allMetadata).replace(/"/g, '""') : "N/A"
+        
         csvRows.push(
-          `"${customer.metadata_value}",${customer.metadata_type},${customer.total_views},${customer.successful_ar_views},"${new Date(customer.last_viewed).toLocaleString()}"`
+          `"${customer.metadata_value}","${customer.metadata_type}",${customer.total_views},${customer.successful_ar_views},"${new Date(customer.last_viewed).toLocaleString()}",${uniqueSessions},${Math.round(engagementTime)},${Math.round(arSuccessRate)},${engagementScore},"${buyingIntent}","${metadataStr}"`
         )
       })
       csvRows.push("")
@@ -302,18 +323,38 @@ function CampaignDashboard() {
       })
     }
 
-    // Activity Log
+    // Activity Log with Full Metadata
     if (analytics.logs && analytics.logs.length > 0) {
       csvRows.push("ACTIVITY LOG")
-      csvRows.push("Timestamp,Status,Action,AR Compatible,Customer,Error")
+      csvRows.push("Timestamp,Status,Action,AR Compatible,Customer ID,Customer Type,Platform,Device Type,User Agent,Location (Lat),Location (Lon),Location Accuracy,Screen Width,Screen Height,Viewport Width,Viewport Height,Pixel Ratio,Session ID,Time on Page (s),AR Quick Look Opened,AR Session Start,AR Session End,AR Engagement Time (ms),Additional Metadata,Error")
       analytics.logs.forEach((log) => {
         const timestamp = log.timestamp ? new Date(log.timestamp).toLocaleString() : "N/A"
         const status = log.success ? "Success" : "Failed"
         const action = log.action || "N/A"
         const arCompatible = log.is_ar_compatible !== undefined ? (log.is_ar_compatible ? "Yes" : "No") : "N/A"
-        const customer = log.customer_metadata ? log.customer_metadata.metadata_value : "N/A"
-        const error = log.error_message ? log.error_message : ""
-        csvRows.push(`"${timestamp}","${status}","${action}","${arCompatible}","${customer}","${error}"`)
+        const customerId = log.customer_metadata ? log.customer_metadata.metadata_value : "N/A"
+        const customerType = log.customer_metadata ? log.customer_metadata.metadata_type : "N/A"
+        const platform = log.platform || "N/A"
+        const deviceType = log.device_type || "N/A"
+        const userAgent = log.user_agent ? log.user_agent.replace(/"/g, '""') : "N/A"
+        const latitude = log.latitude || "N/A"
+        const longitude = log.longitude || "N/A"
+        const locationAccuracy = log.location_accuracy || "N/A"
+        const screenWidth = log.screen_width || "N/A"
+        const screenHeight = log.screen_height || "N/A"
+        const viewportWidth = log.viewport_width || "N/A"
+        const viewportHeight = log.viewport_height || "N/A"
+        const pixelRatio = log.pixel_ratio || "N/A"
+        const sessionId = log.session_id || "N/A"
+        const timeOnPage = log.time_on_page || "N/A"
+        const arQuickLookOpened = log.ar_quick_look_opened ? "Yes" : "No"
+        const arSessionStart = log.ar_session_start_time ? new Date(log.ar_session_start_time).toLocaleString() : "N/A"
+        const arSessionEnd = log.ar_session_end_time ? new Date(log.ar_session_end_time).toLocaleString() : "N/A"
+        const arEngagementTime = log.ar_engagement_time || "N/A"
+        const additionalMetadata = log.additional_metadata ? JSON.stringify(log.additional_metadata).replace(/"/g, '""') : "N/A"
+        const error = log.error_message ? log.error_message.replace(/"/g, '""') : ""
+        
+        csvRows.push(`"${timestamp}","${status}","${action}","${arCompatible}","${customerId}","${customerType}","${platform}","${deviceType}","${userAgent}","${latitude}","${longitude}","${locationAccuracy}","${screenWidth}","${screenHeight}","${viewportWidth}","${viewportHeight}","${pixelRatio}","${sessionId}","${timeOnPage}","${arQuickLookOpened}","${arSessionStart}","${arSessionEnd}","${arEngagementTime}","${additionalMetadata}","${error}"`)
       })
     }
 
@@ -498,620 +539,19 @@ function CampaignDashboard() {
           </Card>
         </div>
 
-        {/* Analytics Section */}
         <div className="mt-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-3xl font-serif font-light text-white tracking-tight">Campaign Analytics</h2>
-              <p className="text-white/70 text-sm mt-1">Track views, engagement, and performance metrics</p>
-            </div>
-            <Button
-              onClick={downloadAnalyticsCSV}
-              disabled={!analytics || loadingAnalytics}
-              className="bg-transparent border-2 border-[#d4af37] text-white hover:bg-[#d4af37]/15 hover:text-white rounded-lg"
-            >
-              <Download className="mr-2 h-4 w-4" />
-              Download CSV
-            </Button>
-          </div>
-
-          {loadingAnalytics ? (
+          {analytics ? (
+            <AnalyticsSection 
+              analytics={analytics} 
+              loading={loadingAnalytics} 
+              onDownloadCSV={downloadAnalyticsCSV} 
+            />
+          ) : loadingAnalytics ? (
             <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
               <CardContent className="pt-12 pb-12 flex items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-[#d4af37]" />
               </CardContent>
             </Card>
-          ) : analytics ? (
-            <>
-              {/* Summary Stats Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-white/60 font-light">Total Views</p>
-                        <p className="text-3xl font-serif font-light text-white mt-1">
-                          {analytics.summary.total_views}
-                        </p>
-                      </div>
-                      <div className="h-12 w-12 bg-white/10 rounded-full flex items-center justify-center border border-white/10">
-                        <Eye className="h-6 w-6 text-[#d4af37]" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-white/60 font-light">AR Views</p>
-                        <p className="text-3xl font-serif font-light text-white mt-1">
-                          {analytics.summary.successful_ar_views}
-                        </p>
-                      </div>
-                      <div className="h-12 w-12 bg-white/10 rounded-full flex items-center justify-center border border-white/10">
-                        <CheckCircle2 className="h-6 w-6 text-green-500" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-white/60 font-light">Unique Customers</p>
-                        <p className="text-3xl font-serif font-light text-white mt-1">
-                          {analytics.summary.unique_customers}
-                        </p>
-                      </div>
-                      <div className="h-12 w-12 bg-white/10 rounded-full flex items-center justify-center border border-white/10">
-                        <Users className="h-6 w-6 text-blue-500" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-white/60 font-light">Errors</p>
-                        <p className="text-3xl font-serif font-light text-white mt-1">{analytics.summary.errors}</p>
-                      </div>
-                      <div className="h-12 w-12 bg-white/10 rounded-full flex items-center justify-center border border-white/10">
-                        <AlertCircle className="h-6 w-6 text-red-500" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Device Compatibility & Engagement */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
-                  <CardHeader>
-                    <CardTitle className="text-xl font-serif font-light text-white flex items-center gap-2">
-                      <Smartphone className="h-5 w-5 text-[#d4af37]" />
-                      Device Compatibility
-                    </CardTitle>
-                    <CardDescription className="text-white/60">AR capability breakdown</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
-                      <div>
-                        <p className="text-sm text-white/60 font-light">AR Compatible</p>
-                        <p className="text-2xl font-serif font-light text-white mt-1">
-                          {analytics.summary.ar_compatible_devices}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-[#d4af37] font-medium">
-                          {analytics.summary.total_views > 0
-                            ? Math.round((analytics.summary.ar_compatible_devices / analytics.summary.total_views) * 100)
-                            : 0}
-                          %
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
-                      <div>
-                        <p className="text-sm text-white/60 font-light">Non-AR Compatible</p>
-                        <p className="text-2xl font-serif font-light text-white mt-1">
-                          {analytics.summary.non_ar_compatible_devices}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-white/60 font-medium">
-                          {analytics.summary.total_views > 0
-                            ? Math.round(
-                                (analytics.summary.non_ar_compatible_devices / analytics.summary.total_views) * 100
-                              )
-                            : 0}
-                          %
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
-                      <div>
-                        <p className="text-sm text-white/60 font-light">QR Code Shown</p>
-                        <p className="text-2xl font-serif font-light text-white mt-1">
-                          {analytics.summary.qr_code_shown}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
-                  <CardHeader>
-                    <CardTitle className="text-xl font-serif font-light text-white flex items-center gap-2">
-                      <TrendingUp className="h-5 w-5 text-[#d4af37]" />
-                      Engagement Metrics
-                    </CardTitle>
-                    <CardDescription className="text-white/60">Customer interaction data</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
-                      <div>
-                        <p className="text-sm text-white/60 font-light">With Customer Metadata</p>
-                        <p className="text-2xl font-serif font-light text-white mt-1">
-                          {analytics.summary.views_with_customer_metadata}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-[#d4af37] font-medium">
-                          {analytics.summary.total_views > 0
-                            ? Math.round(
-                                (analytics.summary.views_with_customer_metadata / analytics.summary.total_views) * 100
-                              )
-                            : 0}
-                          %
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
-                      <div>
-                        <p className="text-sm text-white/60 font-light">With Additional Metadata</p>
-                        <p className="text-2xl font-serif font-light text-white mt-1">
-                          {analytics.summary.views_with_additional_metadata}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-white/60 font-medium">
-                          {analytics.summary.total_views > 0
-                            ? Math.round(
-                                (analytics.summary.views_with_additional_metadata / analytics.summary.total_views) * 100
-                              )
-                            : 0}
-                          %
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
-                      <div>
-                        <p className="text-sm text-white/60 font-light">Conversion Rate</p>
-                        <p className="text-2xl font-serif font-light text-white mt-1">
-                          {analytics.summary.total_views > 0
-                            ? Math.round((analytics.summary.successful_ar_views / analytics.summary.total_views) * 100)
-                            : 0}
-                          %
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Performance Insights */}
-              <div className="mb-6">
-                <h3 className="text-2xl font-serif font-light text-white mb-6 tracking-tight">Performance Insights</h3>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  {/* Conversion Analysis */}
-                  <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
-                    <CardHeader>
-                      <CardTitle className="text-lg font-serif font-light text-white flex items-center gap-2">
-                        <BarChart3 className="h-5 w-5 text-[#d4af37]" />
-                        Conversion Analysis
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="space-y-3">
-                        <div>
-                          <div className="flex justify-between mb-2">
-                            <span className="text-sm text-white/60">AR Success Rate</span>
-                            <span className="text-sm font-medium text-[#d4af37]">
-                              {analytics.summary.total_views > 0
-                                ? Math.round((analytics.summary.successful_ar_views / analytics.summary.total_views) * 100)
-                                : 0}
-                              %
-                            </span>
-                          </div>
-                          <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-gradient-to-r from-[#d4af37] to-yellow-600 rounded-full"
-                              style={{
-                                width: `${
-                                  analytics.summary.total_views > 0
-                                    ? (analytics.summary.successful_ar_views / analytics.summary.total_views) * 100
-                                    : 0
-                                }%`,
-                              }}
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <div className="flex justify-between mb-2">
-                            <span className="text-sm text-white/60">Device Compatibility</span>
-                            <span className="text-sm font-medium text-green-400">
-                              {analytics.summary.total_views > 0
-                                ? Math.round(
-                                    (analytics.summary.ar_compatible_devices / analytics.summary.total_views) * 100
-                                  )
-                                : 0}
-                              %
-                            </span>
-                          </div>
-                          <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-gradient-to-r from-green-500 to-emerald-600 rounded-full"
-                              style={{
-                                width: `${
-                                  analytics.summary.total_views > 0
-                                    ? (analytics.summary.ar_compatible_devices / analytics.summary.total_views) * 100
-                                    : 0
-                                }%`,
-                              }}
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <div className="flex justify-between mb-2">
-                            <span className="text-sm text-white/60">Customer Tracking</span>
-                            <span className="text-sm font-medium text-blue-400">
-                              {analytics.summary.total_views > 0
-                                ? Math.round(
-                                    (analytics.summary.views_with_customer_metadata / analytics.summary.total_views) * 100
-                                  )
-                                : 0}
-                              %
-                            </span>
-                          </div>
-                          <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-gradient-to-r from-blue-500 to-cyan-600 rounded-full"
-                              style={{
-                                width: `${
-                                  analytics.summary.total_views > 0
-                                    ? (analytics.summary.views_with_customer_metadata / analytics.summary.total_views) * 100
-                                    : 0
-                                }%`,
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Quality Metrics */}
-                  <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
-                    <CardHeader>
-                      <CardTitle className="text-lg font-serif font-light text-white flex items-center gap-2">
-                        <Activity className="h-5 w-5 text-[#d4af37]" />
-                        Quality Metrics
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                        <div>
-                          <p className="text-sm text-white/60">Error Rate</p>
-                          <p className="text-2xl font-serif font-light text-white mt-1">
-                            {analytics.summary.total_views > 0
-                              ? ((analytics.summary.errors / analytics.summary.total_views) * 100).toFixed(1)
-                              : 0}
-                            %
-                          </p>
-                        </div>
-                        <div
-                          className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                            analytics.summary.errors === 0
-                              ? "bg-green-500/20"
-                              : analytics.summary.errors / analytics.summary.total_views < 0.05
-                              ? "bg-yellow-500/20"
-                              : "bg-red-500/20"
-                          }`}
-                        >
-                          <AlertCircle
-                            className={`h-5 w-5 ${
-                              analytics.summary.errors === 0
-                                ? "text-green-500"
-                                : analytics.summary.errors / analytics.summary.total_views < 0.05
-                                ? "text-yellow-500"
-                                : "text-red-500"
-                            }`}
-                          />
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                        <div>
-                          <p className="text-sm text-white/60">Avg Views per Customer</p>
-                          <p className="text-2xl font-serif font-light text-white mt-1">
-                            {analytics.summary.unique_customers > 0
-                              ? (
-                                  analytics.summary.views_with_customer_metadata / analytics.summary.unique_customers
-                                ).toFixed(1)
-                              : 0}
-                          </p>
-                        </div>
-                        <div className="h-10 w-10 bg-blue-500/20 rounded-full flex items-center justify-center">
-                          <Users className="h-5 w-5 text-blue-500" />
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                        <div>
-                          <p className="text-sm text-white/60">QR Code Engagement</p>
-                          <p className="text-2xl font-serif font-light text-white mt-1">
-                            {analytics.summary.total_views > 0
-                              ? Math.round((analytics.summary.qr_code_shown / analytics.summary.total_views) * 100)
-                              : 0}
-                            %
-                          </p>
-                        </div>
-                        <div className="h-10 w-10 bg-purple-500/20 rounded-full flex items-center justify-center">
-                          <Smartphone className="h-5 w-5 text-purple-500" />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Export & Download Options */}
-                  <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
-                    <CardHeader>
-                      <CardTitle className="text-lg font-serif font-light text-white flex items-center gap-2">
-                        <Download className="h-5 w-5 text-[#d4af37]" />
-                        Data Export
-                      </CardTitle>
-                      <CardDescription className="text-white/60">Download analytics reports</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <Button
-                        onClick={downloadAnalyticsCSV}
-                        className="w-full bg-[#d4af37] hover:bg-[#c9a532] text-black font-medium rounded-lg"
-                      >
-                        <FileText className="mr-2 h-4 w-4" />
-                        Download Full Report
-                      </Button>
-                      <div className="pt-2 space-y-2 text-sm text-white/60">
-                        <p className="flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-[#d4af37]" />
-                          Summary metrics
-                        </p>
-                        <p className="flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-[#d4af37]" />
-                          Customer breakdown
-                        </p>
-                        <p className="flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-[#d4af37]" />
-                          Parameter analysis
-                        </p>
-                        <p className="flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-[#d4af37]" />
-                          Activity logs
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-
-              {/* Customer Breakdown */}
-              {analytics.customer_breakdown.length > 0 && (
-                <Card className="mb-6 bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
-                  <CardHeader>
-                    <CardTitle className="text-xl font-serif font-light text-white flex items-center gap-2">
-                      <Users className="h-5 w-5 text-[#d4af37]" />
-                      Customer Breakdown
-                    </CardTitle>
-                    <CardDescription className="text-white/60">Individual customer engagement metrics</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {analytics.customer_breakdown.map((customer, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10"
-                        >
-                          <div className="flex-1">
-                            <p className="text-white font-medium">{customer.metadata_value}</p>
-                            <p className="text-sm text-white/60 mt-1">
-                              {customer.metadata_type} • Last viewed:{" "}
-                              {new Date(customer.last_viewed).toLocaleDateString()}
-                            </p>
-                          </div>
-                          <div className="flex gap-6 text-right">
-                            <div>
-                              <p className="text-sm text-white/60 font-light">Total Views</p>
-                              <p className="text-xl font-serif font-light text-white mt-1">{customer.total_views}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-white/60 font-light">AR Views</p>
-                              <p className="text-xl font-serif font-light text-[#d4af37] mt-1">
-                                {customer.successful_ar_views}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Additional Metadata Analysis */}
-              {analytics.additional_metadata_analysis.length > 0 && (
-                <Card className="mb-6 bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
-                  <CardHeader>
-                    <CardTitle className="text-xl font-serif font-light text-white flex items-center gap-2">
-                      <FileText className="h-5 w-5 text-[#d4af37]" />
-                      Additional Parameters Analysis
-                    </CardTitle>
-                    <CardDescription className="text-white/60">Query parameter tracking and breakdown</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
-                      {analytics.additional_metadata_analysis.map((param, index) => (
-                        <div key={index} className="p-4 bg-white/5 rounded-lg border border-white/10">
-                          <div className="mb-4">
-                            <h4 className="text-lg font-medium text-white">{param.parameter_name}</h4>
-                            <div className="flex gap-6 mt-2">
-                              <p className="text-sm text-white/60">
-                                Unique Values: <span className="text-white">{param.unique_values_count}</span>
-                              </p>
-                              <p className="text-sm text-white/60">
-                                Total Occurrences: <span className="text-white">{param.total_occurrences}</span>
-                              </p>
-                            </div>
-                          </div>
-                          <div className="space-y-2">
-                            {Object.entries(param.values_breakdown).map(([value, stats]) => (
-                              <div
-                                key={value}
-                                className="flex items-center justify-between p-3 bg-white/5 rounded border border-white/10"
-                              >
-                                <p className="text-white font-mono text-sm">{value}</p>
-                                <div className="flex gap-4 text-sm">
-                                  <span className="text-white/60">
-                                    Count: <span className="text-white">{stats.count}</span>
-                                  </span>
-                                  <span className="text-white/60">
-                                    AR Views: <span className="text-[#d4af37]">{stats.successful_ar_views}</span>
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Activity Log */}
-              {analytics.logs && analytics.logs.length > 0 && (
-                <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <CardTitle className="text-xl font-serif font-light text-white flex items-center gap-2">
-                          <Activity className="h-5 w-5 text-[#d4af37]" />
-                          Activity Log
-                        </CardTitle>
-                        <CardDescription className="text-white/60">
-                          Recent campaign activity and interactions
-                        </CardDescription>
-                      </div>
-                      <span className="text-sm text-white/60 bg-white/5 px-3 py-1 rounded-full border border-white/10">
-                        {analytics.logs.length} entries
-                      </span>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2 max-h-96 overflow-y-auto">
-                      {analytics.logs.slice(0, 20).map((log: any, index: number) => {
-                        const isSuccess = log.success && log.action === 'redirect_to_ar'
-                        const isError = !log.success || log.error_message
-                        const isQRCode = log.action === 'show_qr_code'
-                        
-                        return (
-                        <div
-                          key={index}
-                          className="flex items-start gap-4 p-4 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
-                        >
-                          <div
-                            className={`h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                              isSuccess
-                                ? "bg-green-500/20"
-                                : isError
-                                ? "bg-red-500/20"
-                                : "bg-blue-500/20"
-                            }`}
-                          >
-                            {isSuccess ? (
-                              <CheckCircle2 className="h-5 w-5 text-green-500" />
-                            ) : isError ? (
-                              <AlertCircle className="h-5 w-5 text-red-500" />
-                            ) : (
-                              <Eye className="h-5 w-5 text-blue-500" />
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-1">
-                              <p className="text-white font-medium">
-                                {isSuccess
-                                  ? "Successful AR View"
-                                  : isError
-                                  ? "Error Encountered"
-                                  : isQRCode
-                                  ? "QR Code Shown"
-                                  : "Page View"}
-                              </p>
-                              <span className="text-xs text-white/60 flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                {log.timestamp ? new Date(log.timestamp).toLocaleString() : "N/A"}
-                              </span>
-                            </div>
-                            <div className="flex flex-wrap gap-2 mt-2">
-                              {log.customer_metadata && (
-                                <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded border border-blue-500/30">
-                                  Customer: {log.customer_metadata.metadata_value}
-                                </span>
-                              )}
-                              {log.is_ar_compatible !== undefined && (
-                                <span
-                                  className={`text-xs px-2 py-1 rounded border ${
-                                    log.is_ar_compatible
-                                      ? "bg-green-500/20 text-green-300 border-green-500/30"
-                                      : "bg-orange-500/20 text-orange-300 border-orange-500/30"
-                                  }`}
-                                >
-                                  {log.is_ar_compatible ? "AR Compatible" : "Non-AR Device"}
-                                </span>
-                              )}
-                              {log.action === 'show_qr_code' && (
-                                <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded border border-purple-500/30">
-                                  QR Code Shown
-                                </span>
-                              )}
-                              {log.error_message && (
-                                <span className="text-xs bg-red-500/20 text-red-300 px-2 py-1 rounded border border-red-500/30">
-                                  Error: {log.error_message}
-                                </span>
-                              )}
-                              {log.action && (
-                                <span className="text-xs bg-white/10 text-white/70 px-2 py-1 rounded border border-white/10">
-                                  Action: {log.action}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      )}
-                      {analytics.logs.length > 20 && (
-                        <div className="text-center py-4">
-                          <p className="text-sm text-white/60">
-                            Showing 20 of {analytics.logs.length} entries. Download CSV for complete data.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </>
           ) : (
             <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
               <CardContent className="pt-12 pb-12 text-center">
