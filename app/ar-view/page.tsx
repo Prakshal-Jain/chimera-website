@@ -191,7 +191,7 @@ function ARExperienceContent() {
 
   // Track AR Quick Look engagement using Page Visibility API
   useEffect(() => {
-    if (!campaignCode) return
+    if (!campaignCode || !isIOS) return  // Only track on iOS devices that can actually open AR
 
     const handleVisibilityChange = async () => {
       if (document.hidden && !arStartTimeRef.current) {
@@ -237,7 +237,7 @@ function ARExperienceContent() {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [campaignCode])
+  }, [campaignCode, isIOS])
 
   // Fetch data based on mode
   useEffect(() => {
@@ -375,9 +375,14 @@ function ARExperienceContent() {
         additional_metadata: additionalMetadata,
       }
       await logCampaignAccess(successMetadata)
-      const separator = campaign.model_url.includes('?') ? '&' : '?'
-      const urlWithSession = `${campaign.model_url}${separator}session_id=${sessionIdRef.current}`
-      window.location.href = urlWithSession
+      // Create and click a hidden anchor tag to trigger AR without navigating away
+      const arAnchor = document.createElement('a')
+      arAnchor.href = campaign.model_url
+      arAnchor.rel = 'ar'
+      arAnchor.style.display = 'none'
+      document.body.appendChild(arAnchor)
+      arAnchor.click()
+      document.body.removeChild(arAnchor)
     } else {
       const failureMetadata: UserMetadata = {
         ...metadata,
