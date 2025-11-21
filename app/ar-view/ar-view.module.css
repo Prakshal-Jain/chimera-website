@@ -25,7 +25,176 @@
     letter-spacing: -0.02em;
   }
   
-  /* Loading Image Container */
+  /* Luxury Loading Screen */
+  .loadingContainer {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .loadingContainer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .loadingContent {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    width: 100%;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+  }
+
+  .loadingImageWrapper {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    box-shadow: 
+      0 0 80px rgba(212, 175, 55, 0.15),
+      0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: fadeInScale 0.8s ease-out;
+  }
+
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .loadingDemoImage {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+  }
+
+  .imageOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(0, 0, 0, 0.3) 100%
+    );
+    pointer-events: none;
+  }
+
+  .loadingTextContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    text-align: center;
+    animation: fadeInUp 0.8s ease-out 0.3s both;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .loadingSpinnerLuxury {
+    width: 3rem;
+    height: 3rem;
+    color: #d4af37;
+    animation: spin 1.5s linear infinite;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .loadingTitle {
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+    margin: 0;
+    background: linear-gradient(135deg, #ffffff 0%, #d4af37 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .loadingSubtitle {
+    font-size: 1.125rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 300;
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .loadingContent {
+      gap: 2rem;
+      padding: 1.5rem;
+    }
+
+    .loadingTitle {
+      font-size: 1.75rem;
+    }
+
+    .loadingSubtitle {
+      font-size: 1rem;
+    }
+
+    .loadingSpinnerLuxury {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+
+    .loadingImageWrapper {
+      max-width: 100%;
+    }
+  }
+
+  /* Legacy Loading Styles (kept for compatibility) */
   .loadingImageContainer {
     width: 100%;
     max-width: 300px;
@@ -40,7 +209,6 @@
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   }
 
-  /* Loading Card */
   .loadingCard {
     display: flex;
     flex-direction: column;
@@ -60,15 +228,6 @@
     border-top: 2px solid #1976d2;
     border-radius: 50%;
     animation: spin 1s linear infinite;
-  }
-  
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
   }
   
   .loadingCard p {

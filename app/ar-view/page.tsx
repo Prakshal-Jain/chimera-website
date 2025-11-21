@@ -102,7 +102,6 @@ function ARExperienceContent() {
   const pageLoadTimeRef = useRef<number>(Date.now())
   const hasLoggedRef = useRef(false)
   const hasRedirectedRef = useRef(false)
-  const arStartTimeRef = useRef<number | null>(null)
 
   // Detect iOS device
   useEffect(() => {
@@ -189,55 +188,6 @@ function ARExperienceContent() {
     fetchApproxLocation()
   }, [campaignCode])
 
-  // Track AR Quick Look engagement using Page Visibility API
-  useEffect(() => {
-    if (!campaignCode || !isIOS) return  // Only track on iOS devices that can actually open AR
-
-    const handleVisibilityChange = async () => {
-      if (document.hidden && !arStartTimeRef.current) {
-        arStartTimeRef.current = Date.now()
-        
-        try {
-          await fetch(`${API_URL}/ar-view/track/ar-start`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              session_id: sessionIdRef.current,
-              ar_start_time: new Date().toISOString()
-            })
-          })
-        } catch (error) {
-          // Silent fail
-        }
-        
-      } else if (!document.hidden && arStartTimeRef.current) {
-        const arEndTime = Date.now()
-        const engagementTime = arEndTime - arStartTimeRef.current
-        
-        try {
-          await fetch(`${API_URL}/ar-view/track/ar-end`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              session_id: sessionIdRef.current,
-              ar_end_time: new Date().toISOString(),
-              engagement_time: engagementTime
-            })
-          })
-        } catch (error) {
-          // Silent fail
-        }
-        
-        arStartTimeRef.current = null
-      }
-    }
-
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-    
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
-    }
-  }, [campaignCode, isIOS])
 
   // Fetch data based on mode
   useEffect(() => {
@@ -424,26 +374,24 @@ function ARExperienceContent() {
   // Campaign mode: Loading campaign data only (not blocking for metadata)
   if (campaignCode && (isLoading || !minLoadTimeElapsed)) {
     return (
-      <div className={styles.container}>
-        <div className={styles.content}>
-          <main>
-            <section className={styles.heroSection}>
-              <div className={styles.loadingImageContainer}>
-                <Image 
-                  src="/ar-view-click.jpeg" 
-                  alt="AR View" 
-                  width={300} 
-                  height={300} 
-                  className={styles.loadingImage}
-                  priority
-                />
-              </div>
-              <div className={styles.loadingCard}>
-                <Loader2 className={styles.loadingSpinner} />
-                <p>Redirecting to AR experience...</p>
-              </div>
-            </section>
-          </main>
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingContent}>
+          <div className={styles.loadingImageWrapper}>
+            <Image 
+              src="/ar-car-demo.png" 
+              alt="AR Experience Preview" 
+              width={800} 
+              height={600} 
+              className={styles.loadingDemoImage}
+              priority
+            />
+            <div className={styles.imageOverlay} />
+          </div>
+          <div className={styles.loadingTextContainer}>
+            <Loader2 className={styles.loadingSpinnerLuxury} />
+            <h2 className={styles.loadingTitle}>Preparing Your AR Experience</h2>
+            <p className={styles.loadingSubtitle}>Get ready to view your vehicle in augmented reality</p>
+          </div>
         </div>
       </div>
     )

@@ -258,7 +258,7 @@ function CampaignDashboard() {
     // Customer Breakdown with Engagement Metrics
     if (analytics.customer_breakdown.length > 0) {
       csvRows.push("CUSTOMER BREAKDOWN")
-      csvRows.push("Customer ID,Type,Total Views,Successful AR Views,Last Viewed,Unique Sessions,Engagement Time (min),AR Success Rate (%),Engagement Score,Buying Intent,Additional Metadata")
+      csvRows.push("Customer ID,Type,Total Views,Successful AR Views,Last Viewed,Unique Sessions,AR Success Rate (%),Engagement Score,Buying Intent,Additional Metadata")
       analytics.customer_breakdown.forEach((customer) => {
         // Get customer logs to extract metadata
         const customerLogs = analytics.logs.filter(
@@ -274,18 +274,14 @@ function CampaignDashboard() {
           }
         }
         
-        // Calculate engagement time
-        const engagementTime = timestamps.length > 1 ? (timestamps[timestamps.length - 1] - timestamps[0]) / 60000 : 0
-        
         // Calculate AR success rate
         const arSuccessRate = customer.total_views > 0 ? (customer.successful_ar_views / customer.total_views) * 100 : 0
         
         // Calculate engagement score
-        const viewScore = Math.min((customer.total_views / 10) * 30, 30)
-        const arScore = (arSuccessRate / 100) * 25
-        const sessionScore = Math.min((uniqueSessions / 5) * 25, 25)
-        const timeScore = Math.min((engagementTime / 60) * 20, 20)
-        const engagementScore = Math.round(viewScore + arScore + sessionScore + timeScore)
+        const viewScore = Math.min((customer.total_views / 10) * 40, 40)
+        const arScore = (arSuccessRate / 100) * 30
+        const sessionScore = Math.min((uniqueSessions / 5) * 30, 30)
+        const engagementScore = Math.round(viewScore + arScore + sessionScore)
         
         // Determine buying intent
         let buyingIntent = "Low"
@@ -302,7 +298,7 @@ function CampaignDashboard() {
         const metadataStr = Object.keys(allMetadata).length > 0 ? JSON.stringify(allMetadata).replace(/"/g, '""') : "N/A"
         
         csvRows.push(
-          `"${customer.metadata_value}","${customer.metadata_type}",${customer.total_views},${customer.successful_ar_views},"${new Date(customer.last_viewed).toLocaleString()}",${uniqueSessions},${Math.round(engagementTime)},${Math.round(arSuccessRate)},${engagementScore},"${buyingIntent}","${metadataStr}"`
+          `"${customer.metadata_value}","${customer.metadata_type}",${customer.total_views},${customer.successful_ar_views},"${new Date(customer.last_viewed).toLocaleString()}",${uniqueSessions},${Math.round(arSuccessRate)},${engagementScore},"${buyingIntent}","${metadataStr}"`
         )
       })
       csvRows.push("")
@@ -326,7 +322,7 @@ function CampaignDashboard() {
     // Activity Log with Full Metadata
     if (analytics.logs && analytics.logs.length > 0) {
       csvRows.push("ACTIVITY LOG")
-      csvRows.push("Timestamp,Status,Action,AR Compatible,Customer ID,Customer Type,Platform,Device Type,User Agent,Location (Lat),Location (Lon),Location Accuracy,Screen Width,Screen Height,Viewport Width,Viewport Height,Pixel Ratio,Session ID,Time on Page (s),AR Quick Look Opened,AR Session Start,AR Session End,AR Engagement Time (ms),Additional Metadata,Error")
+      csvRows.push("Timestamp,Status,Action,AR Compatible,Customer ID,Customer Type,Platform,Device Type,User Agent,Location (Lat),Location (Lon),Location Accuracy,Screen Width,Screen Height,Viewport Width,Viewport Height,Pixel Ratio,Session ID,Time on Page (s),AR Quick Look Opened,Additional Metadata,Error")
       analytics.logs.forEach((log) => {
         const timestamp = log.timestamp ? new Date(log.timestamp).toLocaleString() : "N/A"
         const status = log.success ? "Success" : "Failed"
@@ -348,13 +344,10 @@ function CampaignDashboard() {
         const sessionId = log.session_id || "N/A"
         const timeOnPage = log.time_on_page || "N/A"
         const arQuickLookOpened = log.ar_quick_look_opened ? "Yes" : "No"
-        const arSessionStart = log.ar_session_start_time ? new Date(log.ar_session_start_time).toLocaleString() : "N/A"
-        const arSessionEnd = log.ar_session_end_time ? new Date(log.ar_session_end_time).toLocaleString() : "N/A"
-        const arEngagementTime = log.ar_engagement_time || "N/A"
         const additionalMetadata = log.additional_metadata ? JSON.stringify(log.additional_metadata).replace(/"/g, '""') : "N/A"
         const error = log.error_message ? log.error_message.replace(/"/g, '""') : ""
         
-        csvRows.push(`"${timestamp}","${status}","${action}","${arCompatible}","${customerId}","${customerType}","${platform}","${deviceType}","${userAgent}","${latitude}","${longitude}","${locationAccuracy}","${screenWidth}","${screenHeight}","${viewportWidth}","${viewportHeight}","${pixelRatio}","${sessionId}","${timeOnPage}","${arQuickLookOpened}","${arSessionStart}","${arSessionEnd}","${arEngagementTime}","${additionalMetadata}","${error}"`)
+        csvRows.push(`"${timestamp}","${status}","${action}","${arCompatible}","${customerId}","${customerType}","${platform}","${deviceType}","${userAgent}","${latitude}","${longitude}","${locationAccuracy}","${screenWidth}","${screenHeight}","${viewportWidth}","${viewportHeight}","${pixelRatio}","${sessionId}","${timeOnPage}","${arQuickLookOpened}","${additionalMetadata}","${error}"`)
       })
     }
 

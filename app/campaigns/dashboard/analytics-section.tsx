@@ -59,7 +59,6 @@ interface EnhancedCustomer {
     engagement_score: number
     buying_intent: "high" | "medium" | "low"
     unique_sessions: number
-    engagement_time_minutes: number
     ar_success_rate: number
     metadata?: Record<string, any>
 }
@@ -85,10 +84,6 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
                 }
             }
 
-            // Calculate engagement time (time span between first and last interaction)
-            const engagementTime =
-                timestamps.length > 1 ? (timestamps[timestamps.length - 1] - timestamps[0]) / 60000 : 0
-
             // Calculate AR success rate
             const arSuccessRate = customer.total_views > 0 ? (customer.successful_ar_views / customer.total_views) * 100 : 0
 
@@ -101,15 +96,13 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
             })
 
             // Calculate engagement score (0-100)
-            // - Repeat views (30 pts): up to 10 views = 3 pts each
-            // - AR success rate (25 pts): percentage based
-            // - Unique sessions (25 pts): up to 5 sessions = 5 pts each
-            // - Engagement time (20 pts): up to 60 minutes = 0.33 pts per minute
-            const viewScore = Math.min((customer.total_views / 10) * 30, 30)
-            const arScore = (arSuccessRate / 100) * 25
-            const sessionScore = Math.min((uniqueSessions / 5) * 25, 25)
-            const timeScore = Math.min((engagementTime / 60) * 20, 20)
-            const engagementScore = Math.round(viewScore + arScore + sessionScore + timeScore)
+            // - Repeat views (40 pts): up to 10 views = 4 pts each
+            // - AR success rate (30 pts): percentage based
+            // - Unique sessions (30 pts): up to 5 sessions = 6 pts each
+            const viewScore = Math.min((customer.total_views / 10) * 40, 40)
+            const arScore = (arSuccessRate / 100) * 30
+            const sessionScore = Math.min((uniqueSessions / 5) * 30, 30)
+            const engagementScore = Math.round(viewScore + arScore + sessionScore)
 
             // Determine buying intent
             let buying_intent: "high" | "medium" | "low"
@@ -122,7 +115,6 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
                 engagement_score: engagementScore,
                 buying_intent,
                 unique_sessions: uniqueSessions,
-                engagement_time_minutes: Math.round(engagementTime),
                 ar_success_rate: Math.round(arSuccessRate),
                 metadata,
             } as EnhancedCustomer
@@ -609,7 +601,6 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
                                             </div>
                                         </th>
                                         <th className="text-left py-3 px-4 text-sm font-medium text-white/60">Sessions</th>
-                                        <th className="text-left py-3 px-4 text-sm font-medium text-white/60">Time</th>
                                         <th className="text-left py-3 px-4 text-sm font-medium text-white/60">Last Seen</th>
                                     </tr>
                                 </thead>
@@ -674,12 +665,6 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
                                                 </td>
                                                 <td className="py-4 px-4">
                                                     <span className="text-white">{customer.unique_sessions}</span>
-                                                </td>
-                                                <td className="py-4 px-4">
-                                                    <div className="flex items-center gap-1 text-white/70">
-                                                        <Clock className="h-3.5 w-3.5" />
-                                                        <span className="text-sm">{customer.engagement_time_minutes}m</span>
-                                                    </div>
                                                 </td>
                                                 <td className="py-4 px-4">
                                                     <span className="text-sm text-white/60">
