@@ -5,6 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight, ExternalLink, Mail, Phone, CheckCircle, Sparkles, TrendingUp, Award, Play, ChevronDown, Menu, X } from "lucide-react"
 import styles from "./page.module.css"
+import { DEALERSHIPS } from "./utils/dealerships"
 
 export default function Home() {
   const [currentWord, setCurrentWord] = useState(0)
@@ -394,82 +395,28 @@ export default function Home() {
       <section className={styles.partnersSection}>
         <h2 className={styles.sectionTitle}>Our Partners</h2>
         <div className={styles.partnersContainer}>
-          <a
-            href="https://www.boardwalklotus.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.partnerLink}
-          >
-            <div className={styles.partner}>
-              <div className={styles.partnerLogoContainer}>
-                <Image
-                  src="/lotus-logo.png"
-                  alt="Boardwalk Lotus Redwood City Logo"
-                  width={250}
-                  height={250}
-                  className={styles.partnerLogo}
-                />
+          {DEALERSHIPS.map((dealership) => (
+            <a
+              key={dealership.name}
+              href={dealership.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.partnerLink}
+            >
+              <div className={styles.partner}>
+                <div className={styles.partnerLogoContainer}>
+                  <Image
+                    src={dealership.logo}
+                    alt={`${dealership.name} Logo`}
+                    width={dealership.logoWidth || 200}
+                    height={dealership.logoHeight || 100}
+                    className={styles.partnerLogo}
+                  />
+                </div>
+                <h3 className={styles.partnerName}>{dealership.name}</h3>
               </div>
-              <h3 className={styles.partnerName}>Boardwalk Lotus Redwood City</h3>
-            </div>
-          </a>
-          <a
-            href="https://www.losgatosluxcars.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.partnerLink}
-          >
-            <div className={styles.partner}>
-              <div className={styles.partnerLogoContainer}>
-                <Image
-                  src="/lamborghini-logo.png"
-                  alt="Luxury Collection Los Gatos Logo"
-                  width={200}
-                  height={100}
-                  className={styles.partnerLogo}
-                />
-              </div>
-              <h3 className={styles.partnerName}>Luxury Collection Los Gatos</h3>
-            </div>
-          </a>
-          <a
-            href="https://www.lamborghininewportbeach.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.partnerLink}
-          >
-            <div className={styles.partner}>
-              <div className={styles.partnerLogoContainer}>
-                <Image
-                  src="/lambonb.png"
-                  alt="Lamborghini Newport Beach Logo"
-                  width={200}
-                  height={100}
-                  className={styles.partnerLogo}
-                />
-              </div>
-              <h3 className={styles.partnerName}>Lamborghini Newport Beach</h3>
-            </div>
-          </a>
-          <a
-            href="https://www.ferrariofrm.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.partnerLink}
-          >
-            <div className={styles.partner}>
-              <div className={styles.partnerLogoContainer}>
-                <Image
-                  src="/ferrari.png"
-                  alt="Ferrari of Rancho Mirage Logo"
-                  width={200}
-                  height={100}
-                  className={styles.partnerLogo}
-                />
-              </div>
-              <h3 className={styles.partnerName}>Ferrari of Rancho Mirage</h3>
-            </div>
-          </a>
+            </a>
+          ))}
         </div>
         <div className={styles.partnerButton}>
           <Link

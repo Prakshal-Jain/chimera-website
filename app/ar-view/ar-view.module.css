@@ -1,28 +1,48 @@
 .container {
     min-height: 100vh;
-    background-color: #f8f9fa;
-    /* Increased top padding from 2rem to 4rem */
+    background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
     padding: 2rem;
+    position: relative;
+  }
+
+  .container::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(212, 175, 55, 0.02) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
   }
   
   .content {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 2rem;
+    position: relative;
+    z-index: 1;
   }
   
   /* Hero Section */
   .heroSection {
     text-align: center;
-    padding: 2rem 0 3rem;
+    padding: 3rem 0 4rem;
   }
   
   .heroTitle {
     font-size: 3.5rem;
-    font-weight: 700;
-    color: #2c3e50;
+    font-weight: 300;
+    color: #ffffff;
     line-height: 1.2;
     letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #ffffff 0%, #d4af37 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
   }
   
   /* Luxury Loading Screen */
@@ -214,26 +234,39 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
+    gap: 1.5rem;
     border-radius: 1rem;
-    padding: 1rem;
-    margin: 1rem auto;
+    padding: 2rem;
+    margin: 2rem auto;
     max-width: 400px;
   }
   
   .loadingSpinner {
-    width: 1.5rem;
-    height: 1.5rem;
-    border: 2px solid #e3f2fd;
-    border-top: 2px solid #1976d2;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+    width: 2.5rem;
+    height: 2.5rem;
+    color: #d4af37;
+    animation: spin 1.5s linear infinite;
   }
   
   .loadingCard p {
     margin: 0;
-    color: #1976d2;
-    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 300;
+    font-size: 1.125rem;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .loadingCard a {
+    color: #d4af37;
+    text-decoration: none;
+    font-weight: 400;
+    transition: color 0.3s ease;
+  }
+
+  .loadingCard a:hover {
+    color: #e6c547;
+    text-decoration: underline;
   }
 
   .metadataSteps {
@@ -250,48 +283,66 @@
     align-items: center;
     gap: 0.75rem;
     font-size: 0.95rem;
-    color: #1976d2;
+    color: rgba(255, 255, 255, 0.7);
   }
 
   .stepComplete {
     width: 20px;
     height: 20px;
-    color: #2e7d32;
+    color: #4caf50;
     flex-shrink: 0;
   }
 
   .stepLoading {
     width: 20px;
     height: 20px;
-    color: #1976d2;
+    color: #d4af37;
     flex-shrink: 0;
     animation: spin 1s linear infinite;
   }
 
+  /* Dealership Badge */
+  .dealershipBadge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .dealershipLogo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    filter: brightness(1.1);
+  }
+
   .heroSubtitle {
     font-size: 1.25rem;
-    color: #666;
-    margin-bottom: 2rem;
-    font-weight: 400;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    font-weight: 300;
+    letter-spacing: 0.02em;
   }
   
   /* Error Card */
   .errorCard {
     display: flex;
     align-items: flex-start;
-    gap: 1rem;
-    background: #f8d7da;
-    border: 1px solid #f5c6cb;
+    gap: 1.5rem;
+    background: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.3);
     border-radius: 1rem;
-    padding: 1.5rem;
+    padding: 2rem;
     margin: 2rem auto;
     max-width: 600px;
+    backdrop-filter: blur(10px);
   }
   
   .errorIcon {
-    color: #721c24;
-    width: 1.5rem;
-    height: 1.5rem;
+    color: #dc3545;
+    width: 2rem;
+    height: 2rem;
     flex-shrink: 0;
     margin-top: 0.125rem;
   }
@@ -301,17 +352,17 @@
   }
   
   .errorContent h3 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #721c24;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #ffffff;
     margin: 0 0 0.5rem 0;
   }
   
   .errorContent p {
-    font-size: 0.95rem;
-    color: #721c24;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.6;
   }
   
   /* Warning Card */
@@ -319,17 +370,17 @@
     display: flex;
     align-items: flex-start;
     gap: 1.5rem;
-    background: white;
-    border: 2px solid #ffc107;
+    background: rgba(212, 175, 55, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.3);
     border-radius: 1rem;
     padding: 2rem;
-    margin: 2rem auto;
+    margin: 1rem auto;
     max-width: 700px;
-    box-shadow: 0 4px 20px rgba(255, 193, 7, 0.15);
+    backdrop-filter: blur(10px);
   }
   
   .warningIcon {
-    color: #ffc107;
+    color: #d4af37;
     width: 2rem;
     height: 2rem;
     flex-shrink: 0;
@@ -342,62 +393,132 @@
   
   .warningContent h3 {
     font-size: 1.25rem;
-    font-weight: 600;
-    color: #2c3e50;
+    font-weight: 500;
+    color: #ffffff;
     margin: 0 0 0.75rem 0;
   }
   
   .warningContent p {
     font-size: 1rem;
-    color: #495057;
+    color: rgba(255, 255, 255, 0.8);
     margin: 0;
     line-height: 1.6;
   }
   
   /* Added showcase image styles */
   .showcaseImageContainer {
-    width: 400px;
-    aspect-ratio: 1;
+    width: 100%;
+    max-width: 500px;
     margin: 0 auto 4rem;
     text-align: center;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    box-shadow: 
+      0 0 60px rgba(212, 175, 55, 0.15),
+      0 20px 40px rgba(0, 0, 0, 0.4);
   }
   
   .showcaseImage {
-    border-radius: 1.5rem;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     width: 100%;
-    height: 100%;
+    height: auto;
+    display: block;
     object-fit: cover;
   }
   
   .modelsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: 1fr;
     gap: 2rem;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
   }
   
+  /* Elegant Card with Side-by-Side Layout */
+  .elegantCard {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1.5rem;
+    padding: 3rem;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  }
+  
+  .elegantCard:hover {
+    border-color: rgba(212, 175, 55, 0.3);
+    box-shadow: 
+      0 0 40px rgba(212, 175, 55, 0.1),
+      0 15px 50px rgba(0, 0, 0, 0.4);
+  }
+
+  .cardContent {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 3rem;
+    align-items: center;
+    justify-items: center;
+  }
+
+  .imageSection {
+    position: relative;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 
+      0 0 40px rgba(212, 175, 55, 0.1),
+      0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+  }
+
+  .cardImage {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 1rem;
+    object-fit: cover;
+  }
+
+  .qrSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .qrLoading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+  }
+  
+  /* Legacy Model Card for Regular AR View */
   .modelCard {
-    background: white;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 1.5rem;
     padding: 2.5rem;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(10px);
     transition: all 0.3s ease;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   }
   
   .modelCard:hover {
     transform: translateY(-4px);
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+    border-color: rgba(212, 175, 55, 0.3);
+    box-shadow: 
+      0 0 40px rgba(212, 175, 55, 0.1),
+      0 15px 50px rgba(0, 0, 0, 0.4);
   }
   
   .modelName {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: #2c3e50;
-    margin: 0 0 1.5rem 0;
+    font-size: 2rem;
+    font-weight: 300;
+    color: #ffffff;
     text-align: center;
     line-height: 1.3;
+    letter-spacing: -0.01em;
   }
   
   /* iOS Content */
@@ -441,38 +562,101 @@
     flex-direction: column;
     align-items: center;
   }
+
+  .qrContent p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    text-align: center;
+    line-height: 1.6;
+  }
   
   .qrCodeContainer {
-    background: white;
-    padding: 1rem;
+    background: rgb(255, 255, 255);
+    padding: 1.5rem;
     border-radius: 1rem;
-    border: 2px solid #e9ecef;
-    margin-bottom: 0;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    margin: 0;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .qrCode {
     display: block;
-    width: 200px;
-    height: 200px;
+    width: 280px;
+    height: 280px;
     border-radius: 0.5rem;
   }
   
   .qrNote {
     font-size: 0.875rem;
-    color: #6c757d;
+    color: rgba(255, 255, 255, 0.6);
     margin: 0;
     text-align: center;
     font-style: italic;
   }
   
   /* Responsive Design */
+  @media (max-width: 1024px) {
+    .cardContent {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .imageSection {
+      order: 2;
+      max-width: 100%;
+      width: 100%;
+    }
+
+    .qrSection {
+      order: 1;
+    }
+  }
+
   @media (max-width: 768px) {
+    .container {
+      padding: 1rem;
+    }
+
     .content {
       padding: 0 1rem;
     }
   
     .heroTitle {
       font-size: 2.5rem;
+    }
+
+    .dealershipBadge {
+      margin-bottom: 2rem;
+    }
+
+    .dealershipLogo {
+      width: 32px;
+      height: 32px;
+    }
+
+    .heroSubtitle {
+      font-size: 1.125rem;
+    }
+
+    .elegantCard {
+      padding: 1.5rem;
+    }
+
+    .cardContent {
+      gap: 2rem;
+    }
+
+    .imageSection {
+      width: 100%;
+    }
+
+    .cardImage {
+      max-width: 100%;
+      height: auto;
     }
 
     .loadingImageContainer {
@@ -482,15 +666,46 @@
   
     .showcaseImageContainer {
       margin-bottom: 3rem;
+      max-width: 100%;
     }
   
     .modelsGrid {
       grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .modelCard {
+      padding: 2rem;
+    }
+
+    .modelName {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .qrInstructions {
+      font-size: 0.95rem;
+    }
+
+    .qrCode {
+      width: 240px;
+      height: 240px;
+    }
+
+    .qrCodeContainer {
+      padding: 1rem;
     }
   
-    .warningCard {
+    .warningCard,
+    .errorCard {
       flex-direction: column;
       text-align: center;
+      padding: 1.5rem;
+    }
+
+    .arButton {
+      padding: 0.875rem 2rem;
+      font-size: 1rem;
     }
   }
   
@@ -500,7 +715,47 @@
     }
   
     .heroTitle {
-      font-size: 2rem;
+      font-size: 1.75rem;
+    }
+
+    .dealershipBadge {
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .dealershipLogo {
+      width: 28px;
+      height: 28px;
+    }
+
+    .heroSubtitle {
+      font-size: 1rem;
+    }
+
+    .elegantCard {
+      padding: 1.25rem;
+    }
+
+    .cardContent {
+      gap: 1.5rem;
+    }
+
+    .modelName {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .qrInstructions {
+      font-size: 0.875rem;
+    }
+
+    .qrCode {
+      width: 220px;
+      height: 220px;
+    }
+
+    .qrCodeContainer {
+      padding: 0.75rem;
     }
 
     .loadingImageContainer {
@@ -512,7 +767,7 @@
     }
   
     .modelCard {
-      padding: 2rem;
+      padding: 1.5rem;
     }
   
     .modelName {

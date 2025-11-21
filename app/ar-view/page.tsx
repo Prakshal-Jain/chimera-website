@@ -8,6 +8,7 @@ import HeaderBackButtonTitle from "../components/HeaderBackButtonTitle"
 import styles from "./ar-view.module.css"
 import { API_URL } from "../variables"
 import QRCode from "qrcode"
+import { getDealershipLogo } from "../utils/dealerships"
 
 interface ARFile {
   filename: string
@@ -371,6 +372,7 @@ function ARExperienceContent() {
       .join(" ")
   }
 
+
   // Campaign mode: Loading campaign data only (not blocking for metadata)
   if (campaignCode && (isLoading || !minLoadTimeElapsed)) {
     return (
@@ -427,12 +429,22 @@ function ARExperienceContent() {
           <main>
             <section className={styles.heroSection}>
               <h1 className={styles.heroTitle}>{campaign.campaign_name}</h1>
+              <div className={styles.dealershipBadge}>
+                <Image 
+                  src={getDealershipLogo(campaign.dealership)} 
+                  alt={`${campaign.dealership} logo`} 
+                  width={40} 
+                  height={40} 
+                  className={styles.dealershipLogo}
+                />
+                <p className={styles.heroSubtitle}>{campaign.dealership}</p>
+              </div>
               <div className={styles.loadingCard}>
                 <Loader2 className={styles.loadingSpinner} />
                 <p>Redirecting to AR experience...</p>
-                <p style={{ fontSize: "0.875rem", marginTop: "1rem", color: "#666" }}>
+                <p style={{ fontSize: "0.875rem", marginTop: "1rem", color: "rgba(255, 255, 255, 0.6)" }}>
                   If you are not redirected,{" "}
-                  <a href={campaign.model_url} rel="ar" style={{ color: "#007aff", textDecoration: "underline" }}>
+                  <a href={campaign.model_url} rel="ar">
                     click here
                   </a>
                 </p>
@@ -446,36 +458,53 @@ function ARExperienceContent() {
 
   // Campaign mode: Show QR code
   if (campaignCode && campaign) {
+    console.log(campaign.dealership);
     return (
       <div className={styles.container}>
         <div className={styles.content}>
           <main>
             <section className={styles.heroSection}>
               <h1 className={styles.heroTitle}>{campaign.campaign_name}</h1>
-              <p className={styles.heroSubtitle}>{campaign.dealership}</p>
-              <div className={styles.showcaseImageContainer}>
-                <Image src="/gallery/29.png" alt="AR View showcase" width={600} height={400} className={styles.showcaseImage} priority />
+              <div className={styles.dealershipBadge}>
+                <Image 
+                  src={getDealershipLogo(campaign.dealership)} 
+                  alt={`${campaign.dealership} logo`} 
+                  width={40} 
+                  height={40} 
+                  className={styles.dealershipLogo}
+                />
+                <p className={styles.heroSubtitle}>{campaign.dealership}</p>
               </div>
+              
               <div className={styles.modelsGrid}>
-                <div className={styles.modelCard}>
-                  <h3 className={styles.modelName}>{getCarName(campaign.car_model)}</h3>
-                  <div className={styles.qrContent}>
-                    <p style={{ marginBottom: "1rem", fontSize: "0.95rem", color: "#666" }}>
-                      Scan this QR code with your iPhone, iPad, or Apple Vision Pro to view in AR
-                    </p>
-                    <div className={styles.qrCodeContainer}>
-                      {isQRCodeGenerating || isCollectingMetadata ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '300px', gap: '1rem' }}>
-                          <Loader2 className={styles.loadingSpinner} style={{ width: '48px', height: '48px' }} />
-                          <p style={{ fontSize: '0.875rem', color: '#666' }}>
-                            {isCollectingMetadata ? 'Preparing personalized QR code...' : 'Generating QR code...'}
-                          </p>
-                        </div>
-                      ) : dynamicQRCode ? (
-                        <Image src={dynamicQRCode} alt={`QR code for ${getCarName(campaign.car_model)}`} width={300} height={300} className={styles.qrCode} />
-                      ) : (
-                        <Image src={campaign.qr_code_url} alt={`QR code for ${getCarName(campaign.car_model)}`} width={300} height={300} className={styles.qrCode} />
-                      )}
+                <div className={styles.elegantCard}>
+                  <div className={styles.cardContent}>
+                    <div className={styles.imageSection}>
+                      <Image 
+                        src="/ar-car-demo.png" 
+                        alt="AR Experience Preview" 
+                        width={300} 
+                        height={300} 
+                        className={styles.cardImage} 
+                        priority 
+                      />
+                    </div>
+                    <div className={styles.qrSection}>
+                    <h4 className={styles.modelName}>Scan this QR code with your iPhone, iPad, or Apple Vision Pro to view in AR</h4>
+                      <div className={styles.qrCodeContainer}>
+                        {isQRCodeGenerating || isCollectingMetadata ? (
+                          <div className={styles.qrLoading}>
+                            <Loader2 className={styles.loadingSpinner} style={{ width: '48px', height: '48px', color: '#d4af37' }} />
+                            <p style={{ fontSize: '0.875rem', color: 'rgba(255, 255, 255, 0.7)', marginTop: '1rem' }}>
+                              {isCollectingMetadata ? 'Preparing personalized QR code...' : 'Generating QR code...'}
+                            </p>
+                          </div>
+                        ) : dynamicQRCode ? (
+                          <Image src={dynamicQRCode} alt={`QR code for ${getCarName(campaign.car_model)}`} width={280} height={280} className={styles.qrCode} />
+                        ) : (
+                          <Image src={campaign.qr_code_url} alt={`QR code for ${getCarName(campaign.car_model)}`} width={280} height={280} className={styles.qrCode} />
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
