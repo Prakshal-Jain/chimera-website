@@ -29,7 +29,7 @@
   /* Hero Section */
   .heroSection {
     text-align: center;
-    padding: 3rem 0 4rem;
+    padding: 1rem 0 4rem;
   }
   
   .heroTitle {
@@ -45,15 +45,60 @@
     margin-bottom: 1rem;
   }
   
+  /* Chimera Logo Links */
+  .chimeraLogoLink {
+    position: absolute;
+    top: 2rem;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    z-index: 10;
+    transition: filter 0.3s ease;
+  }
+
+  .chimeraLogoLink:hover {
+    filter: brightness(1.1);
+  }
+
+  .chimeraLogo {
+    width: auto;
+    height: auto;
+    max-width: 200px;
+    filter: brightness(1);
+    display: block;
+  }
+
+  .chimeraLogoLinkTop {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    transition: filter 0.3s ease;
+  }
+
+  .chimeraLogoLinkTop:hover {
+    filter: brightness(1.1);
+  }
+
+  .chimeraLogoTop {
+    width: auto;
+    height: auto;
+    max-width: 180px;
+    filter: brightness(1.1);
+    display: block;
+  }
+
   /* Luxury Loading Screen */
   .loadingContainer {
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
     position: relative;
     overflow: hidden;
+    padding-top: 120px;
   }
 
   .loadingContainer::before {
@@ -614,6 +659,22 @@
     .qrSection {
       order: 1;
     }
+
+    .chimeraLogoLink {
+      top: 1.5rem;
+    }
+
+    .chimeraLogo {
+      max-width: 160px;
+    }
+
+    .chimeraLogoTop {
+      max-width: 150px;
+    }
+
+    .loadingContainer {
+      padding-top: 100px;
+    }
   }
 
   @media (max-width: 768px) {
@@ -730,6 +791,26 @@
 
     .heroSubtitle {
       font-size: 1rem;
+    }
+
+    .chimeraLogoLink {
+      top: 1rem;
+    }
+
+    .chimeraLogo {
+      max-width: 140px;
+    }
+
+    .chimeraLogoTop {
+      max-width: 130px;
+    }
+
+    .chimeraLogoLinkTop {
+      margin-bottom: 1.5rem;
+    }
+
+    .loadingContainer {
+      padding-top: 80px;
     }
 
     .elegantCard {

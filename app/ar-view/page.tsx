@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, Suspense } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Smartphone, AlertCircle, Loader2, Check } from "lucide-react"
 import HeaderBackButtonTitle from "../components/HeaderBackButtonTitle"
@@ -377,6 +378,16 @@ function ARExperienceContent() {
   if (campaignCode && (isLoading || !minLoadTimeElapsed)) {
     return (
       <div className={styles.loadingContainer}>
+        <Link href="/" className={styles.chimeraLogoLink}>
+          <Image 
+            src="/chimera-logo.png" 
+            alt="Chimera" 
+            width={200} 
+            height={67} 
+            className={styles.chimeraLogo}
+            priority
+          />
+        </Link>
         <div className={styles.loadingContent}>
           <div className={styles.loadingImageWrapper}>
             <Image 
@@ -426,6 +437,16 @@ function ARExperienceContent() {
     return (
       <div className={styles.container}>
         <div className={styles.content}>
+          <Link href="/" className={styles.chimeraLogoLinkTop}>
+            <Image 
+              src="/chimera-logo.png" 
+              alt="Chimera" 
+              width={180} 
+              height={60} 
+              className={styles.chimeraLogoTop}
+              priority
+            />
+          </Link>
           <main>
             <section className={styles.heroSection}>
               <h1 className={styles.heroTitle}>{campaign.campaign_name}</h1>
@@ -462,6 +483,16 @@ function ARExperienceContent() {
     return (
       <div className={styles.container}>
         <div className={styles.content}>
+          <Link href="/" className={styles.chimeraLogoLinkTop}>
+            <Image 
+              src="/chimera-logo.png" 
+              alt="Chimera" 
+              width={180} 
+              height={60} 
+              className={styles.chimeraLogoTop}
+              priority
+            />
+          </Link>
           <main>
             <section className={styles.heroSection}>
               <h1 className={styles.heroTitle}>{campaign.campaign_name}</h1>
