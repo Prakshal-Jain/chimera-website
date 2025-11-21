@@ -97,6 +97,7 @@ function ARExperienceContent() {
   const [dynamicQRCode, setDynamicQRCode] = useState<string | null>(null)
   const [isQRCodeGenerating, setIsQRCodeGenerating] = useState(false)
   const [minLoadTimeElapsed, setMinLoadTimeElapsed] = useState(false)
+  const [persistentUserId, setPersistentUserId] = useState<string | null>(null)
 
   const sessionIdRef = useRef<string>(
     typeof window !== "undefined" ? `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}` : ""
@@ -104,6 +105,84 @@ function ARExperienceContent() {
   const pageLoadTimeRef = useRef<number>(Date.now())
   const hasLoggedRef = useRef(false)
   const hasRedirectedRef = useRef(false)
+  const arEngagementStartTimeRef = useRef<number | null>(null)
+  
+  // Extract cross-device tracking parameters
+  const originSessionId = searchParams.get("origin_session") || undefined
+  const originDevice = searchParams.get("origin_device") || undefined
+  const qrScanned = !!originSessionId
+
+  // Initialize or retrieve persistent user ID from localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      let userId = localStorage.getItem("chimera_user_id")
+      if (!userId) {
+        userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        localStorage.setItem("chimera_user_id", userId)
+      }
+      setPersistentUserId(userId)
+    }
+  }, [])
+
+  // Recover incomplete AR sessions from localStorage
+  useEffect(() => {
+    if (typeof window === "undefined" || !persistentUserId) return
+
+    try {
+      const keysToRemove: string[] = []
+      
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("ar_session_")) {
+          try {
+            const sessionData = JSON.parse(localStorage.getItem(key) || "{}")
+            const age = Date.now() - sessionData.start_time
+            
+            // If session is > 5 minutes old, recover it
+            if (age > 300000) {
+              const estimatedDuration = Math.min(Math.floor(age / 1000), 300) // Cap at 5 min
+              
+              // Send recovery request to backend
+              fetch(`${API_URL}/campaign/${sessionData.campaign_code}/ar-engagement/recover`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  session_id: sessionData.session_id,
+                  persistent_user_id: persistentUserId,
+                  start_time: sessionData.start_time,
+                  estimated_duration: estimatedDuration,
+                }),
+              }).catch((err) => console.error("Error recovering AR session:", err))
+              
+              keysToRemove.push(key)
+            }
+          } catch (e) {
+            // Invalid session data, remove it
+            keysToRemove.push(key)
+          }
+        }
+      })
+      
+      // Clean up recovered sessions
+      keysToRemove.forEach((key) => localStorage.removeItem(key))
+      
+      // Also clean up old sessions (> 7 days)
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("ar_session_")) {
+          try {
+            const sessionData = JSON.parse(localStorage.getItem(key) || "{}")
+            const age = Date.now() - sessionData.start_time
+            if (age > 7 * 24 * 60 * 60 * 1000) {
+              localStorage.removeItem(key)
+            }
+          } catch (e) {
+            localStorage.removeItem(key)
+          }
+        }
+      })
+    } catch (error) {
+      console.error("Error during AR session recovery:", error)
+    }
+  }, [persistentUserId])
 
   // Detect iOS device
   useEffect(() => {
@@ -219,6 +298,48 @@ function ARExperienceContent() {
     handleARViewDecision()
   }, [isCollectingMetadata, isLoading, campaign, isIOS, campaignCode])
 
+  // Page Visibility API - Track AR Quick Look engagement
+  useEffect(() => {
+    if (!campaignCode || !persistentUserId) return
+
+    const handleVisibilityChange = async () => {
+      if (!document.hidden && arEngagementStartTimeRef.current) {
+        // User returned from AR Quick Look
+        const sessionKey = `ar_session_${sessionIdRef.current}`
+        const sessionData = localStorage.getItem(sessionKey)
+        
+        if (sessionData) {
+          try {
+            const data = JSON.parse(sessionData)
+            const duration = Math.floor((Date.now() - data.start_time) / 1000)
+            
+            // Send AR engagement end
+            await fetch(`${API_URL}/campaign/${campaignCode}/ar-engagement/end`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                session_id: sessionIdRef.current,
+                persistent_user_id: persistentUserId,
+                duration_seconds: duration,
+              }),
+            })
+            
+            // Clear localStorage
+            localStorage.removeItem(sessionKey)
+            arEngagementStartTimeRef.current = null
+            
+            console.log(`✓ AR engagement completed: ${duration}s`)
+          } catch (err) {
+            console.error("Error logging AR engagement end:", err)
+          }
+        }
+      }
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange)
+  }, [campaignCode, persistentUserId])
+
   // Generate dynamic QR code with all metadata for campaign mode
   useEffect(() => {
     if (!campaignCode || !campaign || isIOS === null) return
@@ -233,6 +354,10 @@ function ARExperienceContent() {
         if (metadataCode) {
           qrUrl += `&metadata=${metadataCode}`
         }
+        
+        // Add cross-device tracking parameters
+        qrUrl += `&origin_session=${sessionIdRef.current}`
+        qrUrl += `&origin_device=desktop`
         
         // Add any additional query parameters
         if (Object.keys(additionalQueryParams.current).length > 0) {
@@ -327,6 +452,37 @@ function ARExperienceContent() {
         additional_metadata: additionalMetadata,
       }
       await logCampaignAccess(successMetadata)
+      
+      // Store AR session in localStorage before opening AR Quick Look
+      const arSessionData = {
+        session_id: sessionIdRef.current,
+        persistent_user_id: persistentUserId,
+        campaign_code: campaignCode,
+        metadata_code: metadataCode,
+        start_time: Date.now(),
+        origin_session_id: originSessionId,
+      }
+      localStorage.setItem(`ar_session_${sessionIdRef.current}`, JSON.stringify(arSessionData))
+      
+      // Log AR engagement start
+      try {
+        await fetch(`${API_URL}/campaign/${campaignCode}/ar-engagement/start`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            session_id: sessionIdRef.current,
+            persistent_user_id: persistentUserId,
+            metadata_code: metadataCode,
+            origin_session_id: originSessionId,
+            origin_device: originDevice,
+            qr_scanned: qrScanned,
+          }),
+        })
+        arEngagementStartTimeRef.current = Date.now()
+      } catch (err) {
+        console.error("Error logging AR engagement start:", err)
+      }
+      
       // Create and click a hidden anchor tag to trigger AR without navigating away
       const arAnchor = document.createElement('a')
       arAnchor.href = campaign.model_url
@@ -358,7 +514,13 @@ function ARExperienceContent() {
       await fetch(`${API_URL}/campaign/${campaignCode}/log`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(metadataToLog),
+        body: JSON.stringify({
+          ...metadataToLog,
+          persistent_user_id: persistentUserId,
+          origin_session_id: originSessionId,
+          origin_device: originDevice,
+          qr_scanned: qrScanned,
+        }),
       })
     } catch (err) {
       console.error("Error logging campaign access:", err)

@@ -60,6 +60,7 @@ interface EnhancedCustomer {
     buying_intent: "high" | "medium" | "low"
     unique_sessions: number
     ar_success_rate: number
+    avg_ar_engagement_time?: number
     metadata?: Record<string, any>
 }
 
@@ -86,6 +87,11 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
 
             // Calculate AR success rate
             const arSuccessRate = customer.total_views > 0 ? (customer.successful_ar_views / customer.total_views) * 100 : 0
+
+            // Calculate AR engagement time
+            const logsWithEngagement = customerLogs.filter((log: any) => log.ar_engagement_duration_seconds && log.ar_engagement_duration_seconds > 0)
+            const totalEngagementTime = logsWithEngagement.reduce((sum: number, log: any) => sum + (log.ar_engagement_duration_seconds || 0), 0)
+            const avgEngagementTime = logsWithEngagement.length > 0 ? totalEngagementTime / logsWithEngagement.length : 0
 
             // Extract additional metadata from logs
             const metadata: Record<string, any> = {}
@@ -116,6 +122,7 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
                 buying_intent,
                 unique_sessions: uniqueSessions,
                 ar_success_rate: Math.round(arSuccessRate),
+                avg_ar_engagement_time: avgEngagementTime,
                 metadata,
             } as EnhancedCustomer
         })
@@ -159,6 +166,25 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
 
         const errorRate = analytics.summary.total_views > 0 ? (analytics.summary.errors / analytics.summary.total_views) * 100 : 0
 
+        // Calculate AR engagement metrics
+        const logsWithEngagement = analytics.logs.filter((log: any) => log.ar_engagement_duration_seconds && log.ar_engagement_duration_seconds > 0)
+        const totalEngagementTime = logsWithEngagement.reduce((sum: number, log: any) => sum + (log.ar_engagement_duration_seconds || 0), 0)
+        const avgEngagementTime = logsWithEngagement.length > 0 ? totalEngagementTime / logsWithEngagement.length : 0
+        const totalEngagedSessions = logsWithEngagement.length
+        
+        // Engagement time distribution
+        const engagementDistribution = {
+            short: logsWithEngagement.filter((log: any) => log.ar_engagement_duration_seconds < 30).length,
+            medium: logsWithEngagement.filter((log: any) => log.ar_engagement_duration_seconds >= 30 && log.ar_engagement_duration_seconds < 60).length,
+            long: logsWithEngagement.filter((log: any) => log.ar_engagement_duration_seconds >= 60 && log.ar_engagement_duration_seconds < 120).length,
+            veryLong: logsWithEngagement.filter((log: any) => log.ar_engagement_duration_seconds >= 120).length,
+        }
+        
+        // QR code conversion tracking
+        const qrShownCount = analytics.logs.filter((log: any) => log.action === 'show_qr_code').length
+        const qrScannedCount = analytics.logs.filter((log: any) => log.qr_scanned === true).length
+        const qrConversionRate = qrShownCount > 0 ? (qrScannedCount / qrShownCount) * 100 : 0
+
         return {
             highIntentCount,
             mediumIntentCount,
@@ -167,6 +193,12 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
             avgViewsPerCustomer,
             deviceCompatibilityRate,
             errorRate,
+            avgEngagementTime,
+            totalEngagedSessions,
+            engagementDistribution,
+            qrConversionRate,
+            qrShownCount,
+            qrScannedCount,
         }
     }, [enhancedCustomers, analytics])
 
@@ -300,6 +332,74 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
                     </CardContent>
                 </Card>
             </div>
+
+            {/* AR Engagement Metrics */}
+            {metrics.totalEngagedSessions > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl overflow-hidden">
+                        <CardContent className="pt-6">
+                            <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                    <p className="text-sm text-white/60 font-light mb-1">Avg. AR Engagement</p>
+                                    <p className="text-4xl font-serif font-light text-white">{metrics.avgEngagementTime.toFixed(0)}s</p>
+                                    <p className="text-xs text-white/50 mt-2">{metrics.totalEngagedSessions} sessions tracked</p>
+                                </div>
+                                <div className="h-14 w-14 bg-[#d4af37]/20 rounded-2xl flex items-center justify-center border border-[#d4af37]/30">
+                                    <Clock className="h-7 w-7 text-[#d4af37]" />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl overflow-hidden">
+                        <CardContent className="pt-6">
+                            <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                    <p className="text-sm text-white/60 font-light mb-1">Engagement Distribution</p>
+                                    <div className="mt-2 space-y-1.5">
+                                        <div className="flex items-center justify-between text-xs">
+                                            <span className="text-white/60">&lt;30s</span>
+                                            <span className="text-white font-medium">{metrics.engagementDistribution.short}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between text-xs">
+                                            <span className="text-white/60">30-60s</span>
+                                            <span className="text-white font-medium">{metrics.engagementDistribution.medium}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between text-xs">
+                                            <span className="text-white/60">1-2min</span>
+                                            <span className="text-white font-medium">{metrics.engagementDistribution.long}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between text-xs">
+                                            <span className="text-white/60">2min+</span>
+                                            <span className="text-white font-medium">{metrics.engagementDistribution.veryLong}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="h-14 w-14 bg-cyan-500/20 rounded-2xl flex items-center justify-center border border-cyan-500/30">
+                                    <BarChart3 className="h-7 w-7 text-cyan-400" />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {metrics.qrShownCount > 0 && (
+                        <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl overflow-hidden">
+                            <CardContent className="pt-6">
+                                <div className="flex items-start justify-between">
+                                    <div className="flex-1">
+                                        <p className="text-sm text-white/60 font-light mb-1">QR Code Conversion</p>
+                                        <p className="text-4xl font-serif font-light text-white">{metrics.qrConversionRate.toFixed(0)}%</p>
+                                        <p className="text-xs text-white/50 mt-2">{metrics.qrScannedCount} of {metrics.qrShownCount} scanned</p>
+                                    </div>
+                                    <div className="h-14 w-14 bg-indigo-500/20 rounded-2xl flex items-center justify-center border border-indigo-500/30">
+                                        <FileText className="h-7 w-7 text-indigo-400" />
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+                </div>
+            )}
 
             {/* Buying Intent Distribution */}
             <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">

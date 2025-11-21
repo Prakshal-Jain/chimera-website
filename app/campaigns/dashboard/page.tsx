@@ -258,7 +258,7 @@ function CampaignDashboard() {
     // Customer Breakdown with Engagement Metrics
     if (analytics.customer_breakdown.length > 0) {
       csvRows.push("CUSTOMER BREAKDOWN")
-      csvRows.push("Customer ID,Type,Total Views,Successful AR Views,Last Viewed,Unique Sessions,AR Success Rate (%),Engagement Score,Buying Intent,Additional Metadata")
+      csvRows.push("Customer ID,Type,Total Views,Successful AR Views,Last Viewed,Unique Sessions,AR Success Rate (%),Avg AR Engagement (s),Engagement Score,Buying Intent,Additional Metadata")
       analytics.customer_breakdown.forEach((customer) => {
         // Get customer logs to extract metadata
         const customerLogs = analytics.logs.filter(
@@ -276,6 +276,11 @@ function CampaignDashboard() {
         
         // Calculate AR success rate
         const arSuccessRate = customer.total_views > 0 ? (customer.successful_ar_views / customer.total_views) * 100 : 0
+        
+        // Calculate AR engagement time
+        const logsWithEngagement = customerLogs.filter((log: any) => log.ar_engagement_duration_seconds && log.ar_engagement_duration_seconds > 0)
+        const totalEngagementTime = logsWithEngagement.reduce((sum: number, log: any) => sum + (log.ar_engagement_duration_seconds || 0), 0)
+        const avgEngagementTime = logsWithEngagement.length > 0 ? Math.round(totalEngagementTime / logsWithEngagement.length) : 0
         
         // Calculate engagement score
         const viewScore = Math.min((customer.total_views / 10) * 40, 40)
@@ -298,7 +303,7 @@ function CampaignDashboard() {
         const metadataStr = Object.keys(allMetadata).length > 0 ? JSON.stringify(allMetadata).replace(/"/g, '""') : "N/A"
         
         csvRows.push(
-          `"${customer.metadata_value}","${customer.metadata_type}",${customer.total_views},${customer.successful_ar_views},"${new Date(customer.last_viewed).toLocaleString()}",${uniqueSessions},${Math.round(arSuccessRate)},${engagementScore},"${buyingIntent}","${metadataStr}"`
+          `"${customer.metadata_value}","${customer.metadata_type}",${customer.total_views},${customer.successful_ar_views},"${new Date(customer.last_viewed).toLocaleString()}",${uniqueSessions},${Math.round(arSuccessRate)},${avgEngagementTime},${engagementScore},"${buyingIntent}","${metadataStr}"`
         )
       })
       csvRows.push("")
@@ -322,7 +327,7 @@ function CampaignDashboard() {
     // Activity Log with Full Metadata
     if (analytics.logs && analytics.logs.length > 0) {
       csvRows.push("ACTIVITY LOG")
-      csvRows.push("Timestamp,Status,Action,AR Compatible,Customer ID,Customer Type,Platform,Device Type,User Agent,Location (Lat),Location (Lon),Location Accuracy,Screen Width,Screen Height,Viewport Width,Viewport Height,Pixel Ratio,Session ID,Time on Page (s),AR Quick Look Opened,Additional Metadata,Error")
+      csvRows.push("Timestamp,Status,Action,AR Compatible,Customer ID,Customer Type,Persistent User ID,Platform,Device Type,User Agent,Location (Lat),Location (Lon),Location Accuracy,Screen Width,Screen Height,Viewport Width,Viewport Height,Pixel Ratio,Session ID,Origin Session ID,QR Scanned,Time on Page (s),AR Quick Look Opened,AR Engagement Duration (s),AR Engagement Status,Additional Metadata,Error")
       analytics.logs.forEach((log) => {
         const timestamp = log.timestamp ? new Date(log.timestamp).toLocaleString() : "N/A"
         const status = log.success ? "Success" : "Failed"
@@ -330,6 +335,7 @@ function CampaignDashboard() {
         const arCompatible = log.is_ar_compatible !== undefined ? (log.is_ar_compatible ? "Yes" : "No") : "N/A"
         const customerId = log.customer_metadata ? log.customer_metadata.metadata_value : "N/A"
         const customerType = log.customer_metadata ? log.customer_metadata.metadata_type : "N/A"
+        const persistentUserId = log.persistent_user_id || "N/A"
         const platform = log.platform || "N/A"
         const deviceType = log.device_type || "N/A"
         const userAgent = log.user_agent ? log.user_agent.replace(/"/g, '""') : "N/A"
@@ -342,12 +348,16 @@ function CampaignDashboard() {
         const viewportHeight = log.viewport_height || "N/A"
         const pixelRatio = log.pixel_ratio || "N/A"
         const sessionId = log.session_id || "N/A"
+        const originSessionId = log.origin_session_id || "N/A"
+        const qrScanned = log.qr_scanned ? "Yes" : "No"
         const timeOnPage = log.time_on_page || "N/A"
         const arQuickLookOpened = log.ar_quick_look_opened ? "Yes" : "No"
+        const arEngagementDuration = log.ar_engagement_duration_seconds || "N/A"
+        const arEngagementStatus = log.ar_engagement_status || "N/A"
         const additionalMetadata = log.additional_metadata ? JSON.stringify(log.additional_metadata).replace(/"/g, '""') : "N/A"
         const error = log.error_message ? log.error_message.replace(/"/g, '""') : ""
         
-        csvRows.push(`"${timestamp}","${status}","${action}","${arCompatible}","${customerId}","${customerType}","${platform}","${deviceType}","${userAgent}","${latitude}","${longitude}","${locationAccuracy}","${screenWidth}","${screenHeight}","${viewportWidth}","${viewportHeight}","${pixelRatio}","${sessionId}","${timeOnPage}","${arQuickLookOpened}","${additionalMetadata}","${error}"`)
+        csvRows.push(`"${timestamp}","${status}","${action}","${arCompatible}","${customerId}","${customerType}","${persistentUserId}","${platform}","${deviceType}","${userAgent}","${latitude}","${longitude}","${locationAccuracy}","${screenWidth}","${screenHeight}","${viewportWidth}","${viewportHeight}","${pixelRatio}","${sessionId}","${originSessionId}","${qrScanned}","${timeOnPage}","${arQuickLookOpened}","${arEngagementDuration}","${arEngagementStatus}","${additionalMetadata}","${error}"`)
       })
     }
 
