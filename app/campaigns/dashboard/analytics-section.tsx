@@ -353,8 +353,8 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
 
                     <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl overflow-hidden">
                         <CardContent className="pt-6">
-                            <div className="flex items-start justify-between">
-                                <div className="flex-1">
+                            <div className="flex items-start justify-between gap-4">
+                                <div className="flex-1 min-w-0">
                                     <p className="text-sm text-white/60 font-light mb-1">Engagement Distribution</p>
                                     <div className="mt-2 space-y-1.5">
                                         <div className="flex items-center justify-between text-xs">
@@ -375,7 +375,7 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
                                         </div>
                                     </div>
                                 </div>
-                                <div className="h-14 w-14 bg-cyan-500/20 rounded-2xl flex items-center justify-center border border-cyan-500/30">
+                                <div className="h-14 w-14 bg-cyan-500/20 rounded-2xl flex items-center justify-center border border-cyan-500/30 flex-shrink-0">
                                     <BarChart3 className="h-7 w-7 text-cyan-400" />
                                 </div>
                             </div>
@@ -400,83 +400,6 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
                     )}
                 </div>
             )}
-
-            {/* Buying Intent Distribution */}
-            <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
-                <CardHeader>
-                    <CardTitle className="text-xl font-serif font-light text-white flex items-center gap-2">
-                        <Flame className="h-5 w-5 text-[#d4af37]" />
-                        Buying Intent Distribution
-                    </CardTitle>
-                    <CardDescription className="text-white/60">Customer readiness to purchase</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* High Intent */}
-                        <div className="relative">
-                            <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center gap-2">
-                                    <Flame className="h-5 w-5 text-red-400" />
-                                    <span className="text-white font-medium">High Intent</span>
-                                </div>
-                                <span className="text-2xl font-serif font-light text-red-400">{metrics.highIntentCount}</span>
-                            </div>
-                            <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-                                <div
-                                    className="h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full transition-all duration-500"
-                                    style={{
-                                        width: `${enhancedCustomers.length > 0 ? (metrics.highIntentCount / enhancedCustomers.length) * 100 : 0
-                                            }%`,
-                                    }}
-                                />
-                            </div>
-                            <p className="text-xs text-white/50 mt-2">Score 70-100 • Ready to buy</p>
-                        </div>
-
-                        {/* Medium Intent */}
-                        <div className="relative">
-                            <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center gap-2">
-                                    <TrendingUp className="h-5 w-5 text-yellow-400" />
-                                    <span className="text-white font-medium">Medium Intent</span>
-                                </div>
-                                <span className="text-2xl font-serif font-light text-yellow-400">{metrics.mediumIntentCount}</span>
-                            </div>
-                            <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-                                <div
-                                    className="h-full bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full transition-all duration-500"
-                                    style={{
-                                        width: `${enhancedCustomers.length > 0 ? (metrics.mediumIntentCount / enhancedCustomers.length) * 100 : 0
-                                            }%`,
-                                    }}
-                                />
-                            </div>
-                            <p className="text-xs text-white/50 mt-2">Score 40-69 • Considering</p>
-                        </div>
-
-                        {/* Low Intent */}
-                        <div className="relative">
-                            <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center gap-2">
-                                    <Target className="h-5 w-5 text-blue-400" />
-                                    <span className="text-white font-medium">Low Intent</span>
-                                </div>
-                                <span className="text-2xl font-serif font-light text-blue-400">{metrics.lowIntentCount}</span>
-                            </div>
-                            <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-                                <div
-                                    className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
-                                    style={{
-                                        width: `${enhancedCustomers.length > 0 ? (metrics.lowIntentCount / enhancedCustomers.length) * 100 : 0
-                                            }%`,
-                                    }}
-                                />
-                            </div>
-                            <p className="text-xs text-white/50 mt-2">Score 0-39 • Exploring</p>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
 
             {/* Performance Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
