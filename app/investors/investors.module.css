@@ -1,0 +1,477 @@
+.container {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #0a0a0a, #1a1a1a);
+    color: white;
+}
+
+/* Header */
+.header {
+    padding: 1.5rem 3rem;
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.headerContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logoLink {
+    width: 100%;
+    max-width: 260px;
+    display: flex;
+    justify-content: center;
+    filter: brightness(1.1) contrast(1.05);
+}
+
+.headerLabel {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 500;
+}
+
+.logo {
+    width: 100%;
+    height: auto;
+}
+
+/* Hero Section */
+.heroSection {
+    padding: 6rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.heroContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+}
+
+.heroLabel {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 500;
+    margin-bottom: -1.5rem;
+}
+
+.heroTitle {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 300;
+    line-height: 1.2;
+    color: white;
+    max-width: 900px;
+    font-family: var(--font-serif);
+}
+
+.pitchDeckButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 1.25rem 3rem;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 2px solid #d4af37;
+    border-radius: 0.75rem;
+    color: white;
+    font-size: 1.125rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    letter-spacing: 0.3px;
+}
+
+.pitchDeckButton:hover {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: #c29d2e;
+    box-shadow: 0 12px 40px rgba(212, 175, 55, 0.25);
+    transform: translateY(-2px);
+}
+
+.buttonIcon {
+    width: 1.25rem;
+    height: 1.25rem;
+    transition: transform 0.3s ease;
+}
+
+.pitchDeckButton:hover .buttonIcon {
+    transform: translateX(3px);
+}
+
+/* Contact Section */
+.contactSection {
+    padding: 4rem 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.contactTitle {
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 300;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: var(--font-serif);
+}
+
+.contactGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.contactCard {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+}
+
+.contactCard:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(212, 175, 55, 0.4);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.contactIcon {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: #d4af37;
+    flex-shrink: 0;
+}
+
+.contactLabel {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.contactValue {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: white;
+}
+
+/* Vision Section */
+.visionSection {
+    padding: 5rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.visionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+
+.visionIcon {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: #d4af37;
+}
+
+.visionTitle {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 300;
+    text-align: center;
+    color: white;
+    font-family: var(--font-serif);
+}
+
+.currentFocus {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.focusLabel {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+}
+
+.focusBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 2.5rem;
+    background: rgba(212, 175, 55, 0.1);
+    border: 2px solid #d4af37;
+    border-radius: 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.focusIcon {
+    width: 2rem;
+    height: 2rem;
+    color: #d4af37;
+}
+
+.focusText {
+    color: white;
+}
+
+.expansionSection {
+    margin-bottom: 4rem;
+}
+
+.expansionLabel {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.marketGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.marketCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.marketCard:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(212, 175, 55, 0.3);
+}
+
+.marketIcon {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: #d4af37;
+}
+
+.marketName {
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.patentSection {
+    display: flex;
+    justify-content: center;
+    margin-top: 4rem;
+}
+
+.patentBadge {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem 3rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    border-radius: 1rem;
+    max-width: 600px;
+}
+
+.patentIcon {
+    width: 3rem;
+    height: 3rem;
+    color: #d4af37;
+    flex-shrink: 0;
+}
+
+.patentText {
+    text-align: left;
+}
+
+.patentTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #d4af37;
+    margin-bottom: 0.5rem;
+}
+
+.patentDescription {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.5;
+}
+
+/* Traction Section */
+.tractionSection {
+    padding: 5rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.tractionTitle {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 300;
+    text-align: center;
+    margin-bottom: 3rem;
+    color: white;
+    font-family: var(--font-serif);
+}
+
+.tractionImageContainer {
+    border-radius: 1.5rem;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.tractionImage {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* CTA Section */
+.ctaSection {
+    padding: 5rem 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.ctaTitle {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 300;
+    margin-bottom: 3rem;
+    color: white;
+    font-family: var(--font-serif);
+}
+
+.ctaButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+}
+
+.ctaPrimary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 1.25rem 3rem;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 2px solid #d4af37;
+    border-radius: 0.75rem;
+    color: white;
+    font-size: 1.125rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.ctaPrimary:hover {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: #c29d2e;
+    box-shadow: 0 12px 40px rgba(212, 175, 55, 0.25);
+    transform: translateY(-2px);
+}
+
+.ctaPrimary:hover .buttonIcon {
+    transform: translateX(3px);
+}
+
+/* Footer */
+.footer {
+    padding: 3rem 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footerContent {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.footerLogoContainer {
+    opacity: 0.6;
+}
+
+.footerCopyright {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .heroSection {
+        padding: 4rem 1.5rem;
+    }
+
+    .heroTitle {
+        font-size: 2rem;
+    }
+
+    .contactGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .marketGrid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .marketCard {
+        padding: 1.5rem 1rem;
+    }
+
+    .patentBadge {
+        flex-direction: column;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .patentText {
+        text-align: center;
+    }
+
+    .ctaButtons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .ctaPrimary {
+        width: 100%;
+        justify-content: center;
+    }
+}
