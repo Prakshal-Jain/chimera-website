@@ -10,6 +10,7 @@ import { DEALERSHIPS } from "./utils/dealerships"
 export default function Home() {
   const [currentWord, setCurrentWord] = useState(0)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isDealershipsDropdownOpen, setIsDealershipsDropdownOpen] = useState(false)
   const words = ["Cars", "Jets", "Yachts", "Jewelry", "Watches"]
 
   useEffect(() => {
@@ -18,6 +19,23 @@ export default function Home() {
     }, 3000)
     return () => clearInterval(interval)
   }, [])
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+      if (isDealershipsDropdownOpen && !target.closest(`.${styles.dropdownContainer}`)) {
+        setIsDealershipsDropdownOpen(false)
+      }
+    }
+
+    if (isDealershipsDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [isDealershipsDropdownOpen])
 
   const scrollToContent = () => {
     const differenceSection = document.getElementById("difference-section")
@@ -55,8 +73,58 @@ export default function Home() {
           >
             Become Partner <ExternalLink className={styles.icon} />
           </Link>
-          <Link href="/configuration" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>
+          {/* Desktop: Dropdown for "For Dealerships" */}
+          <div className={styles.dropdownContainer}>
+            <button
+              className={styles.navLink}
+              onClick={(e) => {
+                e.preventDefault()
+                if (typeof window !== "undefined" && window.innerWidth > 768) {
+                  setIsDealershipsDropdownOpen(!isDealershipsDropdownOpen)
+                }
+              }}
+            >
+              For Dealerships
+              <ChevronDown className={`${styles.dropdownChevron} ${isDealershipsDropdownOpen ? styles.dropdownChevronOpen : ""}`} />
+            </button>
+            {isDealershipsDropdownOpen && (
+              <div
+                className={styles.dropdownMenu}
+                onMouseLeave={() => {
+                  if (typeof window !== "undefined" && window.innerWidth > 768) {
+                    setIsDealershipsDropdownOpen(false)
+                  }
+                }}
+              >
+                <Link
+                  href="/configuration"
+                  className={styles.dropdownItem}
+                  onClick={() => {
+                    setIsDealershipsDropdownOpen(false)
+                    setIsMobileMenuOpen(false)
+                  }}
+                >
+                  See Configurations
+                </Link>
+                <Link
+                  href="/guide"
+                  className={styles.dropdownItem}
+                  onClick={() => {
+                    setIsDealershipsDropdownOpen(false)
+                    setIsMobileMenuOpen(false)
+                  }}
+                >
+                  Guide
+                </Link>
+              </div>
+            )}
+          </div>
+          {/* Mobile: Show "For Dealerships" items at same layer */}
+          <Link href="/configuration" className={`${styles.navLink} ${styles.mobileOnly}`} onClick={() => setIsMobileMenuOpen(false)}>
             See Configurations
+          </Link>
+          <Link href="/guide" className={`${styles.navLink} ${styles.mobileOnly}`} onClick={() => setIsMobileMenuOpen(false)}>
+            Guide
           </Link>
           <Link href="/gallery" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>
             Gallery
@@ -64,8 +132,8 @@ export default function Home() {
           <Link href="/events" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>
             Events
           </Link>
-          <Link href="/guide" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>
-            Guide
+          <Link href="/investors" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>
+            For Investors
           </Link>
           <Link href="/contact" className={styles.navLink} onClick={() => setIsMobileMenuOpen(false)}>
             Contact
