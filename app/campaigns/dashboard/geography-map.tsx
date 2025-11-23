@@ -20,11 +20,13 @@ interface GeographyMapProps {
     location_accuracy?: number
     ar_engagement_duration_seconds?: number
   }>
+  selectedLocation?: { lat: number; lng: number } | null
 }
 
-export function GeographyMap({ logs }: GeographyMapProps) {
+export function GeographyMap({ logs, selectedLocation }: GeographyMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
+  const selectedMarkerRef = useRef<any>(null)
   const [locationStats, setLocationStats] = useState({
     totalLocations: 0,
     totalUsers: 0,
@@ -294,6 +296,97 @@ export function GeographyMap({ logs }: GeographyMapProps) {
       }
     }
   }, [logs])
+
+  // Handle selectedLocation changes
+  useEffect(() => {
+    if (!mapInstanceRef.current || !selectedLocation) {
+      // Remove marker if selectedLocation is null
+      if (selectedMarkerRef.current && mapInstanceRef.current) {
+        mapInstanceRef.current.removeLayer(selectedMarkerRef.current)
+        selectedMarkerRef.current = null
+      }
+      return
+    }
+
+    const updateSelectedLocation = async () => {
+      const L = (await import("leaflet")).default
+      const map = mapInstanceRef.current
+
+      if (!map) return
+
+      // Remove existing selected marker if any
+      if (selectedMarkerRef.current) {
+        map.removeLayer(selectedMarkerRef.current)
+      }
+
+      // Create a special highlighted marker for the selected location
+      const selectedIcon = L.divIcon({
+        className: "selected-location-marker",
+        html: `<div style="
+                    background: radial-gradient(circle, rgba(212,175,55,0.95) 0%, rgba(212,175,55,0.7) 100%);
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    border: 4px solid rgba(212,175,55,1);
+                    box-shadow: 0 0 30px rgba(212,175,55,1), 0 0 20px rgba(212,175,55,0.8), 0 0 10px rgba(212,175,55,0.6);
+                    position: relative;
+                    animation: pulse 2s infinite;
+                "></div>
+                <style>
+                  @keyframes pulse {
+                    0%, 100% { transform: scale(1); opacity: 1; }
+                    50% { transform: scale(1.2); opacity: 0.8; }
+                  }
+                </style>`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+      })
+
+      // Add marker at selected location
+      const marker = L.marker([selectedLocation.lat, selectedLocation.lng], {
+        icon: selectedIcon,
+        zIndexOffset: 1000, // Ensure it's on top
+      })
+
+      marker.bindPopup(`
+        <div style="
+          background: rgba(0,0,0,0.95);
+          padding: 12px;
+          border-radius: 8px;
+          border: 2px solid rgba(212,175,55,0.8);
+          min-width: 200px;
+        ">
+          <div style="color: #d4af37; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
+            Selected Location
+          </div>
+          <div style="color: rgba(255,255,255,0.8); font-size: 12px;">
+            <strong>Location:</strong> ${selectedLocation.lat.toFixed(4)}, ${selectedLocation.lng.toFixed(4)}
+          </div>
+        </div>
+      `)
+
+      // Remove marker when popup is closed to return to original state
+      marker.on("popupclose", () => {
+        if (selectedMarkerRef.current && map) {
+          map.removeLayer(selectedMarkerRef.current)
+          selectedMarkerRef.current = null
+        }
+      })
+
+      marker.addTo(map)
+      marker.openPopup()
+
+      // Center and zoom to selected location
+      map.setView([selectedLocation.lat, selectedLocation.lng], 10, {
+        animate: true,
+        duration: 0.5,
+      })
+
+      selectedMarkerRef.current = marker
+    }
+
+    updateSelectedLocation().catch(console.error)
+  }, [selectedLocation])
 
   return (
     <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl overflow-hidden">

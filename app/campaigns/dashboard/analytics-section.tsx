@@ -22,6 +22,7 @@ import {
 import { useState, useMemo } from "react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts"
 import { GeographyMap } from "./geography-map"
+import { HighIntentBuyers } from "./high-intent-buyers"
 
 interface CustomerWithIntent {
   metadata_type: string
@@ -85,6 +86,7 @@ interface EnhancedCustomer {
 export function AnalyticsSection({ analytics, loading, onDownloadCSV }: AnalyticsSectionProps) {
   const [sortBy, setSortBy] = useState<"engagement" | "views" | "ar_success">("engagement")
   const [sortDirection, setSortDirection] = useState<"desc" | "asc">("desc")
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null)
 
   const engagementTimelineData = useMemo(() => {
     // Group logs by date
@@ -332,6 +334,15 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
     })
   }
 
+  const handleLocationClick = (lat: number, lng: number) => {
+    setSelectedLocation({ lat, lng })
+    // Scroll to map
+    const mapElement = document.getElementById("geography-map")
+    if (mapElement) {
+      mapElement.scrollIntoView({ behavior: "smooth", block: "center" })
+    }
+  }
+
   if (loading) {
     return (
       <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
@@ -382,7 +393,9 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
                   {metrics.totalEngagedSessions > 0 ? metrics.avgEngagementTime.toFixed(0) : "0"}s
                 </p>
                 <p className="text-xs text-white/50 mt-2">
-                  {metrics.totalEngagedSessions > 0 ? `${metrics.totalEngagedSessions} sessions tracked` : "No sessions tracked"}
+                  {metrics.totalEngagedSessions > 0
+                    ? `${metrics.totalEngagedSessions} sessions tracked`
+                    : "No sessions tracked"}
                 </p>
               </div>
               <div className="h-14 w-14 bg-[#d4af37]/20 rounded-2xl flex items-center justify-center border border-[#d4af37]/30">
@@ -396,7 +409,7 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
           <CardContent className="pt-6">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-white/60 font-light mb-1">Engagement Distribution</p>
+                <p className="text-sm text-white/60 mb-1">Engagement Distribution</p>
                 <div className="mt-2 space-y-1.5">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-white/60">&lt;30s</span>
@@ -423,6 +436,9 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
           </CardContent>
         </Card>
       </div>
+
+      {/* High-Intent Buyers Leaderboard */}
+      <HighIntentBuyers logs={analytics.logs} onLocationClick={handleLocationClick} />
 
       {/* Engagement Timeline Graph */}
       <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl overflow-hidden">
@@ -495,7 +511,9 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
       </Card>
 
       {/* Geography Map */}
-      <GeographyMap logs={analytics.logs} />
+      <div id="geography-map">
+        <GeographyMap logs={analytics.logs} selectedLocation={selectedLocation} />
+      </div>
 
       {/* Row 2: AR Conversion, QR Code Conversion, Device Support */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
