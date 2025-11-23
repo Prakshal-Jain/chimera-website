@@ -247,7 +247,7 @@ function CampaignDashboard() {
     csvRows.push(`Total Views,${analytics.summary.total_views}`)
     csvRows.push(`Successful AR Views,${analytics.summary.successful_ar_views}`)
     csvRows.push(`QR Code Shown,${analytics.summary.qr_code_shown}`)
-    csvRows.push(`Errors,${analytics.summary.errors}`)
+    csvRows.push(`Unsuccessful,${analytics.summary.errors}`)
     csvRows.push(`AR Compatible Devices,${analytics.summary.ar_compatible_devices}`)
     csvRows.push(`Non-AR Compatible Devices,${analytics.summary.non_ar_compatible_devices}`)
     csvRows.push(`Views with Customer Metadata,${analytics.summary.views_with_customer_metadata}`)
@@ -327,7 +327,7 @@ function CampaignDashboard() {
     // Activity Log with Full Metadata
     if (analytics.logs && analytics.logs.length > 0) {
       csvRows.push("ACTIVITY LOG")
-      csvRows.push("Timestamp,Status,Action,AR Compatible,Customer ID,Customer Type,Persistent User ID,Platform,Device Type,User Agent,Location (Lat),Location (Lon),Location Accuracy,Screen Width,Screen Height,Viewport Width,Viewport Height,Pixel Ratio,Session ID,Origin Session ID,QR Scanned,Time on Page (s),AR Quick Look Opened,AR Engagement Duration (s),AR Engagement Status,Additional Metadata,Error")
+      csvRows.push("Timestamp,Status,Action,AR Compatible,Customer ID,Customer Type,Persistent User ID,Platform,Device Type,User Agent,Location (Lat),Location (Lon),Location Accuracy,Screen Width,Screen Height,Viewport Width,Viewport Height,Pixel Ratio,Session ID,Origin Session ID,QR Scanned,Time on Page (s),AR Quick Look Opened,AR Engagement Duration (s),AR Engagement Status,Additional Metadata,Unsuccessful")
       analytics.logs.forEach((log) => {
         const timestamp = log.timestamp ? new Date(log.timestamp).toLocaleString() : "N/A"
         const status = log.success ? "Success" : "Failed"
