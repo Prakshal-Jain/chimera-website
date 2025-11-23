@@ -356,8 +356,8 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
         </Button>
       </div>
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Row 1: Total Views, Avg. AR Engagement, Engagement Distribution */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl overflow-hidden">
           <CardContent className="pt-6">
             <div className="flex items-start justify-between">
@@ -377,44 +377,47 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
           <CardContent className="pt-6">
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <p className="text-sm text-white/60 font-light mb-1">AR Conversion</p>
-                <p className="text-4xl font-serif font-light text-white">{metrics.conversionRate.toFixed(1)}%</p>
-                <p className="text-xs text-white/50 mt-2">{analytics.summary.successful_ar_views} successful views</p>
-              </div>
-              <div className="h-14 w-14 bg-green-500/20 rounded-2xl flex items-center justify-center border border-green-500/30">
-                <CheckCircle2 className="h-7 w-7 text-green-400" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl overflow-hidden">
-          <CardContent className="pt-6">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <p className="text-sm text-white/60 font-light mb-1">Avg. Engagement</p>
-                <p className="text-4xl font-serif font-light text-white">{metrics.avgViewsPerCustomer.toFixed(1)}</p>
-                <p className="text-xs text-white/50 mt-2">views per customer</p>
-              </div>
-              <div className="h-14 w-14 bg-purple-500/20 rounded-2xl flex items-center justify-center border border-purple-500/30">
-                <Activity className="h-7 w-7 text-purple-400" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl overflow-hidden">
-          <CardContent className="pt-6">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <p className="text-sm text-white/60 font-light mb-1">Device Support</p>
+                <p className="text-sm text-white/60 font-light mb-1">Avg. AR Engagement</p>
                 <p className="text-4xl font-serif font-light text-white">
-                  {metrics.deviceCompatibilityRate.toFixed(0)}%
+                  {metrics.totalEngagedSessions > 0 ? metrics.avgEngagementTime.toFixed(0) : "0"}s
                 </p>
-                <p className="text-xs text-white/50 mt-2">AR compatible devices</p>
+                <p className="text-xs text-white/50 mt-2">
+                  {metrics.totalEngagedSessions > 0 ? `${metrics.totalEngagedSessions} sessions tracked` : "No sessions tracked"}
+                </p>
               </div>
-              <div className="h-14 w-14 bg-orange-500/20 rounded-2xl flex items-center justify-center border border-orange-500/30">
-                <Smartphone className="h-7 w-7 text-orange-400" />
+              <div className="h-14 w-14 bg-[#d4af37]/20 rounded-2xl flex items-center justify-center border border-[#d4af37]/30">
+                <Clock className="h-7 w-7 text-[#d4af37]" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl overflow-hidden">
+          <CardContent className="pt-6">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-white/60 font-light mb-1">Engagement Distribution</p>
+                <div className="mt-2 space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-white/60">&lt;30s</span>
+                    <span className="text-white font-medium">{metrics.engagementDistribution.short}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-white/60">30-60s</span>
+                    <span className="text-white font-medium">{metrics.engagementDistribution.medium}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-white/60">1-2min</span>
+                    <span className="text-white font-medium">{metrics.engagementDistribution.long}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-white/60">2min+</span>
+                    <span className="text-white font-medium">{metrics.engagementDistribution.veryLong}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="h-14 w-14 bg-cyan-500/20 rounded-2xl flex items-center justify-center border border-cyan-500/30 flex-shrink-0">
+                <BarChart3 className="h-7 w-7 text-cyan-400" />
               </div>
             </div>
           </CardContent>
@@ -494,75 +497,74 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
       {/* Geography Map */}
       <GeographyMap logs={analytics.logs} />
 
-      {/* AR Engagement Metrics */}
-      {metrics.totalEngagedSessions > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Row 2: AR Conversion, QR Code Conversion, Device Support */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl overflow-hidden">
+          <CardContent className="pt-6">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-sm text-white/60 font-light mb-1">AR Conversion</p>
+                <p className="text-4xl font-serif font-light text-white">{metrics.conversionRate.toFixed(1)}%</p>
+                <p className="text-xs text-white/50 mt-2">{analytics.summary.successful_ar_views} successful views</p>
+              </div>
+              <div className="h-14 w-14 bg-green-500/20 rounded-2xl flex items-center justify-center border border-green-500/30">
+                <CheckCircle2 className="h-7 w-7 text-green-400" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {metrics.qrShownCount > 0 ? (
           <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl overflow-hidden">
             <CardContent className="pt-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <p className="text-sm text-white/60 font-light mb-1">Avg. AR Engagement</p>
-                  <p className="text-4xl font-serif font-light text-white">{metrics.avgEngagementTime.toFixed(0)}s</p>
-                  <p className="text-xs text-white/50 mt-2">{metrics.totalEngagedSessions} sessions tracked</p>
+                  <p className="text-sm text-white/60 font-light mb-1">QR Code Conversion</p>
+                  <p className="text-4xl font-serif font-light text-white">{metrics.qrConversionRate.toFixed(0)}%</p>
+                  <p className="text-xs text-white/50 mt-2">
+                    {metrics.qrScannedCount} of {metrics.qrShownCount} scanned
+                  </p>
                 </div>
-                <div className="h-14 w-14 bg-[#d4af37]/20 rounded-2xl flex items-center justify-center border border-[#d4af37]/30">
-                  <Clock className="h-7 w-7 text-[#d4af37]" />
+                <div className="h-14 w-14 bg-indigo-500/20 rounded-2xl flex items-center justify-center border border-indigo-500/30">
+                  <FileText className="h-7 w-7 text-indigo-400" />
                 </div>
               </div>
             </CardContent>
           </Card>
-
+        ) : (
           <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl overflow-hidden">
             <CardContent className="pt-6">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-white/60 font-light mb-1">Engagement Distribution</p>
-                  <div className="mt-2 space-y-1.5">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-white/60">&lt;30s</span>
-                      <span className="text-white font-medium">{metrics.engagementDistribution.short}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-white/60">30-60s</span>
-                      <span className="text-white font-medium">{metrics.engagementDistribution.medium}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-white/60">1-2min</span>
-                      <span className="text-white font-medium">{metrics.engagementDistribution.long}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-white/60">2min+</span>
-                      <span className="text-white font-medium">{metrics.engagementDistribution.veryLong}</span>
-                    </div>
-                  </div>
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <p className="text-sm text-white/60 font-light mb-1">QR Code Conversion</p>
+                  <p className="text-4xl font-serif font-light text-white">0%</p>
+                  <p className="text-xs text-white/50 mt-2">No QR codes shown</p>
                 </div>
-                <div className="h-14 w-14 bg-cyan-500/20 rounded-2xl flex items-center justify-center border border-cyan-500/30 flex-shrink-0">
-                  <BarChart3 className="h-7 w-7 text-cyan-400" />
+                <div className="h-14 w-14 bg-indigo-500/20 rounded-2xl flex items-center justify-center border border-indigo-500/30">
+                  <FileText className="h-7 w-7 text-indigo-400" />
                 </div>
               </div>
             </CardContent>
           </Card>
+        )}
 
-          {metrics.qrShownCount > 0 && (
-            <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl overflow-hidden">
-              <CardContent className="pt-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <p className="text-sm text-white/60 font-light mb-1">QR Code Conversion</p>
-                    <p className="text-4xl font-serif font-light text-white">{metrics.qrConversionRate.toFixed(0)}%</p>
-                    <p className="text-xs text-white/50 mt-2">
-                      {metrics.qrScannedCount} of {metrics.qrShownCount} scanned
-                    </p>
-                  </div>
-                  <div className="h-14 w-14 bg-indigo-500/20 rounded-2xl flex items-center justify-center border border-indigo-500/30">
-                    <FileText className="h-7 w-7 text-indigo-400" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      )}
+        <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl overflow-hidden">
+          <CardContent className="pt-6">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-sm text-white/60 font-light mb-1">Device Support</p>
+                <p className="text-4xl font-serif font-light text-white">
+                  {metrics.deviceCompatibilityRate.toFixed(0)}%
+                </p>
+                <p className="text-xs text-white/50 mt-2">AR compatible devices</p>
+              </div>
+              <div className="h-14 w-14 bg-orange-500/20 rounded-2xl flex items-center justify-center border border-orange-500/30">
+                <Smartphone className="h-7 w-7 text-orange-400" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Performance Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -675,14 +677,6 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 bg-white/5 rounded-xl border border-white/10">
                 <div className="flex items-center gap-2 mb-2">
-                  <CheckCircle2 className="h-4 w-4 text-green-400" />
-                  <span className="text-sm text-white/60">Success Rate</span>
-                </div>
-                <p className="text-3xl font-serif font-light text-white">{metrics.conversionRate.toFixed(1)}%</p>
-              </div>
-
-              <div className="p-4 bg-white/5 rounded-xl border border-white/10">
-                <div className="flex items-center gap-2 mb-2">
                   <AlertCircle className="h-4 w-4 text-red-400" />
                   <span className="text-sm text-white/60">Unsuccessful</span>
                 </div>
@@ -696,16 +690,6 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
                 </div>
                 <p className="text-3xl font-serif font-light text-white">
                   {metrics.avgViewsPerCustomer > 1 ? ((metrics.avgViewsPerCustomer - 1) * 50).toFixed(0) : 0}%
-                </p>
-              </div>
-
-              <div className="p-4 bg-white/5 rounded-xl border border-white/10">
-                <div className="flex items-center gap-2 mb-2">
-                  <Smartphone className="h-4 w-4 text-orange-400" />
-                  <span className="text-sm text-white/60">Compatibility</span>
-                </div>
-                <p className="text-3xl font-serif font-light text-white">
-                  {metrics.deviceCompatibilityRate.toFixed(0)}%
                 </p>
               </div>
             </div>

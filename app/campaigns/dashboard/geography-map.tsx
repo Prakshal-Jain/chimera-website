@@ -17,6 +17,8 @@ interface GeographyMapProps {
     timestamp: string
     success?: boolean
     ar_engagement_status?: string
+    location_accuracy?: number
+    ar_engagement_duration_seconds?: number
   }>
 }
 
@@ -69,6 +71,8 @@ export function GeographyMap({ logs }: GeographyMapProps) {
         userId: string
         timestamp: string
         success: boolean
+        locationAccuracy?: number
+        engagementTime?: number
       }> = []
 
       const uniqueUsers = new Set<string>()
@@ -81,6 +85,8 @@ export function GeographyMap({ logs }: GeographyMapProps) {
             userId: log.persistent_user_id || "anonymous",
             timestamp: log.timestamp,
             success: log.success || false,
+            locationAccuracy: log.location_accuracy,
+            engagementTime: log.ar_engagement_duration_seconds,
           })
           if (log.persistent_user_id) {
             uniqueUsers.add(log.persistent_user_id)
@@ -182,6 +188,25 @@ export function GeographyMap({ logs }: GeographyMapProps) {
           minute: "2-digit",
         })
 
+        const locationAccuracyText = location.locationAccuracy 
+          ? `${location.locationAccuracy.toFixed(0)}m` 
+          : null
+
+        // Format engagement time
+        let engagementTimeText = null
+        if (location.engagementTime && location.engagementTime > 0) {
+          const seconds = Math.round(location.engagementTime)
+          if (seconds < 60) {
+            engagementTimeText = `${seconds}s`
+          } else {
+            const minutes = Math.floor(seconds / 60)
+            const remainingSeconds = seconds % 60
+            engagementTimeText = remainingSeconds > 0 
+              ? `${minutes}m ${remainingSeconds}s` 
+              : `${minutes}m`
+          }
+        }
+
         marker.bindPopup(`
                     <div style="
                         background: rgba(0,0,0,0.95);
@@ -193,9 +218,16 @@ export function GeographyMap({ logs }: GeographyMapProps) {
                         <div style="color: #d4af37; font-weight: 600; margin-bottom: 8px; font-size: 14px;">
                             ${location.success ? "✓ Successful View" : "✗ Failed View"}
                         </div>
+                        ${locationAccuracyText ? `
                         <div style="color: rgba(255,255,255,0.8); font-size: 12px; margin-bottom: 4px;">
-                            <strong>User:</strong> ${location.userId.substring(0, 20)}...
+                            <strong>Location Accuracy:</strong> ${locationAccuracyText}
                         </div>
+                        ` : ''}
+                        ${engagementTimeText ? `
+                        <div style="color: rgba(255,255,255,0.8); font-size: 12px; margin-bottom: 4px;">
+                            <strong>Engagement Time:</strong> ${engagementTimeText}
+                        </div>
+                        ` : ''}
                         <div style="color: rgba(255,255,255,0.8); font-size: 12px; margin-bottom: 4px;">
                             <strong>Location:</strong> ${location.lat.toFixed(4)}, ${location.lng.toFixed(4)}
                         </div>
