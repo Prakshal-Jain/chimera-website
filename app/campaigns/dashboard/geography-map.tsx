@@ -31,6 +31,7 @@ export function GeographyMap({ logs, selectedLocation }: GeographyMapProps) {
     totalLocations: 0,
     totalUsers: 0,
     topCity: "",
+    distinctRegions: 0,
   })
 
   useEffect(() => {
@@ -78,6 +79,7 @@ export function GeographyMap({ logs, selectedLocation }: GeographyMapProps) {
       }> = []
 
       const uniqueUsers = new Set<string>()
+      const distinctRegions = new Set<string>()
 
       logs.forEach((log) => {
         if (log.latitude && log.longitude) {
@@ -93,6 +95,9 @@ export function GeographyMap({ logs, selectedLocation }: GeographyMapProps) {
           if (log.persistent_user_id) {
             uniqueUsers.add(log.persistent_user_id)
           }
+          // Group locations into regions by rounding to 1 decimal place (~11km precision)
+          const regionKey = `${log.latitude.toFixed(1)},${log.longitude.toFixed(1)}`
+          distinctRegions.add(regionKey)
         }
       })
 
@@ -282,6 +287,7 @@ export function GeographyMap({ logs, selectedLocation }: GeographyMapProps) {
         totalLocations: locationData.length,
         totalUsers: uniqueUsers.size,
         topCity: locationData.length > 0 ? "Multiple Locations" : "No data",
+        distinctRegions: distinctRegions.size,
       })
 
       mapInstanceRef.current = map
@@ -403,12 +409,8 @@ export function GeographyMap({ logs, selectedLocation }: GeographyMapProps) {
           </div>
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <p className="text-2xl font-serif font-light text-white">{locationStats.totalLocations}</p>
-              <p className="text-xs text-white/60">Total Sessions</p>
-            </div>
-            <div className="text-right">
-              <p className="text-2xl font-serif font-light text-white">{locationStats.totalUsers}</p>
-              <p className="text-xs text-white/60">Unique Users</p>
+              <p className="text-2xl font-serif font-light text-white">{locationStats.distinctRegions}</p>
+              <p className="text-xs text-white/60">Distinct Regions</p>
             </div>
           </div>
         </div>

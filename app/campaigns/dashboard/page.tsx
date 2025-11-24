@@ -4,19 +4,14 @@ import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2, ArrowLeft, Download, Copy, CheckCircle2, ExternalLink, Calendar, Building2, Car, Hash, Trash2, Eye, Users, AlertCircle, Smartphone, TrendingUp, FileText, BarChart3, PieChart, Activity, Clock } from 'lucide-react'
+import { Loader2, ArrowLeft, Download, Copy, CheckCircle2, ExternalLink, Calendar, Building2, Car, Hash, Eye, Users, AlertCircle, Smartphone, TrendingUp, FileText, BarChart3, PieChart, Activity, Clock, ChevronDown, ChevronUp } from 'lucide-react'
 import { API_URL } from "@/app/variables"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 import { AnalyticsSection } from "./analytics-section"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 
 
 interface CampaignDetails {
@@ -71,8 +66,8 @@ function CampaignDashboard() {
   const [loadingAnalytics, setLoadingAnalytics] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-  const [deleting, setDeleting] = useState(false)
+  const [detailsOpen, setDetailsOpen] = useState(false)
+  const [qrCodeOpen, setQrCodeOpen] = useState(false)
 
   useEffect(() => {
     if (campaignId) {
@@ -144,31 +139,6 @@ function CampaignDashboard() {
     } catch (err) {
       console.error("Error downloading QR code:", err)
       alert("Failed to download QR code")
-    }
-  }
-
-  const handleDeleteCampaign = async () => {
-    if (!campaignId) return
-
-    try {
-      setDeleting(true)
-      const response = await fetch(`${API_URL}/campaigns/${campaignId}`, {
-        method: "DELETE",
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.message || `Failed to delete campaign (${response.status})`)
-      }
-
-      // Redirect to campaigns list after successful deletion
-      router.push("/campaigns")
-    } catch (err: any) {
-      console.error("Error deleting campaign:", err)
-      alert(err.message || "Failed to delete campaign")
-    } finally {
-      setDeleting(false)
-      setShowDeleteDialog(false)
     }
   }
 
@@ -411,15 +381,6 @@ function CampaignDashboard() {
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <Button
-            onClick={() => router.push("/campaigns")}
-            variant="outline"
-            className="mb-6 bg-transparent border border-white/20 text-white hover:bg-white/5 hover:text-white rounded-lg"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Campaigns
-          </Button>
-
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div>
               <h1 className="text-4xl font-serif font-light text-white mb-3 tracking-tight">
@@ -429,14 +390,6 @@ function CampaignDashboard() {
                 {campaign.campaign_id}
               </code>
             </div>
-            <Button
-              onClick={() => setShowDeleteDialog(true)}
-              variant="outline"
-              className="bg-transparent border border-red-500/50 text-red-400 hover:bg-red-500/10 hover:border-red-500 hover:text-white rounded-lg"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete Campaign
-            </Button>
           </div>
         </div>
 
@@ -465,80 +418,110 @@ function CampaignDashboard() {
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           {/* Campaign Details Card */}
-          <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
-            <CardHeader>
-              <CardTitle className="text-2xl font-serif font-light text-white">Campaign Details</CardTitle>
-              <CardDescription className="text-white/60">Overview of campaign information</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <Building2 className="h-5 w-5 text-[#d4af37] mt-0.5 flex-shrink-0" />
-                  <div className="flex-1">
-                    <p className="text-sm text-white/60 font-light">Dealership</p>
-                    <p className="text-white text-lg font-light mt-1">{campaign.dealership}</p>
+          <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl h-auto">
+            <Collapsible open={detailsOpen} onOpenChange={setDetailsOpen}>
+              <CollapsibleTrigger asChild>
+                <CardHeader className={`cursor-pointer hover:bg-white/5 transition-colors ${detailsOpen ? 'rounded-t-2xl' : 'rounded-2xl'}`}>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-2xl font-serif font-light text-white">Campaign Details</CardTitle>
+                      <CardDescription className="text-white/60">Overview of campaign information</CardDescription>
+                    </div>
+                    {detailsOpen ? (
+                      <ChevronUp className="h-5 w-5 text-white/60" />
+                    ) : (
+                      <ChevronDown className="h-5 w-5 text-white/60" />
+                    )}
                   </div>
-                </div>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-3">
+                      <Building2 className="h-5 w-5 text-[#d4af37] mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <p className="text-sm text-white/60 font-light">Dealership</p>
+                        <p className="text-white text-lg font-light mt-1">{campaign.dealership}</p>
+                      </div>
+                    </div>
 
-                <div className="flex items-start gap-3">
-                  <Car className="h-5 w-5 text-[#d4af37] mt-0.5 flex-shrink-0" />
-                  <div className="flex-1">
-                    <p className="text-sm text-white/60 font-light">Vehicle</p>
-                    <p className="text-white text-lg font-light mt-1">
-                      {campaign.manufacturer} {campaign.car_model.replace("_base.usdz", "").replace(/_/g, " ")}
-                    </p>
-                  </div>
-                </div>
+                    <div className="flex items-start gap-3">
+                      <Car className="h-5 w-5 text-[#d4af37] mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <p className="text-sm text-white/60 font-light">Vehicle</p>
+                        <p className="text-white text-lg font-light mt-1">
+                          {campaign.manufacturer} {campaign.car_model.replace("_base.usdz", "").replace(/_/g, " ")}
+                        </p>
+                      </div>
+                    </div>
 
-                <div className="flex items-start gap-3">
-                  <Calendar className="h-5 w-5 text-[#d4af37] mt-0.5 flex-shrink-0" />
-                  <div className="flex-1">
-                    <p className="text-sm text-white/60 font-light">Created</p>
-                    <p className="text-white text-lg font-light mt-1">{formatDate(campaign.created_at)}</p>
-                  </div>
-                </div>
+                    <div className="flex items-start gap-3">
+                      <Calendar className="h-5 w-5 text-[#d4af37] mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <p className="text-sm text-white/60 font-light">Created</p>
+                        <p className="text-white text-lg font-light mt-1">{formatDate(campaign.created_at)}</p>
+                      </div>
+                    </div>
 
-                <div className="flex items-start gap-3">
-                  <Hash className="h-5 w-5 text-[#d4af37] mt-0.5 flex-shrink-0" />
-                  <div className="flex-1">
-                    <p className="text-sm text-white/60 font-light">Campaign ID</p>
-                    <p className="text-white text-lg font-mono font-light mt-1">{campaign.campaign_id}</p>
+                    <div className="flex items-start gap-3">
+                      <Hash className="h-5 w-5 text-[#d4af37] mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <p className="text-sm text-white/60 font-light">Campaign ID</p>
+                        <p className="text-white text-lg font-mono font-light mt-1">{campaign.campaign_id}</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </CardContent>
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
           </Card>
 
           {/* QR Code Card */}
-          <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
-            <CardHeader>
-              <CardTitle className="text-2xl font-serif font-light text-white">QR Code</CardTitle>
-              <CardDescription className="text-white/60">Share this QR code with customers</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-center p-6 bg-white rounded-xl">
-                <img src={campaign.qr_code_url || "/placeholder.svg"} alt="Campaign QR Code" className="w-64 h-64" />
-              </div>
-              <div className="flex flex-col gap-3">
-                <Button
-                  onClick={() => downloadQRCode(campaign.qr_code_url, campaign.campaign_id)}
-                  className="w-full bg-transparent border-2 border-[#d4af37] text-white hover:bg-[#d4af37]/15 hover:text-white rounded-lg"
-                >
-                  <Download className="mr-2 h-4 w-4" />
-                  Download QR Code
-                </Button>
-                <Button
-                  onClick={() => window.open(campaign.campaign_url, "_blank")}
-                  variant="outline"
-                  className="w-full bg-transparent border border-white/20 text-white hover:bg-white/5 hover:text-white rounded-lg"
-                >
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Open Campaign
-                </Button>
-              </div>
-            </CardContent>
+          <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl h-auto">
+            <Collapsible open={qrCodeOpen} onOpenChange={setQrCodeOpen}>
+              <CollapsibleTrigger asChild>
+                <CardHeader className={`cursor-pointer hover:bg-white/5 transition-colors ${qrCodeOpen ? 'rounded-t-2xl' : 'rounded-2xl'}`}>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-2xl font-serif font-light text-white">QR Code</CardTitle>
+                      <CardDescription className="text-white/60">Share this QR code with customers</CardDescription>
+                    </div>
+                    {qrCodeOpen ? (
+                      <ChevronUp className="h-5 w-5 text-white/60" />
+                    ) : (
+                      <ChevronDown className="h-5 w-5 text-white/60" />
+                    )}
+                  </div>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-center p-6 bg-white rounded-xl">
+                    <img src={campaign.qr_code_url || "/placeholder.svg"} alt="Campaign QR Code" className="w-64 h-64" />
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    <Button
+                      onClick={() => downloadQRCode(campaign.qr_code_url, campaign.campaign_id)}
+                      className="w-full bg-transparent border-2 border-[#d4af37] text-white hover:bg-[#d4af37]/15 hover:text-white rounded-lg"
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      Download QR Code
+                    </Button>
+                    <Button
+                      onClick={() => window.open(campaign.campaign_url, "_blank")}
+                      variant="outline"
+                      className="w-full bg-transparent border border-white/20 text-white hover:bg-white/5 hover:text-white rounded-lg"
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      Open Campaign
+                    </Button>
+                  </div>
+                </CardContent>
+              </CollapsibleContent>
+            </Collapsible>
           </Card>
         </div>
 
@@ -566,44 +549,6 @@ function CampaignDashboard() {
           )}
         </div>
       </div>
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="bg-[#1a1a1a] border border-red-500/30">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-white text-2xl">Delete Campaign</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/70 text-base">
-              Are you sure you want to permanently delete "{campaign.campaign_name}"? This action cannot be undone and
-              all campaign data will be lost.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              disabled={deleting}
-              className="bg-transparent border border-white/20 text-white hover:bg-white/5 hover:text-white"
-            >
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteCampaign}
-              disabled={deleting}
-              className="bg-red-500 text-white hover:bg-red-600 border-0"
-            >
-              {deleting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Deleting...
-                </>
-              ) : (
-                <>
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete Permanently
-                </>
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }
