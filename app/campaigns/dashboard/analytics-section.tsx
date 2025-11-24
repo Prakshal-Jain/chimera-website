@@ -615,20 +615,24 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
                   <span className="text-sm text-white/70">{analytics.summary.ar_compatible_devices}</span>
                 </div>
                 <div className="h-10 bg-white/10 rounded-lg overflow-hidden relative">
-                  <div
-                    className="h-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center"
-                    style={{
-                      width: `${
-                        analytics.summary.total_views > 0
-                          ? (analytics.summary.ar_compatible_devices / analytics.summary.total_views) * 100
-                          : 0
-                      }%`,
-                    }}
-                  >
-                    <span className="text-white text-sm font-medium">
-                      {metrics.deviceCompatibilityRate.toFixed(0)}%
-                    </span>
-                  </div>
+                  {(() => {
+                    const percentage = analytics.summary.total_views > 0
+                      ? (analytics.summary.ar_compatible_devices / analytics.summary.total_views) * 100
+                      : 0
+                    const width = Math.max(percentage, 0)
+                    return (
+                      <div
+                        className="h-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center transition-all duration-300"
+                        style={{ width: `${width}%`, minWidth: width > 0 ? '40px' : '0' }}
+                      >
+                        {width > 0 && (
+                          <span className="text-white text-sm font-medium">
+                            {metrics.deviceCompatibilityRate.toFixed(0)}%
+                          </span>
+                        )}
+                      </div>
+                    )
+                  })()}
                 </div>
               </div>
 
@@ -638,18 +642,24 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
                   <span className="text-sm text-white/70">{analytics.summary.successful_ar_views}</span>
                 </div>
                 <div className="h-10 bg-white/10 rounded-lg overflow-hidden relative">
-                  <div
-                    className="h-full bg-gradient-to-r from-[#d4af37] to-yellow-600 flex items-center justify-center"
-                    style={{
-                      width: `${
-                        analytics.summary.total_views > 0
-                          ? (analytics.summary.successful_ar_views / analytics.summary.total_views) * 100
-                          : 0
-                      }%`,
-                    }}
-                  >
-                    <span className="text-black text-sm font-medium">{metrics.conversionRate.toFixed(1)}%</span>
-                  </div>
+                  {(() => {
+                    const percentage = analytics.summary.total_views > 0
+                      ? (analytics.summary.successful_ar_views / analytics.summary.total_views) * 100
+                      : 0
+                    const width = Math.max(percentage, 0)
+                    return (
+                      <div
+                        className="h-full bg-gradient-to-r from-[#d4af37] to-yellow-600 flex items-center justify-center transition-all duration-300"
+                        style={{ width: `${width}%`, minWidth: width > 0 ? '40px' : '0' }}
+                      >
+                        {width > 0 && (
+                          <span className="text-black text-sm font-medium">
+                            {metrics.conversionRate.toFixed(1)}%
+                          </span>
+                        )}
+                      </div>
+                    )
+                  })()}
                 </div>
               </div>
 
@@ -659,23 +669,27 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
                   <span className="text-sm text-white/70">{analytics.summary.qr_code_shown}</span>
                 </div>
                 <div className="h-10 bg-white/10 rounded-lg overflow-hidden relative">
-                  <div
-                    className="h-full bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center"
-                    style={{
-                      width: `${
-                        analytics.summary.total_views > 0
-                          ? (analytics.summary.qr_code_shown / analytics.summary.total_views) * 100
-                          : 0
-                      }%`,
-                    }}
-                  >
-                    <span className="text-white text-sm font-medium">
-                      {analytics.summary.total_views > 0
-                        ? Math.round((analytics.summary.qr_code_shown / analytics.summary.total_views) * 100)
-                        : 0}
-                      %
-                    </span>
-                  </div>
+                  {(() => {
+                    const percentage = analytics.summary.total_views > 0
+                      ? (analytics.summary.qr_code_shown / analytics.summary.total_views) * 100
+                      : 0
+                    const width = Math.max(percentage, 0)
+                    const displayPercentage = analytics.summary.total_views > 0
+                      ? Math.round((analytics.summary.qr_code_shown / analytics.summary.total_views) * 100)
+                      : 0
+                    return (
+                      <div
+                        className="h-full bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center transition-all duration-300"
+                        style={{ width: `${width}%`, minWidth: width > 0 ? '40px' : '0' }}
+                      >
+                        {width > 0 && (
+                          <span className="text-white text-sm font-medium">
+                            {displayPercentage}%
+                          </span>
+                        )}
+                      </div>
+                    )
+                  })()}
                 </div>
               </div>
             </div>
