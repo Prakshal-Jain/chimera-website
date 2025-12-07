@@ -14,7 +14,10 @@ import { getDealershipLogo } from "../utils/dealerships"
 interface ARFile {
   filename: string
   size: number
-  url: string
+  url: string // Backend redirect URL (deprecated - use s3Url instead)
+  s3Url?: string // Direct S3 URL for frontend access (primary)
+  directS3Url?: string // Alias for s3Url (primary)
+  apiUrl?: string // API endpoint to get fresh presigned URL
   qrCodeUrl: string
   qrCodeFilename: string
   campaignCode?: string | null
@@ -32,7 +35,9 @@ interface CampaignData {
   campaign_name: string
   dealership: string
   car_model: string
-  model_url: string
+  model_url: string // Backend redirect URL (deprecated - use direct_s3_url instead)
+  direct_s3_url?: string // Direct S3 URL for frontend access (primary)
+  s3_url_api?: string // API endpoint to get fresh presigned URL
   qr_code_url: string
 }
 
@@ -439,7 +444,15 @@ function ARExperienceContent() {
       ? additionalQueryParams.current 
       : undefined
 
-    if (isIOS && campaign.model_url) {
+    // Use direct S3 URL from S3 bucket (required)
+    if (!campaign.direct_s3_url) {
+      console.error('Campaign missing direct_s3_url - cannot open AR view')
+      setError('AR model URL not available')
+      return
+    }
+    const arModelUrl = campaign.direct_s3_url
+    
+    if (isIOS && arModelUrl) {
       hasRedirectedRef.current = true
       const successMetadata: UserMetadata = {
         ...metadata,
@@ -484,8 +497,9 @@ function ARExperienceContent() {
       }
       
       // Create and click a hidden anchor tag to trigger AR without navigating away
+      // Use direct S3 URL for AR Quick Look
       const arAnchor = document.createElement('a')
-      arAnchor.href = campaign.model_url
+      arAnchor.href = arModelUrl
       arAnchor.rel = 'ar'
       arAnchor.style.display = 'none'
       document.body.appendChild(arAnchor)
@@ -627,7 +641,7 @@ function ARExperienceContent() {
                 <p>Redirecting to AR experience...</p>
                 <p style={{ fontSize: "0.875rem", marginTop: "1rem", color: "rgba(255, 255, 255, 0.6)" }}>
                   If you are not redirected,{" "}
-                  <a href={campaign.model_url} rel="ar">
+                  <a href={campaign.direct_s3_url || campaign.model_url} rel="ar">
                     click here
                   </a>
                 </p>
@@ -756,11 +770,18 @@ function ARExperienceContent() {
 
                     {isIOS && (
                       <div className={styles.iosContent}>
-                        {/* Use campaign URL if available, otherwise direct USDZ link */}
-                        <a href={file.url} rel={file.campaignCode ? undefined : "ar"} className={styles.arButton}>
-                          <Smartphone className={styles.buttonIcon} />
-                          View in AR
-                        </a>
+                        {/* Use S3 URL directly from S3 bucket */}
+                        {(file.s3Url || file.directS3Url) ? (
+                          <a href={file.s3Url || file.directS3Url} rel={file.campaignCode ? undefined : "ar"} className={styles.arButton}>
+                            <Smartphone className={styles.buttonIcon} />
+                            View in AR
+                          </a>
+                        ) : (
+                          <div className={styles.errorCard}>
+                            <AlertCircle className={styles.errorIcon} />
+                            <p>AR model URL not available</p>
+                          </div>
+                        )}
                       </div>
                     )}
 
