@@ -667,7 +667,7 @@ function ARExperienceContent() {
                     <a 
                       href={campaign.direct_s3_url} 
                       rel="ar" 
-                      className={styles.arButtonLarge}
+                      // className={styles.arButtonLarge}
                       // onClick={handleARButtonClick}
                     >
                       <Smartphone className={styles.buttonIconLarge} />
