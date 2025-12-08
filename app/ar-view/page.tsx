@@ -34,6 +34,7 @@ interface CampaignData {
   campaign_name: string
   dealership: string
   car_model: string
+  manufacturer?: string // Optional - may not be in backend response yet
   model_url: string // Backend redirect URL (deprecated - use direct_s3_url instead)
   direct_s3_url?: string // Direct S3 URL for frontend access (primary)
   s3_url_api?: string // API endpoint to get fresh presigned URL
@@ -62,7 +63,7 @@ interface UserMetadata {
   session_id: string
   time_on_page?: number
   success: boolean
-  action: "redirect_to_ar" | "show_qr_code" | "error"
+  action: "redirect_to_ar" | "show_qr_code" | "error" | "page_load"
   error_message?: string
   additional_metadata?: any
   metadata_code?: string
@@ -292,14 +293,14 @@ function ARExperienceContent() {
     }
   }, [metadataSteps, campaignCode])
 
-  // Handle campaign AR decision
+  // Log page load after metadata collection and campaign data is ready
   useEffect(() => {
-    if (!campaignCode || isCollectingMetadata || isLoading || !campaign || hasRedirectedRef.current || hasLoggedRef.current) {
+    if (!campaignCode || isCollectingMetadata || isLoading || !campaign || hasLoggedRef.current) {
       return
     }
 
-    handleARViewDecision()
-  }, [isCollectingMetadata, isLoading, campaign, isIOS, campaignCode])
+    logPageLoad()
+  }, [isCollectingMetadata, isLoading, campaign, campaignCode])
 
   // Page Visibility API - Track AR Quick Look engagement
   useEffect(() => {
@@ -432,8 +433,8 @@ function ARExperienceContent() {
     }
   }
 
-  const handleARViewDecision = async () => {
-    if (hasRedirectedRef.current || hasLoggedRef.current || !campaign) return
+  const logPageLoad = async () => {
+    if (hasLoggedRef.current || !campaign) return
 
     const timeOnPage = Date.now() - pageLoadTimeRef.current
 
@@ -442,85 +443,78 @@ function ARExperienceContent() {
       ? additionalQueryParams.current 
       : undefined
 
-    // Use direct S3 URL from S3 bucket (required)
-    if (!campaign.direct_s3_url) {
+    const pageLoadMetadata: UserMetadata = {
+      ...metadata,
+      is_ar_compatible: isIOS || false,
+      success: true,
+      action: "page_load",
+      time_on_page: timeOnPage,
+      session_id: sessionIdRef.current,
+      metadata_code: metadataCode || undefined,
+      additional_metadata: additionalMetadata,
+    }
+
+    await logCampaignAccess(pageLoadMetadata)
+  }
+
+  const handleARButtonClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!campaign || !campaign.direct_s3_url) {
+      e.preventDefault()
       console.error('Campaign missing direct_s3_url - cannot open AR view')
       setError('AR model URL not available')
       return
     }
-    const arModelUrl = campaign.direct_s3_url
-    
-    if (isIOS && arModelUrl) {
-      hasRedirectedRef.current = true
-      const successMetadata: UserMetadata = {
-        ...metadata,
-        is_ar_compatible: true,
-        success: true,
-        action: "redirect_to_ar",
-        time_on_page: timeOnPage,
-        session_id: sessionIdRef.current,
-        metadata_code: metadataCode || undefined,
-        additional_metadata: additionalMetadata,
-      }
-      await logCampaignAccess(successMetadata)
-      
-      // Store AR session in localStorage before opening AR Quick Look
-      const arSessionData = {
-        session_id: sessionIdRef.current,
-        persistent_user_id: persistentUserId,
-        campaign_code: campaignCode,
-        metadata_code: metadataCode,
-        start_time: Date.now(),
-        origin_session_id: originSessionId,
-      }
-      localStorage.setItem(`ar_session_${sessionIdRef.current}`, JSON.stringify(arSessionData))
-      
-      // Log AR engagement start
-      try {
-        await fetch(`${API_URL}/campaign/${campaignCode}/ar-engagement/start`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            session_id: sessionIdRef.current,
-            persistent_user_id: persistentUserId,
-            metadata_code: metadataCode,
-            origin_session_id: originSessionId,
-            origin_device: originDevice,
-            qr_scanned: qrScanned,
-          }),
-        })
-        arEngagementStartTimeRef.current = Date.now()
-      } catch (err) {
-        console.error("Error logging AR engagement start:", err)
-      }
-      
-      // Create and click a hidden anchor tag to trigger AR without navigating away
-      // Use direct S3 URL for AR Quick Look
-      const arAnchor = document.createElement('a')
-      arAnchor.href = arModelUrl
-      arAnchor.rel = 'ar'
-      arAnchor.style.display = 'none'
-      document.body.appendChild(arAnchor)
-      arAnchor.click()
-      document.body.removeChild(arAnchor)
-    } else {
-      const failureMetadata: UserMetadata = {
-        ...metadata,
-        is_ar_compatible: false,
-        success: false,
-        action: "show_qr_code",
-        time_on_page: timeOnPage,
-        session_id: sessionIdRef.current,
-        metadata_code: metadataCode || undefined,
-        additional_metadata: additionalMetadata,
-      }
-      await logCampaignAccess(failureMetadata)
+
+    // Prepare additional metadata from query parameters
+    const additionalMetadata = Object.keys(additionalQueryParams.current).length > 0 
+      ? additionalQueryParams.current 
+      : undefined
+
+    // Store AR session in localStorage before opening AR Quick Look
+    const arSessionData = {
+      session_id: sessionIdRef.current,
+      persistent_user_id: persistentUserId,
+      campaign_code: campaignCode,
+      metadata_code: metadataCode,
+      start_time: Date.now(),
+      origin_session_id: originSessionId,
     }
+    localStorage.setItem(`ar_session_${sessionIdRef.current}`, JSON.stringify(arSessionData))
+    
+    // Log AR engagement start
+    try {
+      await fetch(`${API_URL}/campaign/${campaignCode}/ar-engagement/start`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id: sessionIdRef.current,
+          persistent_user_id: persistentUserId,
+          metadata_code: metadataCode,
+          origin_session_id: originSessionId,
+          origin_device: originDevice,
+          qr_scanned: qrScanned,
+        }),
+      })
+      arEngagementStartTimeRef.current = Date.now()
+    } catch (err) {
+      console.error("Error logging AR engagement start:", err)
+    }
+
+    // The button's native behavior with rel="ar" will handle opening AR view
   }
 
   const logCampaignAccess = async (metadataToLog: UserMetadata) => {
-    if (hasLoggedRef.current) return
-    hasLoggedRef.current = true
+    if (!campaignCode) return
+    
+    // Only prevent duplicate logging for page_load action
+    // AR engagement start/end are tracked separately
+    if (metadataToLog.action === "page_load" && hasLoggedRef.current) {
+      return
+    }
+    
+    if (metadataToLog.action === "page_load") {
+      hasLoggedRef.current = true
+    }
 
     try {
       await fetch(`${API_URL}/campaign/${campaignCode}/log`, {
@@ -545,6 +539,43 @@ function ARExperienceContent() {
       .split("_")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ")
+  }
+
+  // Extract manufacturer and model from car_model
+  const getManufacturerAndModel = (carModel: string, manufacturer?: string) => {
+    // If manufacturer is provided, use it
+    if (manufacturer) {
+      const cleanModel = carModel
+        .replace(/_base\.(usdz|reality)$/, "")
+        .replace(manufacturer, "")
+        .trim()
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")
+      return { manufacturer, model: cleanModel || carModel }
+    }
+    
+    // Try to extract from car_model (common patterns: "Lamborghini_Revuelto" or "Revuelto")
+    const cleanModel = carModel.replace(/_base\.(usdz|reality)$/, "")
+    const parts = cleanModel.split("_")
+    
+    // Common manufacturers to check
+    const manufacturers = ["Lamborghini", "Ferrari", "Porsche", "McLaren", "Aston Martin", "Bentley", "Rolls Royce", "Mercedes", "BMW", "Audi"]
+    
+    // Check if first part is a manufacturer
+    const firstPart = parts[0].charAt(0).toUpperCase() + parts[0].slice(1)
+    if (manufacturers.includes(firstPart)) {
+      return {
+        manufacturer: firstPart,
+        model: parts.slice(1).map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")
+      }
+    }
+    
+    // Fallback: return as model only
+    return {
+      manufacturer: "Luxury Vehicle",
+      model: parts.map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")
+    }
   }
 
 
@@ -606,46 +637,128 @@ function ARExperienceContent() {
     )
   }
 
-  // Campaign mode: iOS redirect message
+  // Campaign mode: iOS AR button view
   if (campaignCode && campaign && isIOS) {
+    const { manufacturer, model } = getManufacturerAndModel(campaign.car_model, campaign.manufacturer)
+    
     return (
       <div className={styles.container}>
         <div className={styles.content}>
-          <Link href="/" className={styles.chimeraLogoLinkTop}>
+          {/* Small logo on top */}
+          <Link href="/" className={styles.chimeraLogoLinkSmall}>
             <Image 
               src="/chimera-logo.png" 
               alt="Chimera" 
-              width={180} 
-              height={60} 
-              className={styles.chimeraLogoTop}
+              width={120} 
+              height={40} 
+              className={styles.chimeraLogoSmall}
               priority
             />
           </Link>
-          <main>
-            <section className={styles.heroSection}>
-              <h1 className={styles.heroTitle}>{campaign.campaign_name}</h1>
-              <div className={styles.dealershipBadge}>
+          
+          <main className={styles.mainContent}>
+            <div className={styles.arExperienceLayout}>
+              {/* Desktop: Image on left, Content on right */}
+              {/* Mobile: Content first, Image below */}
+              <div className={styles.arContentSection}>
+                {/* AR Button - Centerpiece */}
+                <div className={styles.arButtonContainer}>
+                  {campaign.direct_s3_url ? (
+                    <a 
+                      href={campaign.direct_s3_url} 
+                      rel="ar" 
+                      className={styles.arButtonLarge}
+                      onClick={handleARButtonClick}
+                    >
+                      <Smartphone className={styles.buttonIconLarge} />
+                      Click to See the Car in your space
+                    </a>
+                  ) : (
+                    <div className={styles.errorCard}>
+                      <AlertCircle className={styles.errorIcon} />
+                      <p>AR model URL not available</p>
+                    </div>
+                  )}
+                  
+                  {/* Muted text below button */}
+                  <p className={styles.arInstructionText}>
+                    Go to an open space, like your Garage or Driveway.
+                  </p>
+                </div>
+                
+                {/* Image Section - Mobile: Below button, Desktop: On left (via CSS) */}
+                <div className={styles.arImageSection}>
+                  <Image 
+                    src="/ar-car-demo.png" 
+                    alt="AR Experience Preview" 
+                    width={500} 
+                    height={500} 
+                    className={styles.arPreviewImage} 
+                    priority 
+                  />
+                </div>
+                
+                {/* Dealership and Model Info */}
+                <div className={styles.campaignInfo}>
+                  <div className={styles.dealershipInfo}>
+                    <Image 
+                      src={getDealershipLogo(campaign.dealership)} 
+                      alt={`${campaign.dealership} logo`} 
+                      width={32} 
+                      height={32} 
+                      className={styles.dealershipLogoSmall}
+                    />
+                    <span className={styles.dealershipName}>{campaign.dealership}</span>
+                  </div>
+                  
+                  <div className={styles.carModelInfo}>
+                    <span className={styles.carModelLabel}>Model:</span>
+                    <span className={styles.carModelValue}>{manufacturer} {model}</span>
+                  </div>
+                  
+                  {/* Founder info - placeholder for now */}
+                  <div className={styles.founderInfo}>
+                    <p className={styles.founderText}>
+                      Questions? Contact PJ (founder) directly at{" "}
+                      <a href="tel:+17167300312" className={styles.founderPhone}>
+                        (716) 730-0312
+                      </a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Desktop: Image on left */}
+              <div className={styles.arImageSectionDesktop}>
                 <Image 
-                  src={getDealershipLogo(campaign.dealership)} 
-                  alt={`${campaign.dealership} logo`} 
-                  width={40} 
-                  height={40} 
-                  className={styles.dealershipLogo}
+                  src="/ar-car-demo.png" 
+                  alt="AR Experience Preview" 
+                  width={500} 
+                  height={500} 
+                  className={styles.arPreviewImage} 
+                  priority 
                 />
-                <p className={styles.heroSubtitle}>{campaign.dealership}</p>
               </div>
-              <div className={styles.loadingCard}>
-                <Loader2 className={styles.loadingSpinner} />
-                <p>Redirecting to AR experience...</p>
-                <p style={{ fontSize: "0.875rem", marginTop: "1rem", color: "rgba(255, 255, 255, 0.6)" }}>
-                  If you are not redirected,{" "}
-                  <a href={campaign.direct_s3_url || campaign.model_url} rel="ar">
-                    click here
-                  </a>
-                </p>
-              </div>
-            </section>
+            </div>
           </main>
+          
+          {/* Footer */}
+          <footer className={styles.footer}>
+            <div className={styles.footerContent}>
+              <Link href="/" className={styles.footerLogoLink}>
+                <Image 
+                  src="/chimera-logo.png" 
+                  alt="Chimera" 
+                  width={100} 
+                  height={33} 
+                  className={styles.footerLogo}
+                />
+              </Link>
+              <a href="#contact" className={styles.footerContact}>
+                Contact us
+              </a>
+            </div>
+          </footer>
         </div>
       </div>
     )
@@ -653,76 +766,136 @@ function ARExperienceContent() {
 
   // Campaign mode: Show QR code
   if (campaignCode && campaign) {
-    console.log(campaign.dealership);
+    const { manufacturer, model } = getManufacturerAndModel(campaign.car_model, campaign.manufacturer)
+    
     return (
       <div className={styles.container}>
         <div className={styles.content}>
-          <Link href="/" className={styles.chimeraLogoLinkTop}>
+          {/* Small logo on top */}
+          <Link href="/" className={styles.chimeraLogoLinkSmall}>
             <Image 
               src="/chimera-logo.png" 
               alt="Chimera" 
-              width={180} 
-              height={60} 
-              className={styles.chimeraLogoTop}
+              width={120} 
+              height={40} 
+              className={styles.chimeraLogoSmall}
               priority
             />
           </Link>
-          <main>
-            <section className={styles.heroSection}>
-              <h1 className={styles.heroTitle}>{campaign.campaign_name}</h1>
-              <div className={styles.dealershipBadge}>
-                <Image 
-                  src={getDealershipLogo(campaign.dealership)} 
-                  alt={`${campaign.dealership} logo`} 
-                  width={40} 
-                  height={40} 
-                  className={styles.dealershipLogo}
-                />
-                <p className={styles.heroSubtitle}>{campaign.dealership}</p>
-              </div>
-              
-              <div className={styles.modelsGrid}>
-                <div className={styles.elegantCard}>
-                  <div className={styles.cardContent}>
-                    <div className={styles.imageSection}>
-                      <Image 
-                        src="/ar-car-demo.png" 
-                        alt="AR Experience Preview" 
-                        width={300} 
-                        height={300} 
-                        className={styles.cardImage} 
-                        priority 
-                      />
-                    </div>
-                    <div className={styles.qrSection}>
-                    <h4 className={styles.modelName}>Scan this QR code with your iPhone, iPad, or Apple Vision Pro to view in AR</h4>
-                      <div className={styles.qrCodeContainer}>
-                        {isQRCodeGenerating || isCollectingMetadata ? (
-                          <div className={styles.qrLoading}>
-                            <Loader2 className={styles.loadingSpinner} style={{ width: '48px', height: '48px', color: '#d4af37' }} />
-                            <p style={{ fontSize: '0.875rem', color: 'rgba(255, 255, 255, 0.7)', marginTop: '1rem' }}>
-                              {isCollectingMetadata ? 'Preparing personalized QR code...' : 'Generating QR code...'}
-                            </p>
-                          </div>
-                        ) : dynamicQRCode ? (
-                          <Image src={dynamicQRCode} alt={`QR code for ${getCarName(campaign.car_model)}`} width={280} height={280} className={styles.qrCode} />
-                        ) : (
-                          <Image src={campaign.qr_code_url} alt={`QR code for ${getCarName(campaign.car_model)}`} width={280} height={280} className={styles.qrCode} />
-                        )}
+          
+          <main className={styles.mainContent}>
+            <div className={styles.arExperienceLayout}>
+              {/* Desktop: Image on left, Content on right */}
+              {/* Mobile: Content first, Image below */}
+              <div className={styles.arContentSection}>
+                {/* QR Code Section */}
+                <div className={styles.qrCodeSection}>
+                  <h4 className={styles.qrCodeTitle}>
+                    Scan this QR code with your iPhone, iPad, or Apple Vision Pro to view in AR
+                  </h4>
+                  <div className={styles.qrCodeContainer}>
+                    {isQRCodeGenerating || isCollectingMetadata ? (
+                      <div className={styles.qrLoading}>
+                        <Loader2 className={styles.loadingSpinner} style={{ width: '48px', height: '48px', color: '#d4af37' }} />
+                        <p style={{ fontSize: '0.875rem', color: 'rgba(255, 255, 255, 0.7)', marginTop: '1rem' }}>
+                          {isCollectingMetadata ? 'Preparing personalized QR code...' : 'Generating QR code...'}
+                        </p>
                       </div>
-                    </div>
+                    ) : dynamicQRCode ? (
+                      <Image src={dynamicQRCode} alt={`QR code for ${manufacturer} ${model}`} width={280} height={280} className={styles.qrCode} />
+                    ) : (
+                      <Image src={campaign.qr_code_url} alt={`QR code for ${manufacturer} ${model}`} width={280} height={280} className={styles.qrCode} />
+                    )}
+                  </div>
+                  
+                  {/* Muted text below QR code */}
+                  <p className={styles.arInstructionText}>
+                    Go to an open space, like your Garage or Driveway.
+                  </p>
+                </div>
+                
+                {/* iOS Device Warning - Right below QR code */}
+                <div className={styles.warningCard}>
+                  <Smartphone className={styles.warningIcon} />
+                  <div className={styles.warningContent}>
+                    <h3>iOS Device Required</h3>
+                    <p>This AR experience is currently only supported on iPhone, iPad, and Apple Vision Pro.</p>
+                  </div>
+                </div>
+                
+                {/* Image Section - Mobile: Below warning, Desktop: On left (via CSS) */}
+                <div className={styles.arImageSection}>
+                  <Image 
+                    src="/ar-car-demo.png" 
+                    alt="AR Experience Preview" 
+                    width={500} 
+                    height={500} 
+                    className={styles.arPreviewImage} 
+                    priority 
+                  />
+                </div>
+                
+                {/* Dealership and Model Info */}
+                <div className={styles.campaignInfo}>
+                  <div className={styles.dealershipInfo}>
+                    <Image 
+                      src={getDealershipLogo(campaign.dealership)} 
+                      alt={`${campaign.dealership} logo`} 
+                      width={32} 
+                      height={32} 
+                      className={styles.dealershipLogoSmall}
+                    />
+                    <span className={styles.dealershipName}>{campaign.dealership}</span>
+                  </div>
+                  
+                  <div className={styles.carModelInfo}>
+                    <span className={styles.carModelLabel}>Model:</span>
+                    <span className={styles.carModelValue}>{manufacturer} {model}</span>
+                  </div>
+                  
+                  {/* Founder info - placeholder for now */}
+                  <div className={styles.founderInfo}>
+                    <p className={styles.founderText}>
+                      Questions? Contact our founder directly at{" "}
+                      <a href="tel:+1234567890" className={styles.founderPhone}>
+                        (123) 456-7890
+                      </a>
+                    </p>
                   </div>
                 </div>
               </div>
-            </section>
-            <div className={styles.warningCard}>
-              <Smartphone className={styles.warningIcon} />
-              <div className={styles.warningContent}>
-                <h3>iOS Device Required</h3>
-                <p>This AR experience is currently only supported on iPhone, iPad, and Apple Vision Pro.</p>
+              
+              {/* Desktop: Image on left */}
+              <div className={styles.arImageSectionDesktop}>
+                <Image 
+                  src="/ar-car-demo.png" 
+                  alt="AR Experience Preview" 
+                  width={500} 
+                  height={500} 
+                  className={styles.arPreviewImage} 
+                  priority 
+                />
               </div>
             </div>
           </main>
+          
+          {/* Footer */}
+          <footer className={styles.footer}>
+            <div className={styles.footerContent}>
+              <Link href="/" className={styles.footerLogoLink}>
+                <Image 
+                  src="/chimera-logo.png" 
+                  alt="Chimera" 
+                  width={100} 
+                  height={33} 
+                  className={styles.footerLogo}
+                />
+              </Link>
+              <a href="#contact" className={styles.footerContact}>
+                Contact us
+              </a>
+            </div>
+          </footer>
         </div>
       </div>
     )
@@ -770,7 +943,7 @@ function ARExperienceContent() {
                       <div className={styles.iosContent}>
                         {/* Use S3 URL directly from S3 bucket */}
                         {(file.s3Url || file.directS3Url) ? (
-                          <a href={file.s3Url || file.directS3Url} rel={file.campaignCode ? undefined : "ar"} className={styles.arButton}>
+                          <a href={file.s3Url || file.directS3Url} rel="ar" className={styles.arButton}>
                             <Smartphone className={styles.buttonIcon} />
                             View in AR
                           </a>

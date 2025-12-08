@@ -860,4 +860,382 @@
       font-size: 1rem;
     }
   }
+
+  /* New Redesigned Layout Styles */
+  
+  /* Small logo on top */
+  .chimeraLogoLinkSmall {
+    display: flex;
+    justify-content: center;
+    margin: 1.5rem auto 2rem;
+    transition: filter 0.3s ease;
+  }
+
+  .chimeraLogoLinkSmall:hover {
+    filter: brightness(1.1);
+  }
+
+  .chimeraLogoSmall {
+    width: auto;
+    height: auto;
+    max-width: 120px;
+    filter: brightness(1);
+    display: block;
+  }
+
+  /* Main content layout */
+  .mainContent {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem 0;
+  }
+
+  /* AR Experience Layout - Responsive */
+  .arExperienceLayout {
+    display: flex;
+    gap: 4rem;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* Desktop: Image on left (separate from content) */
+  .arImageSectionDesktop {
+    flex: 0 0 auto;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (min-width: 769px) {
+    .arImageSectionDesktop {
+      display: flex;
+    }
+  }
+
+  /* AR Content Section */
+  .arContentSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  /* AR Button Container */
+  .arButtonContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  /* Large AR Button - Centerpiece */
+  .arButtonLarge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1.5rem 3rem;
+    background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
+    color: #0a0a0a;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.3);
+    letter-spacing: -0.01em;
+    text-align: center;
+    min-width: 300px;
+  }
+
+  .arButtonLarge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(212, 175, 55, 0.4);
+    background: linear-gradient(135deg, #e0c050 0%, #c9a428 100%);
+  }
+
+  .arButtonLarge:active {
+    transform: translateY(0);
+  }
+
+  .buttonIconLarge {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  /* AR Instruction Text - Muted */
+  .arInstructionText {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1rem;
+    font-weight: 300;
+    text-align: center;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* QR Code Section */
+  .qrCodeSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .qrCodeTitle {
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* Campaign Info Section */
+  .campaignInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Dealership Info */
+  .dealershipInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .dealershipLogoSmall {
+    width: 32px;
+    height: 32px;
+    border-radius: 0.5rem;
+    object-fit: contain;
+  }
+
+  .dealershipName {
+    font-size: 1.125rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  /* Car Model Info */
+  .carModelInfo {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .carModelLabel {
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .carModelValue {
+    font-size: 1rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  /* Founder Info */
+  .founderInfo {
+    margin-top: 0.5rem;
+  }
+
+  .founderText {
+    font-size: 0.9375rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .founderPhone {
+    color: #d4af37;
+    text-decoration: none;
+    font-weight: 400;
+    transition: color 0.3s ease;
+  }
+
+  .founderPhone:hover {
+    color: #e0c050;
+    text-decoration: underline;
+  }
+
+  /* AR Image Section - Responsive */
+  .arImageSection {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  /* Desktop: Hide image inside content, show on left via layout */
+  @media (min-width: 769px) {
+    .arContentSection > .arImageSection {
+      display: none;
+    }
+  }
+
+  .arPreviewImage {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    object-fit: contain;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 4rem;
+    padding: 2rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .footerContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .footerLogoLink {
+    transition: filter 0.3s ease;
+  }
+
+  .footerLogoLink:hover {
+    filter: brightness(1.1);
+  }
+
+  .footerLogo {
+    width: auto;
+    height: auto;
+    max-width: 100px;
+    filter: brightness(1);
+    display: block;
+  }
+
+  .footerContact {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    font-weight: 300;
+    transition: color 0.3s ease;
+  }
+
+  .footerContact:hover {
+    color: #d4af37;
+  }
+
+  /* Responsive Design for New Layout */
+  @media (max-width: 1024px) {
+    .arExperienceLayout {
+      gap: 3rem;
+    }
+
+    .arButtonLarge {
+      font-size: 1.25rem;
+      padding: 1.25rem 2.5rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .chimeraLogoLinkSmall {
+      margin: 1rem auto 1.5rem;
+    }
+
+    .chimeraLogoSmall {
+      max-width: 100px;
+    }
+
+    .mainContent {
+      padding: 1rem 0;
+    }
+
+    .arExperienceLayout {
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .arContentSection {
+      width: 100%;
+    }
+
+    /* Mobile: Image appears in DOM order (after button, before details) */
+    .arImageSection {
+      order: 0; /* Natural order in flex container */
+      margin: 1.5rem 0;
+    }
+
+    /* Hide desktop image on mobile */
+    .arImageSectionDesktop {
+      display: none;
+    }
+
+    .arPreviewImage {
+      max-width: 100%;
+    }
+
+    .arButtonLarge {
+      font-size: 1.125rem;
+      padding: 1.125rem 2rem;
+      min-width: auto;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .arInstructionText {
+      font-size: 0.9375rem;
+    }
+
+    .campaignInfo {
+      padding: 1.5rem 0;
+      gap: 1.25rem;
+    }
+
+    .footerContent {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .qrCodeTitle {
+      font-size: 1.125rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .arButtonLarge {
+      font-size: 1rem;
+      padding: 1rem 1.5rem;
+    }
+
+    .buttonIconLarge {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    .arInstructionText {
+      font-size: 0.875rem;
+    }
+
+    .dealershipName {
+      font-size: 1rem;
+    }
+
+    .carModelValue {
+      font-size: 0.9375rem;
+    }
+
+    .founderText {
+      font-size: 0.875rem;
+    }
+  }
   
