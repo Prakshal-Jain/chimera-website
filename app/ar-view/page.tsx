@@ -668,7 +668,7 @@ function ARExperienceContent() {
                       href={campaign.direct_s3_url} 
                       rel="ar" 
                       className={styles.arButtonLarge}
-                      onClick={handleARButtonClick}
+                      // onClick={handleARButtonClick}
                     >
                       <Smartphone className={styles.buttonIconLarge} />
                       Click to See the Car in your space
