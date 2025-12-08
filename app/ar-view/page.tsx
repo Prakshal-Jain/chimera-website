@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, Suspense } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { useSearchParams, useRouter } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { Smartphone, AlertCircle, Loader2, Check } from "lucide-react"
 import HeaderBackButtonTitle from "../components/HeaderBackButtonTitle"
 import styles from "./ar-view.module.css"
@@ -14,7 +14,6 @@ import { getDealershipLogo } from "../utils/dealerships"
 interface ARFile {
   filename: string
   size: number
-  url: string // Backend redirect URL (deprecated - use s3Url instead)
   s3Url?: string // Direct S3 URL for frontend access (primary)
   directS3Url?: string // Alias for s3Url (primary)
   apiUrl?: string // API endpoint to get fresh presigned URL
@@ -71,7 +70,6 @@ interface UserMetadata {
 
 function ARExperienceContent() {
   const searchParams = useSearchParams()
-  const router = useRouter()
   const campaignCode = searchParams.get("campaign_code")?.toUpperCase()
   const metadataCode = searchParams.get("metadata")?.toUpperCase()
 
