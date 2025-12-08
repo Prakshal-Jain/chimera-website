@@ -457,33 +457,31 @@ function ARExperienceContent() {
     await logCampaignAccess(pageLoadMetadata)
   }
 
-  const handleARButtonClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (!campaign || !campaign.direct_s3_url) {
-      e.preventDefault()
-      console.error('Campaign missing direct_s3_url - cannot open AR view')
-      setError('AR model URL not available')
+  const arButtonRef = useRef<HTMLAnchorElement>(null)
+
+  // Set up AR button tracking when component mounts/updates
+  useEffect(() => {
+    if (!arButtonRef.current || !campaign || !campaign.direct_s3_url || !campaignCode) {
       return
     }
 
-    // Prepare additional metadata from query parameters
-    const additionalMetadata = Object.keys(additionalQueryParams.current).length > 0 
-      ? additionalQueryParams.current 
-      : undefined
+    const link = arButtonRef.current
 
-    // Store AR session in localStorage before opening AR Quick Look
-    const arSessionData = {
-      session_id: sessionIdRef.current,
-      persistent_user_id: persistentUserId,
-      campaign_code: campaignCode,
-      metadata_code: metadataCode,
-      start_time: Date.now(),
-      origin_session_id: originSessionId,
-    }
-    localStorage.setItem(`ar_session_${sessionIdRef.current}`, JSON.stringify(arSessionData))
-    
-    // Log AR engagement start
-    try {
-      await fetch(`${API_URL}/campaign/${campaignCode}/ar-engagement/start`, {
+    // Use native addEventListener to avoid React synthetic events
+    const handleClick = () => {
+      // Store AR session in localStorage before opening AR Quick Look
+      const arSessionData = {
+        session_id: sessionIdRef.current,
+        persistent_user_id: persistentUserId,
+        campaign_code: campaignCode,
+        metadata_code: metadataCode,
+        start_time: Date.now(),
+        origin_session_id: originSessionId,
+      }
+      localStorage.setItem(`ar_session_${sessionIdRef.current}`, JSON.stringify(arSessionData))
+      
+      // Log AR engagement start (non-blocking - fire and forget)
+      fetch(`${API_URL}/campaign/${campaignCode}/ar-engagement/start`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -495,13 +493,20 @@ function ARExperienceContent() {
           qr_scanned: qrScanned,
         }),
       })
-      arEngagementStartTimeRef.current = Date.now()
-    } catch (err) {
-      console.error("Error logging AR engagement start:", err)
+        .then(() => {
+          arEngagementStartTimeRef.current = Date.now()
+        })
+        .catch((err) => {
+          console.error("Error logging AR engagement start:", err)
+        })
     }
 
-    // The button's native behavior with rel="ar" will handle opening AR view
-  }
+    link.addEventListener('click', handleClick, { passive: true })
+    
+    return () => {
+      link.removeEventListener('click', handleClick)
+    }
+  }, [campaign, campaignCode, persistentUserId, metadataCode, originSessionId, originDevice, qrScanned])
 
   const logCampaignAccess = async (metadataToLog: UserMetadata) => {
     if (!campaignCode) return
@@ -665,11 +670,18 @@ function ARExperienceContent() {
                 <div className={styles.arButtonContainer}>
                   {campaign.direct_s3_url ? (
                     <a 
+                      ref={arButtonRef}
                       href={campaign.direct_s3_url} 
-                      rel="ar" 
-                      // className={styles.arButtonLarge}
-                      // onClick={handleARButtonClick}
+                      rel="ar"
+                      className={styles.arButtonLarge}
                     >
+                      <img 
+                        src="/ar-car-demo.png" 
+                        alt="AR Experience Preview" 
+                        style={{ display: 'none' }}
+                        width="1"
+                        height="1"
+                      />
                       <Smartphone className={styles.buttonIconLarge} />
                       Click to See the Car in your space
                     </a>
