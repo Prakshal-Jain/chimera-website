@@ -510,59 +510,43 @@ function ARExperienceContent() {
     await logCampaignAccess(pageLoadMetadata)
   }
 
-  const arButtonRef = useRef<HTMLAnchorElement>(null)
+  const handleARButtonClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!campaign || !campaignCode) return
 
-  // Set up AR button tracking when component mounts/updates
-  useEffect(() => {
-    if (!arButtonRef.current || !campaign || !campaign.direct_s3_url || !campaignCode) {
-      return
+    // Capture start time immediately when button is clicked
+    const startTime = Date.now()
+    
+    // Set ref immediately (before API call)
+    arEngagementStartTimeRef.current = startTime
+    
+    // Store AR session in localStorage before opening AR Quick Look
+    const arSessionData = {
+      session_id: sessionIdRef.current,
+      persistent_user_id: persistentUserId,
+      campaign_code: campaignCode,
+      metadata_code: metadataCode,
+      start_time: startTime,
+      origin_session_id: originSessionId,
     }
-
-    const link = arButtonRef.current
-
-    // Use native addEventListener to avoid React synthetic events
-    const handleClick = () => {
-      // Capture start time immediately when button is clicked
-      const startTime = Date.now()
-      
-      // Set ref immediately (before API call)
-      arEngagementStartTimeRef.current = startTime
-      
-      // Store AR session in localStorage before opening AR Quick Look
-      const arSessionData = {
+    localStorage.setItem(`ar_session_${sessionIdRef.current}`, JSON.stringify(arSessionData))
+    
+    // Log AR engagement start (use keepalive to ensure request completes even if page navigates)
+    fetch(`${API_URL}/campaign/${campaignCode}/ar-engagement/start`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
         session_id: sessionIdRef.current,
         persistent_user_id: persistentUserId,
-        campaign_code: campaignCode,
         metadata_code: metadataCode,
-        start_time: startTime,
         origin_session_id: originSessionId,
-      }
-      localStorage.setItem(`ar_session_${sessionIdRef.current}`, JSON.stringify(arSessionData))
-      
-      // Log AR engagement start (non-blocking - fire and forget)
-      fetch(`${API_URL}/campaign/${campaignCode}/ar-engagement/start`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          session_id: sessionIdRef.current,
-          persistent_user_id: persistentUserId,
-          metadata_code: metadataCode,
-          origin_session_id: originSessionId,
-          origin_device: originDevice,
-          qr_scanned: qrScanned,
-        }),
-      })
-        .catch((err) => {
-          console.error("Error logging AR engagement start:", err)
-        })
-    }
-
-    link.addEventListener('click', handleClick, { passive: true })
-    
-    return () => {
-      link.removeEventListener('click', handleClick)
-    }
-  }, [campaign, campaignCode, persistentUserId, metadataCode, originSessionId, originDevice, qrScanned])
+        origin_device: originDevice,
+        qr_scanned: qrScanned,
+      }),
+      keepalive: true, // Important: keeps request alive even if page navigates/unloads
+    }).catch((err) => {
+      console.error("Error logging AR engagement start:", err)
+    })
+  }
 
   const logCampaignAccess = async (metadataToLog: UserMetadata) => {
     if (!campaignCode) return
@@ -726,10 +710,10 @@ function ARExperienceContent() {
                 <div className={styles.arButtonContainer}>
                   {campaign.direct_s3_url ? (
                     <a 
-                      ref={arButtonRef}
                       href={campaign.direct_s3_url} 
                       rel="ar"
                       className={styles.arButtonLarge}
+                      onClick={handleARButtonClick}
                     >
                       <img 
                         src="/ar-car-demo.png" 
