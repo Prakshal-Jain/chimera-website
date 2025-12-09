@@ -45,6 +45,8 @@ function CreateCampaignForm() {
     car_model: "",
     s3_file: "",
     generate_code: true,
+    cta_title: "",
+    cta_url: "",
   })
 
   const [loading, setLoading] = useState(false)
@@ -406,6 +408,40 @@ function CreateCampaignForm() {
                     <p className="text-sm text-white/50">4-12 alphanumeric characters only</p>
                   </div>
                 )}
+              </div>
+
+              {/* CTA Title */}
+              <div className="space-y-2">
+                <Label htmlFor="cta_title" className="text-white/90 font-light">
+                  CTA Title
+                </Label>
+                <Input
+                  id="cta_title"
+                  placeholder="e.g., View Inventory, Contact Us, Schedule Test Drive"
+                  value={formData.cta_title}
+                  onChange={(e) => handleInputChange("cta_title", e.target.value)}
+                  disabled={loading}
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[#d4af37] rounded-lg"
+                />
+              </div>
+
+              {/* CTA URL */}
+              <div className="space-y-2">
+                <Label htmlFor="cta_url" className="text-white/90 font-light">
+                  CTA URL
+                </Label>
+                <Input
+                  id="cta_url"
+                  type="url"
+                  placeholder="e.g., https://dealership.com/inventory"
+                  value={formData.cta_url}
+                  onChange={(e) => handleInputChange("cta_url", e.target.value)}
+                  disabled={loading}
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[#d4af37] rounded-lg"
+                />
+                <p className="text-sm text-white/50">
+                  This can link to inventory (VDP, VLP, etc.), dealership website, or contact page.
+                </p>
               </div>
 
               {/* Error Alert */}
