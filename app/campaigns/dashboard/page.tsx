@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2, ArrowLeft, Download, Copy, CheckCircle2, ExternalLink, Calendar, Building2, Car, Hash, Eye, Users, AlertCircle, Smartphone, TrendingUp, FileText, BarChart3, PieChart, Activity, Clock, ChevronDown, ChevronUp } from 'lucide-react'
+import { Loader2, ArrowLeft, Download, Copy, CheckCircle2, ExternalLink, Calendar, Building2, Car, Hash, Eye, Users, AlertCircle, Smartphone, TrendingUp, FileText, BarChart3, PieChart, Activity, Clock, ChevronDown, ChevronUp, Link as LinkIcon } from 'lucide-react'
 import { API_URL } from "@/app/variables"
 import { AnalyticsSection } from "./analytics-section"
 import {
@@ -26,6 +26,8 @@ interface CampaignDetails {
   qr_code_url: string
   created_at: string
   active: boolean
+  cta_title?: string
+  cta_url?: string
 }
 
 interface AnalyticsData {
@@ -478,6 +480,25 @@ function CampaignDashboard() {
                         <p className="text-white text-lg font-mono font-light mt-1">{campaign.campaign_id}</p>
                       </div>
                     </div>
+
+                    {campaign.cta_title && campaign.cta_url && (
+                      <div className="flex items-start gap-3 pt-2 border-t border-white/10">
+                        <LinkIcon className="h-5 w-5 text-[#d4af37] mt-0.5 flex-shrink-0" />
+                        <div className="flex-1">
+                          <p className="text-sm text-white/60 font-light">Call-to-Action</p>
+                          <a
+                            href={campaign.cta_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-white text-lg font-light mt-1 hover:text-[#d4af37] transition-colors flex items-center gap-2 group"
+                          >
+                            <span>{campaign.cta_title}</span>
+                            <ExternalLink className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </a>
+                          <p className="text-xs text-white/50 font-light mt-1 break-all">{campaign.cta_url}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </CollapsibleContent>
