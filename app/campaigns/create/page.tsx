@@ -34,6 +34,8 @@ function CreateCampaignForm() {
   const [dealerships, setDealerships] = useState<string[]>([])
   const [manufacturers, setManufacturers] = useState<string[]>([])
   const [carModels, setCarModels] = useState<string[]>([])
+  const [s3Files, setS3Files] = useState<Array<{ filename: string; size: number; lastModified: string }>>([])
+  const [loadingS3Files, setLoadingS3Files] = useState(false)
 
   const [formData, setFormData] = useState({
     campaign_name: "",
@@ -41,6 +43,7 @@ function CreateCampaignForm() {
     dealership: "",
     manufacturer: "",
     car_model: "",
+    s3_file: "",
     generate_code: true,
   })
 
@@ -52,6 +55,7 @@ function CreateCampaignForm() {
   // Fetch dealerships on mount and handle URL parameter
   useEffect(() => {
     fetchDealerships()
+    fetchS3Files()
   }, [searchParams])
 
   // Fetch manufacturers when dealership changes
@@ -120,6 +124,23 @@ function CreateCampaignForm() {
     } catch (err) {
       setError("Failed to load car models for selected manufacturer.")
       console.error("Error fetching car models:", err)
+    }
+  }
+
+  const fetchS3Files = async () => {
+    try {
+      setLoadingS3Files(true)
+      const response = await fetch(`${API_URL}/s3-models`)
+      if (!response.ok) throw new Error("Failed to fetch S3 files")
+      const data = await response.json()
+      if (data.success) {
+        setS3Files(data.files || [])
+      }
+    } catch (err) {
+      console.error("Error fetching S3 files:", err)
+      // Don't show error to user, just log it
+    } finally {
+      setLoadingS3Files(false)
     }
   }
 
@@ -317,6 +338,40 @@ function CreateCampaignForm() {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+
+              {/* S3 Model File Selection */}
+              <div className="space-y-2">
+                <Label htmlFor="s3_file" className="text-white/90 font-light">
+                  Model File (from S3)
+                </Label>
+                <Select
+                  value={formData.s3_file}
+                  onValueChange={(value) => handleInputChange("s3_file", value)}
+                  disabled={loading || loadingS3Files || s3Files.length === 0}
+                >
+                  <SelectTrigger className="bg-white/5 border-white/10 text-white focus:border-[#d4af37] rounded-lg disabled:opacity-50">
+                    <SelectValue
+                      placeholder={
+                        loadingS3Files
+                          ? "Loading S3 files..."
+                          : s3Files.length === 0
+                            ? "No files available"
+                            : "Select model file (optional)"
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
+                    {s3Files.map((file) => (
+                      <SelectItem key={file.filename} value={file.filename} className="focus:bg-white/10 focus:text-white">
+                        {file.filename}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-sm text-white/50">
+                  Select a 3D model file from S3. If selected, this will override the car model selection above.
+                </p>
               </div>
 
               {/* Campaign Code */}

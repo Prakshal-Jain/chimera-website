@@ -20,6 +20,7 @@ interface CampaignDetails {
   campaign_name: string
   dealership: string
   manufacturer: string
+  model?: string
   car_model: string
   campaign_url: string
   qr_code_url: string
@@ -453,7 +454,11 @@ function CampaignDashboard() {
                       <div className="flex-1">
                         <p className="text-sm text-white/60 font-light">Vehicle</p>
                         <p className="text-white text-lg font-light mt-1">
-                          {campaign.manufacturer} {campaign.car_model.replace("_base.usdz", "").replace(/_/g, " ")}
+                          {campaign.manufacturer && campaign.model 
+                            ? `${campaign.manufacturer} ${campaign.model}`
+                            : campaign.manufacturer 
+                              ? `${campaign.manufacturer} ${campaign.car_model.replace("_base.usdz", "").replace(/_/g, " ")}`
+                              : campaign.car_model.replace("_base.usdz", "").replace(/_/g, " ")}
                         </p>
                       </div>
                     </div>

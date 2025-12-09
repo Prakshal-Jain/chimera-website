@@ -34,7 +34,8 @@ interface CampaignData {
   campaign_name: string
   dealership: string
   car_model: string
-  manufacturer?: string // Optional - may not be in backend response yet
+  manufacturer?: string // Manufacturer from database
+  model?: string // Model from database
   model_url: string // Backend redirect URL (deprecated - use direct_s3_url instead)
   direct_s3_url?: string // Direct S3 URL for frontend access (primary)
   s3_url_api?: string // API endpoint to get fresh presigned URL
@@ -586,12 +587,25 @@ function ARExperienceContent() {
       .join(" ")
   }
 
-  // Extract manufacturer and model from car_model
-  const getManufacturerAndModel = (carModel: string, manufacturer?: string) => {
+  // Extract manufacturer and model from car_model or use database values
+  const getManufacturerAndModel = (campaign: CampaignData) => {
+    // If database has manufacturer and model, use them directly
+    if (campaign.manufacturer && campaign.model) {
+      return {
+        manufacturer: campaign.manufacturer,
+        model: campaign.model
+      }
+    }
+    
+    // Fallback: try to extract from car_model filename
+    const carModel = campaign.car_model
+    const manufacturer = campaign.manufacturer
+    
     // If manufacturer is provided, use it
     if (manufacturer) {
       const cleanModel = carModel
         .replace(/_base\.(usdz|reality)$/, "")
+        .replace(manufacturer.toLowerCase(), "")
         .replace(manufacturer, "")
         .trim()
         .split("_")
@@ -684,7 +698,7 @@ function ARExperienceContent() {
 
   // Campaign mode: iOS AR button view
   if (campaignCode && campaign && isIOS) {
-    const { manufacturer, model } = getManufacturerAndModel(campaign.car_model, campaign.manufacturer)
+    const { manufacturer, model } = getManufacturerAndModel(campaign)
     
     return (
       <div className={styles.container}>
@@ -818,7 +832,7 @@ function ARExperienceContent() {
 
   // Campaign mode: Show QR code
   if (campaignCode && campaign) {
-    const { manufacturer, model } = getManufacturerAndModel(campaign.car_model, campaign.manufacturer)
+    const { manufacturer, model } = getManufacturerAndModel(campaign)
     
     return (
       <div className={styles.container}>
@@ -908,9 +922,9 @@ function ARExperienceContent() {
                   {/* Founder info - placeholder for now */}
                   <div className={styles.founderInfo}>
                     <p className={styles.founderText}>
-                      Questions? Contact our founder directly at{" "}
-                      <a href="tel:+1234567890" className={styles.founderPhone}>
-                        (123) 456-7890
+                      Questions? Contact PJ (our founder) directly at{" "}
+                      <a href="tel:+7167300312" className={styles.founderPhone}>
+                        (716) 730-0312
                       </a>
                     </p>
                   </div>
