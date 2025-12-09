@@ -110,6 +110,7 @@ function ARExperienceContent() {
   const hasLoggedRef = useRef(false)
   const hasRedirectedRef = useRef(false)
   const arEngagementStartTimeRef = useRef<number | null>(null)
+  const arEngagementEndLoggedRef = useRef(false)
   
   // Extract cross-device tracking parameters
   const originSessionId = searchParams.get("origin_session") || undefined
@@ -302,46 +303,98 @@ function ARExperienceContent() {
     logPageLoad()
   }, [isCollectingMetadata, isLoading, campaign, campaignCode])
 
+  // Track previous visibility state to detect transitions
+  const wasHiddenRef = useRef<boolean>(false)
+
   // Page Visibility API - Track AR Quick Look engagement
   useEffect(() => {
     if (!campaignCode || !persistentUserId) return
 
+    // Initialize wasHiddenRef with current state
+    wasHiddenRef.current = document.hidden
+
     const handleVisibilityChange = async () => {
-      if (!document.hidden && arEngagementStartTimeRef.current) {
+      // Detect transition from hidden to visible (user returned from AR)
+      const becameVisible = wasHiddenRef.current && !document.hidden
+      wasHiddenRef.current = document.hidden
+
+      if (becameVisible) {
         // User returned from AR Quick Look
         const sessionKey = `ar_session_${sessionIdRef.current}`
         const sessionData = localStorage.getItem(sessionKey)
         
+        // Use localStorage start_time or fallback to ref
+        let startTime: number | null = null
         if (sessionData) {
           try {
             const data = JSON.parse(sessionData)
-            const duration = Math.floor((Date.now() - data.start_time) / 1000)
+            startTime = data.start_time
+          } catch (e) {
+            console.error("Error parsing session data:", e)
+          }
+        }
+        
+        // Fallback to ref if localStorage doesn't have it
+        if (!startTime && arEngagementStartTimeRef.current) {
+          startTime = arEngagementStartTimeRef.current
+        }
+
+        if (startTime && !arEngagementEndLoggedRef.current) {
+          try {
+            const duration = Math.floor((Date.now() - startTime) / 1000)
             
-            // Send AR engagement end
-            await fetch(`${API_URL}/campaign/${campaignCode}/ar-engagement/end`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                session_id: sessionIdRef.current,
-                persistent_user_id: persistentUserId,
-                duration_seconds: duration,
-              }),
-            })
-            
-            // Clear localStorage
-            localStorage.removeItem(sessionKey)
-            arEngagementStartTimeRef.current = null
-            
-            console.log(`✓ AR engagement completed: ${duration}s`)
+            // Only log if duration is reasonable (at least 1 second, max 1 hour)
+            if (duration >= 1 && duration <= 3600) {
+              // Prevent duplicate logging
+              arEngagementEndLoggedRef.current = true
+              
+              // Send AR engagement end
+              await fetch(`${API_URL}/campaign/${campaignCode}/ar-engagement/end`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  session_id: sessionIdRef.current,
+                  persistent_user_id: persistentUserId,
+                  duration_seconds: duration,
+                }),
+              })
+              
+              console.log(`✓ AR engagement completed: ${duration}s`)
+              
+              // Clear localStorage and ref
+              if (sessionData) {
+                localStorage.removeItem(sessionKey)
+              }
+              arEngagementStartTimeRef.current = null
+            } else {
+              console.warn(`AR engagement duration out of range: ${duration}s`)
+            }
           } catch (err) {
             console.error("Error logging AR engagement end:", err)
+            // Reset flag on error so it can be retried
+            arEngagementEndLoggedRef.current = false
           }
         }
       }
     }
 
+    // Also handle page focus as a backup (for iOS Safari)
+    const handleFocus = async () => {
+      // Small delay to ensure visibility state is updated
+      setTimeout(() => {
+        if (!document.hidden) {
+          handleVisibilityChange()
+        }
+      }, 100)
+    }
+
     document.addEventListener("visibilitychange", handleVisibilityChange)
-    return () => document.removeEventListener("visibilitychange", handleVisibilityChange)
+    window.addEventListener("focus", handleFocus)
+    
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+      window.removeEventListener("focus", handleFocus)
+    }
   }, [campaignCode, persistentUserId])
 
   // Generate dynamic QR code with all metadata for campaign mode
@@ -469,13 +522,19 @@ function ARExperienceContent() {
 
     // Use native addEventListener to avoid React synthetic events
     const handleClick = () => {
+      // Capture start time immediately when button is clicked
+      const startTime = Date.now()
+      
+      // Set ref immediately (before API call)
+      arEngagementStartTimeRef.current = startTime
+      
       // Store AR session in localStorage before opening AR Quick Look
       const arSessionData = {
         session_id: sessionIdRef.current,
         persistent_user_id: persistentUserId,
         campaign_code: campaignCode,
         metadata_code: metadataCode,
-        start_time: Date.now(),
+        start_time: startTime,
         origin_session_id: originSessionId,
       }
       localStorage.setItem(`ar_session_${sessionIdRef.current}`, JSON.stringify(arSessionData))
@@ -493,9 +552,6 @@ function ARExperienceContent() {
           qr_scanned: qrScanned,
         }),
       })
-        .then(() => {
-          arEngagementStartTimeRef.current = Date.now()
-        })
         .catch((err) => {
           console.error("Error logging AR engagement start:", err)
         })
@@ -1018,3 +1074,4 @@ export default function ARExperiencePage() {
     </Suspense>
   )
 }
+
