@@ -8,32 +8,16 @@ import {
   Users,
   AlertCircle,
   Smartphone,
-  TrendingUp,
-  Flame,
   Clock,
   CheckCircle2,
-  Target,
   BarChart3,
   Activity,
-  ArrowUp,
-  ArrowDown,
   FileText,
 } from "lucide-react"
 import { useState, useMemo } from "react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts"
 import { GeographyMap } from "./geography-map"
 import { HighIntentBuyers } from "./high-intent-buyers"
-
-interface CustomerWithIntent {
-  metadata_type: string
-  metadata_value: string
-  total_views: number
-  successful_ar_views: number
-  last_viewed: string
-  buying_intent_score: number
-  engagement_time?: number
-  unique_sessions: number
-}
 
 interface AnalyticsData {
   summary: {
@@ -69,23 +53,7 @@ interface AnalyticsSectionProps {
   onDownloadCSV: () => void
 }
 
-interface EnhancedCustomer {
-  metadata_type: string
-  metadata_value: string
-  total_views: number
-  successful_ar_views: number
-  last_viewed: string
-  engagement_score: number
-  buying_intent: "high" | "medium" | "low"
-  unique_sessions: number
-  ar_success_rate: number
-  avg_ar_engagement_time?: number
-  metadata?: Record<string, any>
-}
-
 export function AnalyticsSection({ analytics, loading, onDownloadCSV }: AnalyticsSectionProps) {
-  const [sortBy, setSortBy] = useState<"engagement" | "views" | "ar_success">("engagement")
-  const [sortDirection, setSortDirection] = useState<"desc" | "asc">("desc")
   const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null)
 
   const engagementTimelineData = useMemo(() => {
@@ -144,92 +112,8 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
       })
   }, [analytics.logs])
 
-  const enhancedCustomers = useMemo(() => {
-    return analytics.customer_breakdown.map((customer) => {
-      // Get all logs for this customer
-      const customerLogs = analytics.logs.filter(
-        (log: any) => log.customer_metadata?.metadata_value === customer.metadata_value,
-      )
-
-      // Calculate unique sessions (views separated by 1+ hours)
-      const timestamps = customerLogs.map((log: any) => new Date(log.timestamp).getTime()).sort((a, b) => a - b)
-
-      let uniqueSessions = timestamps.length > 0 ? 1 : 0
-      for (let i = 1; i < timestamps.length; i++) {
-        if (timestamps[i] - timestamps[i - 1] > 3600000) {
-          uniqueSessions++
-        }
-      }
-
-      // Calculate AR success rate
-      const arSuccessRate = customer.total_views > 0 ? (customer.successful_ar_views / customer.total_views) * 100 : 0
-
-      // Calculate AR engagement time
-      const logsWithEngagement = customerLogs.filter(
-        (log: any) => log.ar_engagement_duration_seconds && log.ar_engagement_duration_seconds > 0,
-      )
-      const totalEngagementTime = logsWithEngagement.reduce(
-        (sum: number, log: any) => sum + (log.ar_engagement_duration_seconds || 0),
-        0,
-      )
-      const avgEngagementTime = logsWithEngagement.length > 0 ? totalEngagementTime / logsWithEngagement.length : 0
-
-      // Extract additional metadata from logs
-      const metadata: Record<string, any> = {}
-      customerLogs.forEach((log: any) => {
-        if (log.additional_metadata) {
-          Object.assign(metadata, log.additional_metadata)
-        }
-      })
-
-      // Calculate engagement score (0-100)
-      // - Repeat views (40 pts): up to 10 views = 4 pts each
-      // - AR success rate (30 pts): percentage based
-      // - Unique sessions (30 pts): up to 5 sessions = 6 pts each
-      const viewScore = Math.min((customer.total_views / 10) * 40, 40)
-      const arScore = (arSuccessRate / 100) * 30
-      const sessionScore = Math.min((uniqueSessions / 5) * 30, 30)
-      const engagementScore = Math.round(viewScore + arScore + sessionScore)
-
-      // Determine buying intent
-      let buying_intent: "high" | "medium" | "low"
-      if (engagementScore >= 70) buying_intent = "high"
-      else if (engagementScore >= 40) buying_intent = "medium"
-      else buying_intent = "low"
-
-      return {
-        ...customer,
-        engagement_score: engagementScore,
-        buying_intent,
-        unique_sessions: uniqueSessions,
-        ar_success_rate: Math.round(arSuccessRate),
-        avg_ar_engagement_time: avgEngagementTime,
-        metadata,
-      } as EnhancedCustomer
-    })
-  }, [analytics])
-
-  const sortedCustomers = useMemo(() => {
-    const sorted = [...enhancedCustomers]
-    sorted.sort((a, b) => {
-      let compareValue = 0
-      if (sortBy === "engagement") {
-        compareValue = a.engagement_score - b.engagement_score
-      } else if (sortBy === "views") {
-        compareValue = a.total_views - b.total_views
-      } else if (sortBy === "ar_success") {
-        compareValue = a.ar_success_rate - b.ar_success_rate
-      }
-      return sortDirection === "desc" ? -compareValue : compareValue
-    })
-    return sorted
-  }, [enhancedCustomers, sortBy, sortDirection])
 
   const metrics = useMemo(() => {
-    const highIntentCount = enhancedCustomers.filter((c) => c.buying_intent === "high").length
-    const mediumIntentCount = enhancedCustomers.filter((c) => c.buying_intent === "medium").length
-    const lowIntentCount = enhancedCustomers.filter((c) => c.buying_intent === "low").length
-
     const conversionRate =
       analytics.summary.total_views > 0
         ? (analytics.summary.successful_ar_views / analytics.summary.total_views) * 100
@@ -277,9 +161,6 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
     const qrConversionRate = qrShownCount > 0 ? (qrScannedCount / qrShownCount) * 100 : 0
 
     return {
-      highIntentCount,
-      mediumIntentCount,
-      lowIntentCount,
       conversionRate,
       avgViewsPerCustomer,
       deviceCompatibilityRate,
@@ -291,47 +172,22 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
       qrShownCount,
       qrScannedCount,
     }
-  }, [enhancedCustomers, analytics])
-
-  const toggleSort = (column: "engagement" | "views" | "ar_success") => {
-    if (sortBy === column) {
-      setSortDirection(sortDirection === "desc" ? "asc" : "desc")
-    } else {
-      setSortBy(column)
-      setSortDirection("desc")
-    }
-  }
-
-  const getBuyingIntentBadge = (intent: "high" | "medium" | "low") => {
-    if (intent === "high") {
-      return {
-        label: "High Intent",
-        color: "bg-red-500/20 text-red-300 border-red-500/30",
-        icon: <Flame className="h-3.5 w-3.5" />,
-      }
-    } else if (intent === "medium") {
-      return {
-        label: "Medium Intent",
-        color: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
-        icon: <TrendingUp className="h-3.5 w-3.5" />,
-      }
-    } else {
-      return {
-        label: "Low Intent",
-        color: "bg-blue-500/20 text-blue-300 border-blue-500/30",
-        icon: <Target className="h-3.5 w-3.5" />,
-      }
-    }
-  }
+  }, [analytics])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString("en-US", {
+    const dateStr = date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
+      year: "numeric"
+    })
+    const timeStr = date.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
+      second: "2-digit",
+      hour12: false
     })
+    return `${dateStr} ${timeStr}`
   }
 
   const handleLocationClick = (lat: number, lng: number) => {
@@ -749,160 +605,6 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
         </Card>
       </div>
 
-      {/* Engagement Table */}
-      {sortedCustomers.length > 0 && (
-        <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
-          <CardHeader>
-            <CardTitle className="text-xl font-serif font-light text-white flex items-center gap-2">
-              <Users className="h-5 w-5 text-[#d4af37]" />
-              Customer Engagement Analysis
-            </CardTitle>
-            <CardDescription className="text-white/60">
-              Ranked by engagement score • {sortedCustomers.length} customers tracked
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="text-left py-3 px-2 text-sm font-medium text-white/60">#</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-white/60">Customer</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-white/60">Intent</th>
-                    <th
-                      className="text-left py-3 px-4 text-sm font-medium text-white/60 cursor-pointer hover:text-white"
-                      onClick={() => toggleSort("engagement")}
-                    >
-                      <div className="flex items-center gap-1">
-                        Engagement
-                        {sortBy === "engagement" &&
-                          (sortDirection === "desc" ? (
-                            <ArrowDown className="h-3.5 w-3.5 text-[#d4af37]" />
-                          ) : (
-                            <ArrowUp className="h-3.5 w-3.5 text-[#d4af37]" />
-                          ))}
-                      </div>
-                    </th>
-                    <th
-                      className="text-left py-3 px-4 text-sm font-medium text-white/60 cursor-pointer hover:text-white"
-                      onClick={() => toggleSort("views")}
-                    >
-                      <div className="flex items-center gap-1">
-                        Views
-                        {sortBy === "views" &&
-                          (sortDirection === "desc" ? (
-                            <ArrowDown className="h-3.5 w-3.5 text-[#d4af37]" />
-                          ) : (
-                            <ArrowUp className="h-3.5 w-3.5 text-[#d4af37]" />
-                          ))}
-                      </div>
-                    </th>
-                    <th
-                      className="text-left py-3 px-4 text-sm font-medium text-white/60 cursor-pointer hover:text-white"
-                      onClick={() => toggleSort("ar_success")}
-                    >
-                      <div className="flex items-center gap-1">
-                        AR Success
-                        {sortBy === "ar_success" &&
-                          (sortDirection === "desc" ? (
-                            <ArrowDown className="h-3.5 w-3.5 text-[#d4af37]" />
-                          ) : (
-                            <ArrowUp className="h-3.5 w-3.5 text-[#d4af37]" />
-                          ))}
-                      </div>
-                    </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-white/60">Sessions</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-white/60">Last Seen</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedCustomers.map((customer, index) => {
-                    const badge = getBuyingIntentBadge(customer.buying_intent)
-                    const isTopRanked = index < 3 && sortBy === "engagement" && sortDirection === "desc"
-
-                    return (
-                      <tr
-                        key={index}
-                        className={`border-b border-white/5 hover:bg-white/5 transition-colors ${
-                          isTopRanked ? "bg-[#d4af37]/5" : ""
-                        }`}
-                      >
-                        <td className="py-4 px-2">
-                          <span
-                            className={`text-lg font-serif font-light ${
-                              index === 0 && isTopRanked
-                                ? "text-[#d4af37]"
-                                : index === 1 && isTopRanked
-                                  ? "text-gray-400"
-                                  : index === 2 && isTopRanked
-                                    ? "text-amber-700"
-                                    : "text-white/60"
-                            }`}
-                          >
-                            {index + 1}
-                          </span>
-                        </td>
-                        <td className="py-4 px-4">
-                          <div>
-                            <p className="text-white font-medium truncate max-w-[200px]">{customer.metadata_value}</p>
-                            <p className="text-xs text-white/50">{customer.metadata_type}</p>
-                          </div>
-                        </td>
-                        <td className="py-4 px-4">
-                          <span
-                            className={`text-xs px-2.5 py-1 rounded-full border flex items-center gap-1.5 w-fit ${badge.color}`}
-                          >
-                            {badge.icon}
-                            {badge.label}
-                          </span>
-                        </td>
-                        <td className="py-4 px-4">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xl font-serif font-light text-[#d4af37]">
-                              {customer.engagement_score}
-                            </span>
-                            <div className="flex-1 min-w-[60px]">
-                              <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                                <div
-                                  className="h-full bg-gradient-to-r from-[#d4af37] to-yellow-600 rounded-full"
-                                  style={{ width: `${customer.engagement_score}%` }}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-4 px-4">
-                          <span className="text-white font-medium">{customer.total_views}</span>
-                        </td>
-                        <td className="py-4 px-4">
-                          <div className="flex items-center gap-2">
-                            <span className="text-white font-medium">{customer.ar_success_rate}%</span>
-                            <span className="text-xs text-white/50">({customer.successful_ar_views})</span>
-                          </div>
-                        </td>
-                        <td className="py-4 px-4">
-                          <span className="text-white">{customer.unique_sessions}</span>
-                        </td>
-                        <td className="py-4 px-4">
-                          <span className="text-sm text-white/60">
-                            {new Date(customer.last_viewed).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </span>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Additional Metadata Analysis */}
       {analytics.additional_metadata_analysis.length > 0 && (
         <Card className="bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl">
@@ -1014,7 +716,7 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
                         </p>
                         <span className="text-xs text-white/60 flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          {log.timestamp ? new Date(log.timestamp).toLocaleString() : "N/A"}
+                          {log.timestamp ? formatDate(log.timestamp) : "N/A"}
                         </span>
                       </div>
                       <div className="flex flex-wrap gap-2 mt-2">

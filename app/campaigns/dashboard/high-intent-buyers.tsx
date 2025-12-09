@@ -344,16 +344,18 @@ export function HighIntentBuyers({ logs, onLocationClick }: HighIntentBuyersProp
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
-    const now = Date.now()
-    const diff = now - date.getTime()
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-    const hours = Math.floor(diff / (1000 * 60 * 60))
-    const minutes = Math.floor(diff / (1000 * 60))
-
-    if (minutes < 60) return `${minutes}m ago`
-    if (hours < 24) return `${hours}h ago`
-    if (days < 7) return `${days}d ago`
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+    const dateStr = date.toLocaleDateString("en-US", { 
+      month: "short", 
+      day: "numeric",
+      year: "numeric"
+    })
+    const timeStr = date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false
+    })
+    return `${dateStr} ${timeStr}`
   }
 
   const SortIcon = ({ column }: { column: keyof BuyerData }) => {
@@ -424,7 +426,7 @@ export function HighIntentBuyers({ logs, onLocationClick }: HighIntentBuyersProp
                   className="text-left py-3 px-4 text-sm font-medium text-white/80 cursor-pointer hover:text-white transition-colors"
                   onClick={() => toggleSort("engagementTimestamp")}
                 >
-                  Engagement Timestamp <SortIcon column="engagementTimestamp" />
+                  Link opened timestamp <SortIcon column="engagementTimestamp" />
                 </th>
                 <th className="text-left py-3 px-4 text-sm font-medium text-white/80">
                   User Metadata
