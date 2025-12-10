@@ -41,6 +41,14 @@ interface AnalyticsData {
     views_with_customer_metadata: number
     unique_customers: number
     views_with_additional_metadata: number
+    cta_clicks: number
+    cta_click_timestamps: Array<{
+      timestamp: string
+      cta_url?: string
+      cta_title?: string
+      session_id: string
+      persistent_user_id?: string
+    }>
   }
   customer_breakdown: Array<{
     metadata_type: string
@@ -172,7 +180,9 @@ function CampaignDashboard() {
           non_ar_compatible_devices: 0,
           views_with_customer_metadata: 0,
           unique_customers: 0,
-          views_with_additional_metadata: 0
+          views_with_additional_metadata: 0,
+          cta_clicks: 0,
+          cta_click_timestamps: []
         },
         customer_breakdown: data.customer_breakdown || [],
         additional_metadata_analysis: data.additional_metadata_analysis || [],

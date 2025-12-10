@@ -13,6 +13,8 @@ import {
   BarChart3,
   Activity,
   FileText,
+  MousePointerClick,
+  ExternalLink,
 } from "lucide-react"
 import { useState, useMemo } from "react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts"
@@ -30,6 +32,14 @@ interface AnalyticsData {
     views_with_customer_metadata: number
     unique_customers: number
     views_with_additional_metadata: number
+    cta_clicks: number
+    cta_click_timestamps: Array<{
+      timestamp: string
+      cta_url?: string
+      cta_title?: string
+      session_id: string
+      persistent_user_id?: string
+    }>
   }
   customer_breakdown: Array<{
     metadata_type: string
@@ -295,6 +305,108 @@ export function AnalyticsSection({ analytics, loading, onDownloadCSV }: Analytic
 
       {/* High-Intent Buyers Leaderboard */}
       <HighIntentBuyers logs={analytics.logs} onLocationClick={handleLocationClick} />
+
+      {/* CTA Clicks Section */}
+      <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl overflow-hidden">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <MousePointerClick className="h-6 w-6 text-[#d4af37]" />
+            <div>
+              <CardTitle className="text-xl font-serif font-light text-white">CTA Clicks</CardTitle>
+              <CardDescription className="text-white/60">
+                Post-engagement conversion actions - {analytics.summary.cta_clicks} total clicks
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {analytics.summary.cta_clicks === 0 ? (
+            <div className="text-center py-8">
+              <MousePointerClick className="h-12 w-12 text-white/20 mx-auto mb-3" />
+              <p className="text-white/60">No CTA clicks recorded yet</p>
+              <p className="text-white/40 text-sm mt-1">CTA clicks appear after users complete AR engagement</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  <p className="text-sm text-white/60 font-light mb-1">Total CTA Clicks</p>
+                  <p className="text-3xl font-serif font-light text-white">{analytics.summary.cta_clicks}</p>
+                </div>
+                <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  <p className="text-sm text-white/60 font-light mb-1">Conversion Rate</p>
+                  <p className="text-3xl font-serif font-light text-white">
+                    {analytics.summary.total_views > 0
+                      ? ((analytics.summary.cta_clicks / analytics.summary.total_views) * 100).toFixed(1)
+                      : "0"}
+                    %
+                  </p>
+                  <p className="text-xs text-white/50 mt-1">
+                    of {analytics.summary.total_views} total views
+                  </p>
+                </div>
+              </div>
+              
+              <div className="border-t border-white/10 pt-4">
+                <h4 className="text-sm font-medium text-white/90 mb-3">Click History</h4>
+                <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                  {analytics.summary.cta_click_timestamps.map((click, index) => {
+                    const clickDate = new Date(click.timestamp)
+                    const formattedDate = clickDate.toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    })
+                    
+                    return (
+                      <div
+                        key={index}
+                        className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-colors"
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-2">
+                              <MousePointerClick className="h-4 w-4 text-[#d4af37] flex-shrink-0" />
+                              <span className="text-white font-medium text-sm">
+                                {click.cta_title || "CTA Click"}
+                              </span>
+                            </div>
+                            {click.cta_url && (
+                              <a
+                                href={click.cta_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-white/60 hover:text-[#d4af37] text-xs flex items-center gap-1 mb-2 truncate"
+                              >
+                                <span className="truncate">{click.cta_url}</span>
+                                <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                              </a>
+                            )}
+                            <div className="flex items-center gap-4 text-xs text-white/50 mt-2">
+                              <span className="flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                {formattedDate}
+                              </span>
+                              {click.persistent_user_id && (
+                                <span className="truncate max-w-[150px]">
+                                  User: {click.persistent_user_id.substring(0, 20)}...
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Engagement Timeline Graph */}
       <Card className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl rounded-2xl overflow-hidden">
