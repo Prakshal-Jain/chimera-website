@@ -589,6 +589,28 @@ function ARExperienceContent() {
     }
   }
 
+  const handleCTAClick = async () => {
+    if (!campaignCode || !campaign || !campaign.cta_url) return
+
+    try {
+      await fetch(`${API_URL}/campaign/${campaignCode}/cta-click`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id: sessionIdRef.current,
+          persistent_user_id: persistentUserId,
+          cta_url: campaign.cta_url,
+          cta_title: campaign.cta_title,
+          timestamp: new Date().toISOString(),
+        }),
+        keepalive: true, // Keep request alive even if page navigates
+      })
+      console.log("✓ CTA click logged")
+    } catch (err) {
+      console.error("Error logging CTA click:", err)
+    }
+  }
+
   const getCarName = (filename: string) => {
     return filename
       .replace(/_base\.(usdz|reality)$/, "")
@@ -741,6 +763,7 @@ function ARExperienceContent() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className={styles.arButtonLarge}
+                          onClick={handleCTAClick}
                         >
                           {campaign.cta_title}
                         </a>

@@ -17,6 +17,10 @@ interface Log {
   longitude?: number
   referer?: string
   x_forwarded_for?: string
+  cta_clicked?: boolean
+  cta_click_timestamp?: string
+  cta_url?: string
+  cta_title?: string
 }
 
 interface HighIntentBuyersProps {
@@ -39,6 +43,7 @@ interface BuyerData {
   arSessionCount: number
   uniqueDaysEngaged: number
   hasQRtoAR: boolean
+  ctaClickCount: number
 }
 
 export function HighIntentBuyers({ logs, onLocationClick }: HighIntentBuyersProps) {
@@ -103,6 +108,7 @@ export function HighIntentBuyers({ logs, onLocationClick }: HighIntentBuyersProp
           arSessionCount: 0,
           uniqueDaysEngaged: 0,
           hasQRtoAR: false,
+          ctaClickCount: 0,
         }
         buyerMap.set(buyerId, buyer)
       }
@@ -118,6 +124,11 @@ export function HighIntentBuyers({ logs, onLocationClick }: HighIntentBuyersProp
       // Check for QR to AR conversion (scanned on computer then viewed on mobile)
       if (log.qr_scanned) {
         buyer.hasQRtoAR = true
+      }
+
+      // Track CTA clicks
+      if (log.cta_clicked) {
+        buyer.ctaClickCount += 1
       }
 
       // Update last seen and track first engagement timestamp
@@ -200,6 +211,7 @@ export function HighIntentBuyers({ logs, onLocationClick }: HighIntentBuyersProp
       // - Number of AR sessions: weighted
       // - Number of separate days engaged: weighted
       // - QR→AR bonus (scanned on computer): bonus
+      // - CTA clicks: high weight (strong buying signal)
       // - Recency (more recent = higher): small weight
       //
       // Scoring breakdown:
@@ -207,8 +219,9 @@ export function HighIntentBuyers({ logs, onLocationClick }: HighIntentBuyersProp
       // - # of AR sessions: 30 points (6 points per session, max 5 sessions = 30 points)
       // - # of separate days: 12 points (6 points per day, max 2 days = 12 points)
       // - QR to AR bonus: 5 points (if has AR engagement) or 2 points (QR-only, no engagement)
+      // - CTA clicks: 35 points (35 points per click, max 1 click = 35 points) - VERY HIGH WEIGHT (post-engagement conversion)
       // - Recency: 5 points (decays over 30 days)
-      // Total max: 92 points (87 max for QR-only users without engagement)
+      // Total max: 127 points (122 max for QR-only users without engagement)
 
       const timeScore = Math.min(buyer.totalARTime / 10, 40)
       const sessionScore = Math.min(buyer.arSessionCount * 6, 30)
@@ -216,12 +229,17 @@ export function HighIntentBuyers({ logs, onLocationClick }: HighIntentBuyersProp
       // QR bonus: 5 points if buyer has AR engagement, 2 points if QR-only (signal but no action)
       // This ensures actual engagement always outranks QR-only users
       const qrBonus = buyer.hasQRtoAR ? (buyer.totalARTime > 0 ? 5 : 2) : 0
+      
+      // CTA click score: 35 points per click (very high weight - post-engagement conversion signal)
+      // Max 1 click = 35 points to prevent gaming
+      // This is weighted highly because CTA only appears AFTER AR experience, making it a strong buying intent signal
+      const ctaScore = Math.min(buyer.ctaClickCount * 35, 35)
 
       // Recency score (5 points if within last day, decays linearly over 30 days)
       const daysSinceLastSeen = (Date.now() - new Date(buyer.lastSeen).getTime()) / (1000 * 60 * 60 * 24)
       const recencyScore = Math.max(0, 5 * (1 - daysSinceLastSeen / 30))
 
-      buyer.intentScore = Math.round(timeScore + sessionScore + daysScore + qrBonus + recencyScore)
+      buyer.intentScore = Math.round(timeScore + sessionScore + daysScore + qrBonus + ctaScore + recencyScore)
     })
 
     return Array.from(buyerMap.values())
