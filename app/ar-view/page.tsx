@@ -40,6 +40,8 @@ interface CampaignData {
   direct_s3_url?: string // Direct S3 URL for frontend access (primary)
   s3_url_api?: string // API endpoint to get fresh presigned URL
   qr_code_url: string
+  cta_title?: string | null // CTA button label
+  cta_url?: string | null // CTA button URL
 }
 
 interface UserMetadata {
@@ -103,6 +105,7 @@ function ARExperienceContent() {
   const [isQRCodeGenerating, setIsQRCodeGenerating] = useState(false)
   const [minLoadTimeElapsed, setMinLoadTimeElapsed] = useState(false)
   const [persistentUserId, setPersistentUserId] = useState<string | null>(null)
+  const [hasEngagementEnded, setHasEngagementEnded] = useState(false)
 
   const sessionIdRef = useRef<string>(
     typeof window !== "undefined" ? `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}` : ""
@@ -340,6 +343,7 @@ function ARExperienceContent() {
           startTime = arEngagementStartTimeRef.current
         }
 
+        // If we have a start time, it means user engaged with AR
         if (startTime && !arEngagementEndLoggedRef.current) {
           try {
             const duration = Math.floor((Date.now() - startTime) / 1000)
@@ -361,12 +365,6 @@ function ARExperienceContent() {
               })
               
               console.log(`✓ AR engagement completed: ${duration}s`)
-              
-              // Clear localStorage and ref
-              if (sessionData) {
-                localStorage.removeItem(sessionKey)
-              }
-              arEngagementStartTimeRef.current = null
             } else {
               console.warn(`AR engagement duration out of range: ${duration}s`)
             }
@@ -374,7 +372,19 @@ function ARExperienceContent() {
             console.error("Error logging AR engagement end:", err)
             // Reset flag on error so it can be retried
             arEngagementEndLoggedRef.current = false
+          } finally {
+            // Mark engagement as ended to show CTA button (even if logging failed)
+            setHasEngagementEnded(true)
+            
+            // Clear localStorage and ref
+            if (sessionData) {
+              localStorage.removeItem(sessionKey)
+            }
+            arEngagementStartTimeRef.current = null
           }
+        } else if (startTime) {
+          // Engagement already logged, but still mark as ended
+          setHasEngagementEnded(true)
         }
       }
     }
@@ -720,36 +730,63 @@ function ARExperienceContent() {
               {/* Desktop: Image on left, Content on right */}
               {/* Mobile: Content first, Image below */}
               <div className={styles.arContentSection}>
-                {/* AR Button - Centerpiece */}
+                {/* AR Button / CTA Button - Centerpiece */}
                 <div className={styles.arButtonContainer}>
-                  {campaign.direct_s3_url ? (
-                    <a 
-                      href={campaign.direct_s3_url} 
-                      rel="ar"
-                      className={styles.arButtonLarge}
-                      onClick={handleARButtonClick}
-                    >
-                      <img 
-                        src="/ar-car-demo.png" 
-                        alt="AR Experience Preview" 
-                        style={{ display: 'none' }}
-                        width="1"
-                        height="1"
-                      />
-                      <Smartphone className={styles.buttonIconLarge} />
-                      Click to See the Car in your space
-                    </a>
+                  {hasEngagementEnded ? (
+                    // Show CTA button if engagement ended and CTA is available
+                    <>
+                      {campaign.cta_title && campaign.cta_url ? (
+                        <a 
+                          href={campaign.cta_url} 
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.arButtonLarge}
+                        >
+                          {campaign.cta_title}
+                        </a>
+                      ) : null}
+                      
+                      {/* Secondary button to reload AR */}
+                      <button
+                        onClick={() => window.location.reload()}
+                        className={styles.arButtonSecondary}
+                      >
+                        See "{manufacturer} {model}" again in AR
+                      </button>
+                    </>
                   ) : (
-                    <div className={styles.errorCard}>
-                      <AlertCircle className={styles.errorIcon} />
-                      <p>AR model URL not available</p>
-                    </div>
+                    // Show AR button before engagement
+                    <>
+                      {campaign.direct_s3_url ? (
+                        <a 
+                          href={campaign.direct_s3_url} 
+                          rel="ar"
+                          className={styles.arButtonLarge}
+                          onClick={handleARButtonClick}
+                        >
+                          <img 
+                            src="/ar-car-demo.png" 
+                            alt="AR Experience Preview" 
+                            style={{ display: 'none' }}
+                            width="1"
+                            height="1"
+                          />
+                          <Smartphone className={styles.buttonIconLarge} />
+                          Click to See the Car in your space
+                        </a>
+                      ) : (
+                        <div className={styles.errorCard}>
+                          <AlertCircle className={styles.errorIcon} />
+                          <p>AR model URL not available</p>
+                        </div>
+                      )}
+                      
+                      {/* Muted text below button */}
+                      <p className={styles.arInstructionText}>
+                        Go to an open space, like your Garage or Driveway.
+                      </p>
+                    </>
                   )}
-                  
-                  {/* Muted text below button */}
-                  <p className={styles.arInstructionText}>
-                    Go to an open space, like your Garage or Driveway.
-                  </p>
                 </div>
                 
                 {/* Image Section - Mobile: Below button, Desktop: On left (via CSS) */}
