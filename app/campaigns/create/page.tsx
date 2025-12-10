@@ -164,6 +164,9 @@ function CreateCampaignForm() {
     if (!formData.car_model) {
       return "Please select a car model"
     }
+    if (!formData.s3_file) {
+      return "Please select a 3D model file"
+    }
     if (!formData.generate_code && !formData.campaign_code.trim()) {
       return "Please enter a campaign code or enable auto-generation"
     }
@@ -345,7 +348,7 @@ function CreateCampaignForm() {
               {/* S3 Model File Selection */}
               <div className="space-y-2">
                 <Label htmlFor="s3_file" className="text-white/90 font-light">
-                  Model File (from S3)
+                  3D Model File *
                 </Label>
                 <Select
                   value={formData.s3_file}
@@ -359,7 +362,7 @@ function CreateCampaignForm() {
                           ? "Loading S3 files..."
                           : s3Files.length === 0
                             ? "No files available"
-                            : "Select model file (optional)"
+                            : "Select model file"
                       }
                     />
                   </SelectTrigger>
@@ -371,9 +374,6 @@ function CreateCampaignForm() {
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-sm text-white/50">
-                  Select a 3D model file from S3. If selected, this will override the car model selection above.
-                </p>
               </div>
 
               {/* Campaign Code */}
