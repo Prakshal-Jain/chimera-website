@@ -619,6 +619,43 @@ function ARExperienceContent() {
       .join(" ")
   }
 
+  // Build AR URL with query strings for tracking (CloudFront caches based on path only)
+  const buildARUrlWithQuery = (baseUrl: string | undefined): string => {
+    if (!baseUrl) return baseUrl || ''
+    
+    try {
+      // Extract query parameters from URL if present
+      const url = new URL(baseUrl)
+      
+      // Add tracking query parameters
+      // ?u=<ID> format for user tracking (CloudFront will cache based on path, not query)
+      if (persistentUserId) {
+        url.searchParams.set('u', persistentUserId)
+      }
+      
+      // Add session ID for tracking
+      if (sessionIdRef.current) {
+        url.searchParams.set('s', sessionIdRef.current)
+      }
+      
+      // Add campaign code if present
+      if (campaignCode) {
+        url.searchParams.set('c', campaignCode)
+      }
+      
+      // Add metadata code if present
+      if (metadataCode) {
+        url.searchParams.set('m', metadataCode)
+      }
+      
+      return url.toString()
+    } catch (error) {
+      // If URL parsing fails, return original URL
+      console.warn('Error building AR URL with query:', error)
+      return baseUrl
+    }
+  }
+
   // Extract manufacturer and model from car_model or use database values
   const getManufacturerAndModel = (campaign: CampaignData) => {
     // If database has manufacturer and model, use them directly
@@ -787,7 +824,7 @@ function ARExperienceContent() {
                     <>
                       {campaign.direct_s3_url ? (
                         <a 
-                          href={campaign.direct_s3_url} 
+                          href={buildARUrlWithQuery(campaign.direct_s3_url)} 
                           rel="ar"
                           className={styles.arButtonLarge}
                           onClick={handleARButtonClick}
@@ -1079,7 +1116,7 @@ function ARExperienceContent() {
                       <div className={styles.iosContent}>
                         {/* Use S3 URL directly from S3 bucket */}
                         {(file.s3Url || file.directS3Url) ? (
-                          <a href={file.s3Url || file.directS3Url} rel="ar" className={styles.arButton}>
+                          <a href={buildARUrlWithQuery(file.s3Url || file.directS3Url)} rel="ar" className={styles.arButton}>
                             <Smartphone className={styles.buttonIcon} />
                             View in AR
                           </a>
