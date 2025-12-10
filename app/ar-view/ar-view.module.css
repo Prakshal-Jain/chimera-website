@@ -864,10 +864,17 @@
   /* New Redesigned Layout Styles */
   
   /* Small logo on top */
+  .logoSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 1.5rem auto 2rem;
+  }
+
   .chimeraLogoLinkSmall {
     display: flex;
     justify-content: center;
-    margin: 1.5rem auto 2rem;
+    margin-bottom: 0.75rem;
     transition: filter 0.3s ease;
   }
 
@@ -881,6 +888,16 @@
     max-width: 120px;
     filter: brightness(1);
     display: block;
+  }
+
+  .viewInSpaceText {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 2.5rem;
+    font-weight: 300;
+    text-align: center;
+    margin: 0;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 
   /* Main content layout */
@@ -1179,12 +1196,20 @@
   }
 
   @media (max-width: 768px) {
-    .chimeraLogoLinkSmall {
+    .logoSection {
       margin: 1rem auto 1.5rem;
+    }
+
+    .chimeraLogoLinkSmall {
+      margin-bottom: 1.5rem;
     }
 
     .chimeraLogoSmall {
       max-width: 100px;
+    }
+
+    .viewInSpaceText {
+      font-size: 1.5rem;
     }
 
     .mainContent {

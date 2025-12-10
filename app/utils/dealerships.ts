@@ -14,20 +14,6 @@ export interface DealershipInfo {
  */
 export const DEALERSHIPS: DealershipInfo[] = [
   {
-    name: "Boardwalk Lotus Redwood City",
-    logo: "/lotus-logo.png",
-    website: "https://www.boardwalklotus.com/",
-    logoWidth: 250,
-    logoHeight: 250,
-  },
-  {
-    name: "The Luxury Collection Los Gatos",
-    logo: "/lamborghini-logo.png",
-    website: "https://www.losgatosluxcars.com/",
-    logoWidth: 200,
-    logoHeight: 100,
-  },
-  {
     name: "Lamborghini Newport Beach",
     logo: "/lambonb.png",
     website: "https://www.lamborghininewportbeach.com/",
@@ -40,6 +26,27 @@ export const DEALERSHIPS: DealershipInfo[] = [
     website: "https://www.ferrariofrm.com/",
     logoWidth: 200,
     logoHeight: 100,
+  },
+  {
+    name: "Lamborghini Miami (Prestige Imports)",
+    logo: "/prestige_imports_miami.png",
+    website: "https://www.prestigeimports.com/",
+    logoWidth: 200,
+    logoHeight: 100,
+  },
+  {
+    name: "The Luxury Collection Los Gatos",
+    logo: "/lamborghini-logo.png",
+    website: "https://www.losgatosluxcars.com/",
+    logoWidth: 200,
+    logoHeight: 100,
+  },
+  {
+    name: "Boardwalk Lotus Redwood City",
+    logo: "/lotus-logo.png",
+    website: "https://www.boardwalklotus.com/",
+    logoWidth: 250,
+    logoHeight: 250,
   },
 ]
 

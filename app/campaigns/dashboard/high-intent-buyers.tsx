@@ -1,8 +1,14 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { useMemo, useState } from "react"
-import { Trophy, MapPin, Clock, Activity, ExternalLink, ArrowUp, ArrowDown } from "lucide-react"
+import { Trophy, MapPin, Clock, Activity, ExternalLink, ArrowUp, ArrowDown, MousePointerClick } from "lucide-react"
 
 interface Log {
   persistent_user_id?: string
@@ -28,6 +34,12 @@ interface HighIntentBuyersProps {
   onLocationClick?: (lat: number, lng: number) => void
 }
 
+interface CTAClick {
+  timestamp: string
+  cta_url?: string
+  cta_title?: string
+}
+
 interface BuyerData {
   id: string
   displayName: string
@@ -44,11 +56,13 @@ interface BuyerData {
   uniqueDaysEngaged: number
   hasQRtoAR: boolean
   ctaClickCount: number
+  ctaClickTimestamps: CTAClick[]
 }
 
 export function HighIntentBuyers({ logs, onLocationClick }: HighIntentBuyersProps) {
   const [sortColumn, setSortColumn] = useState<keyof BuyerData>("intentScore")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc")
+  const [selectedBuyerForCTA, setSelectedBuyerForCTA] = useState<BuyerData | null>(null)
 
   // Aggregate data per buyer
   const buyersData = useMemo(() => {
@@ -109,6 +123,7 @@ export function HighIntentBuyers({ logs, onLocationClick }: HighIntentBuyersProp
           uniqueDaysEngaged: 0,
           hasQRtoAR: false,
           ctaClickCount: 0,
+          ctaClickTimestamps: [],
         }
         buyerMap.set(buyerId, buyer)
       }
@@ -127,8 +142,13 @@ export function HighIntentBuyers({ logs, onLocationClick }: HighIntentBuyersProp
       }
 
       // Track CTA clicks
-      if (log.cta_clicked) {
+      if (log.cta_clicked && log.cta_click_timestamp) {
         buyer.ctaClickCount += 1
+        buyer.ctaClickTimestamps.push({
+          timestamp: log.cta_click_timestamp,
+          cta_url: log.cta_url,
+          cta_title: log.cta_title,
+        })
       }
 
       // Update last seen and track first engagement timestamp
@@ -436,6 +456,12 @@ export function HighIntentBuyers({ logs, onLocationClick }: HighIntentBuyersProp
                 </th>
                 <th
                   className="text-left py-3 px-4 text-sm font-medium text-white/80 cursor-pointer hover:text-white transition-colors"
+                  onClick={() => toggleSort("ctaClickCount")}
+                >
+                  CTA Clicks <SortIcon column="ctaClickCount" />
+                </th>
+                <th
+                  className="text-left py-3 px-4 text-sm font-medium text-white/80 cursor-pointer hover:text-white transition-colors"
                   onClick={() => toggleSort("lastSeen")}
                 >
                   Last Seen <SortIcon column="lastSeen" />
@@ -454,7 +480,7 @@ export function HighIntentBuyers({ logs, onLocationClick }: HighIntentBuyersProp
             <tbody>
               {sortedBuyers.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-8 text-white/60">
+                  <td colSpan={9} className="text-center py-8 text-white/60">
                     No buyer data available
                   </td>
                 </tr>
@@ -524,6 +550,23 @@ export function HighIntentBuyers({ logs, onLocationClick }: HighIntentBuyersProp
                       </div>
                     </td>
                     <td className="py-4 px-4">
+                      {buyer.ctaClickCount > 0 ? (
+                        <button
+                          onClick={() => setSelectedBuyerForCTA(buyer)}
+                          className="flex flex-col items-center cursor-pointer hover:text-[#d4af37] transition-colors group w-full"
+                        >
+                          <span className="text-white font-medium text-sm group-hover:text-[#d4af37]">
+                            {buyer.ctaClickCount}
+                          </span>
+                          <span className="text-white/60 text-xs mt-0.5 group-hover:text-white/80 text-center">
+                            Click to see timestamps
+                          </span>
+                        </button>
+                      ) : (
+                        <span className="text-white/60 text-sm text-center block">0</span>
+                      )}
+                    </td>
+                    <td className="py-4 px-4">
                       <span className="text-white/80 text-sm">{formatDate(buyer.lastSeen)}</span>
                     </td>
                     <td className="py-4 px-4">
@@ -557,6 +600,66 @@ export function HighIntentBuyers({ logs, onLocationClick }: HighIntentBuyersProp
           </table>
         </div>
       </CardContent>
+
+      {/* CTA Click Timestamps Dialog */}
+      <Dialog open={!!selectedBuyerForCTA} onOpenChange={(open) => !open && setSelectedBuyerForCTA(null)}>
+        <DialogContent 
+          className="bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border-white/10 text-white shadow-xl rounded-2xl max-w-2xl max-h-[80vh] overflow-y-auto [&>button]:text-white [&>button]:hover:text-white/80"
+          style={{ backgroundColor: '#1a1a1a' }}
+        >
+          <DialogHeader>
+            <DialogTitle className="text-xl font-serif font-light text-white flex items-center gap-2">
+              <MousePointerClick className="h-5 w-5 text-[#d4af37]" />
+              CTA Click History - {selectedBuyerForCTA?.displayName}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            {selectedBuyerForCTA && selectedBuyerForCTA.ctaClickTimestamps.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-white/60">No CTA clicks recorded for this user</p>
+              </div>
+            ) : selectedBuyerForCTA && selectedBuyerForCTA.ctaClickTimestamps.length > 0 ? (
+              <div className="space-y-8">
+                {/* CTA Info - Show once at top */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-white font-medium text-sm">
+                      {selectedBuyerForCTA.ctaClickTimestamps[0]?.cta_title || "CTA Click"}
+                    </span>
+                  </div>
+                  {selectedBuyerForCTA.ctaClickTimestamps[0]?.cta_url && (
+                    <a
+                      href={selectedBuyerForCTA.ctaClickTimestamps[0].cta_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-white/60 hover:text-[#d4af37] text-xs flex items-center gap-1 truncate"
+                    >
+                      <span className="truncate">{selectedBuyerForCTA.ctaClickTimestamps[0].cta_url}</span>
+                      <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                    </a>
+                  )}
+                </div>
+                
+                {/* Timestamps List */}
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium text-white/90 mb-2">Click Timestamps</h4>
+                  {selectedBuyerForCTA.ctaClickTimestamps.map((click, index) => (
+                    <div
+                      key={index}
+                      className="bg-white/5 rounded-lg p-3 border border-white/10"
+                    >
+                      <div className="flex items-center gap-2 text-xs text-white/80">
+                        <Clock className="h-3 w-3 text-white/60" />
+                        <span>{formatDate(click.timestamp)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   )
 }

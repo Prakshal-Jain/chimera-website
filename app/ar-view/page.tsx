@@ -736,16 +736,21 @@ function ARExperienceContent() {
       <div className={styles.container}>
         <div className={styles.content}>
           {/* Small logo on top */}
-          <Link href="/" className={styles.chimeraLogoLinkSmall}>
-            <Image 
-              src="/chimera-logo.png" 
-              alt="Chimera" 
-              width={120} 
-              height={40} 
-              className={styles.chimeraLogoSmall}
-              priority
-            />
-          </Link>
+          <div className={styles.logoSection}>
+            <Link href="/" className={styles.chimeraLogoLinkSmall}>
+              <Image 
+                src="/chimera-logo.png" 
+                alt="Chimera" 
+                width={120} 
+                height={40} 
+                className={styles.chimeraLogoSmall}
+                priority
+              />
+            </Link>
+            <h1 className={styles.viewInSpaceText}>
+              View {manufacturer} {model} in your space
+            </h1>
+          </div>
           
           <main className={styles.mainContent}>
             <div className={styles.arExperienceLayout}>
@@ -795,7 +800,7 @@ function ARExperienceContent() {
                             height="1"
                           />
                           <Smartphone className={styles.buttonIconLarge} />
-                          Click to See the Car in your space
+                          Click to View
                         </a>
                       ) : (
                         <div className={styles.errorCard}>
@@ -898,16 +903,21 @@ function ARExperienceContent() {
       <div className={styles.container}>
         <div className={styles.content}>
           {/* Small logo on top */}
-          <Link href="/" className={styles.chimeraLogoLinkSmall}>
-            <Image 
-              src="/chimera-logo.png" 
-              alt="Chimera" 
-              width={120} 
-              height={40} 
-              className={styles.chimeraLogoSmall}
-              priority
-            />
-          </Link>
+          <div className={styles.logoSection}>
+            <Link href="/" className={styles.chimeraLogoLinkSmall}>
+              <Image 
+                src="/chimera-logo.png" 
+                alt="Chimera" 
+                width={120} 
+                height={40} 
+                className={styles.chimeraLogoSmall}
+                priority
+              />
+            </Link>
+            <h1 className={styles.viewInSpaceText}>
+              View {manufacturer} {model} in your space
+            </h1>
+          </div>
           
           <main className={styles.mainContent}>
             <div className={styles.arExperienceLayout}>
