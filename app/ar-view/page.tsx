@@ -115,7 +115,7 @@ function ARExperienceContent() {
   const hasRedirectedRef = useRef(false)
   const arEngagementStartTimeRef = useRef<number | null>(null)
   const arEngagementEndLoggedRef = useRef(false)
-  
+
   // Extract cross-device tracking parameters
   const originSessionId = searchParams.get("origin_session") || undefined
   const originDevice = searchParams.get("origin_device") || undefined
@@ -139,17 +139,17 @@ function ARExperienceContent() {
 
     try {
       const keysToRemove: string[] = []
-      
+
       Object.keys(localStorage).forEach((key) => {
         if (key.startsWith("ar_session_")) {
           try {
             const sessionData = JSON.parse(localStorage.getItem(key) || "{}")
             const age = Date.now() - sessionData.start_time
-            
+
             // If session is > 5 minutes old, recover it
             if (age > 300000) {
               const estimatedDuration = Math.min(Math.floor(age / 1000), 300) // Cap at 5 min
-              
+
               // Send recovery request to backend
               fetch(`${API_URL}/campaign/${sessionData.campaign_code}/ar-engagement/recover`, {
                 method: "POST",
@@ -161,7 +161,7 @@ function ARExperienceContent() {
                   estimated_duration: estimatedDuration,
                 }),
               }).catch((err) => console.error("Error recovering AR session:", err))
-              
+
               keysToRemove.push(key)
             }
           } catch (e) {
@@ -170,10 +170,10 @@ function ARExperienceContent() {
           }
         }
       })
-      
+
       // Clean up recovered sessions
       keysToRemove.forEach((key) => localStorage.removeItem(key))
-      
+
       // Also clean up old sessions (> 7 days)
       Object.keys(localStorage).forEach((key) => {
         if (key.startsWith("ar_session_")) {
@@ -326,7 +326,7 @@ function ARExperienceContent() {
         // User returned from AR Quick Look
         const sessionKey = `ar_session_${sessionIdRef.current}`
         const sessionData = localStorage.getItem(sessionKey)
-        
+
         // Use localStorage start_time or fallback to ref
         let startTime: number | null = null
         if (sessionData) {
@@ -337,7 +337,7 @@ function ARExperienceContent() {
             console.error("Error parsing session data:", e)
           }
         }
-        
+
         // Fallback to ref if localStorage doesn't have it
         if (!startTime && arEngagementStartTimeRef.current) {
           startTime = arEngagementStartTimeRef.current
@@ -347,12 +347,12 @@ function ARExperienceContent() {
         if (startTime && !arEngagementEndLoggedRef.current) {
           try {
             const duration = Math.floor((Date.now() - startTime) / 1000)
-            
+
             // Only log if duration is reasonable (at least 1 second, max 1 hour)
             if (duration >= 1 && duration <= 3600) {
               // Prevent duplicate logging
               arEngagementEndLoggedRef.current = true
-              
+
               // Send AR engagement end
               await fetch(`${API_URL}/campaign/${campaignCode}/ar-engagement/end`, {
                 method: "POST",
@@ -363,7 +363,7 @@ function ARExperienceContent() {
                   duration_seconds: duration,
                 }),
               })
-              
+
               console.log(`✓ AR engagement completed: ${duration}s`)
             } else {
               console.warn(`AR engagement duration out of range: ${duration}s`)
@@ -375,7 +375,7 @@ function ARExperienceContent() {
           } finally {
             // Mark engagement as ended to show CTA button (even if logging failed)
             setHasEngagementEnded(true)
-            
+
             // Clear localStorage and ref
             if (sessionData) {
               localStorage.removeItem(sessionKey)
@@ -401,7 +401,7 @@ function ARExperienceContent() {
 
     document.addEventListener("visibilitychange", handleVisibilityChange)
     window.addEventListener("focus", handleFocus)
-    
+
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange)
       window.removeEventListener("focus", handleFocus)
@@ -417,16 +417,16 @@ function ARExperienceContent() {
       try {
         // Build URL with all query parameters
         let qrUrl = `https://chimeraauto.com/ar-view?campaign_code=${campaignCode}`
-        
+
         // Add metadata code if present
         if (metadataCode) {
           qrUrl += `&metadata=${metadataCode}`
         }
-        
+
         // Add cross-device tracking parameters
         qrUrl += `&origin_session=${sessionIdRef.current}`
         qrUrl += `&origin_device=desktop`
-        
+
         // Add any additional query parameters
         if (Object.keys(additionalQueryParams.current).length > 0) {
           Object.entries(additionalQueryParams.current).forEach(([key, value]) => {
@@ -503,8 +503,8 @@ function ARExperienceContent() {
     const timeOnPage = Date.now() - pageLoadTimeRef.current
 
     // Prepare additional metadata from query parameters
-    const additionalMetadata = Object.keys(additionalQueryParams.current).length > 0 
-      ? additionalQueryParams.current 
+    const additionalMetadata = Object.keys(additionalQueryParams.current).length > 0
+      ? additionalQueryParams.current
       : undefined
 
     const pageLoadMetadata: UserMetadata = {
@@ -526,10 +526,10 @@ function ARExperienceContent() {
 
     // Capture start time immediately when button is clicked
     const startTime = Date.now()
-    
+
     // Set ref immediately (before API call)
     arEngagementStartTimeRef.current = startTime
-    
+
     // Store AR session in localStorage before opening AR Quick Look
     const arSessionData = {
       session_id: sessionIdRef.current,
@@ -540,7 +540,7 @@ function ARExperienceContent() {
       origin_session_id: originSessionId,
     }
     localStorage.setItem(`ar_session_${sessionIdRef.current}`, JSON.stringify(arSessionData))
-    
+
     // Log AR engagement start (use keepalive to ensure request completes even if page navigates)
     fetch(`${API_URL}/campaign/${campaignCode}/ar-engagement/start`, {
       method: "POST",
@@ -561,13 +561,13 @@ function ARExperienceContent() {
 
   const logCampaignAccess = async (metadataToLog: UserMetadata) => {
     if (!campaignCode) return
-    
+
     // Only prevent duplicate logging for page_load action
     // AR engagement start/end are tracked separately
     if (metadataToLog.action === "page_load" && hasLoggedRef.current) {
       return
     }
-    
+
     if (metadataToLog.action === "page_load") {
       hasLoggedRef.current = true
     }
@@ -619,43 +619,6 @@ function ARExperienceContent() {
       .join(" ")
   }
 
-  // Build AR URL with query strings for tracking (CloudFront caches based on path only)
-  const buildARUrlWithQuery = (baseUrl: string | undefined): string => {
-    if (!baseUrl) return baseUrl || ''
-    
-    try {
-      // Extract query parameters from URL if present
-      const url = new URL(baseUrl)
-      
-      // Add tracking query parameters
-      // ?u=<ID> format for user tracking (CloudFront will cache based on path, not query)
-      if (persistentUserId) {
-        url.searchParams.set('u', persistentUserId)
-      }
-      
-      // Add session ID for tracking
-      if (sessionIdRef.current) {
-        url.searchParams.set('s', sessionIdRef.current)
-      }
-      
-      // Add campaign code if present
-      if (campaignCode) {
-        url.searchParams.set('c', campaignCode)
-      }
-      
-      // Add metadata code if present
-      if (metadataCode) {
-        url.searchParams.set('m', metadataCode)
-      }
-      
-      return url.toString()
-    } catch (error) {
-      // If URL parsing fails, return original URL
-      console.warn('Error building AR URL with query:', error)
-      return baseUrl
-    }
-  }
-
   // Extract manufacturer and model from car_model or use database values
   const getManufacturerAndModel = (campaign: CampaignData) => {
     // If database has manufacturer and model, use them directly
@@ -665,11 +628,11 @@ function ARExperienceContent() {
         model: campaign.model
       }
     }
-    
+
     // Fallback: try to extract from car_model filename
     const carModel = campaign.car_model
     const manufacturer = campaign.manufacturer
-    
+
     // If manufacturer is provided, use it
     if (manufacturer) {
       const cleanModel = carModel
@@ -682,14 +645,14 @@ function ARExperienceContent() {
         .join(" ")
       return { manufacturer, model: cleanModel || carModel }
     }
-    
+
     // Try to extract from car_model (common patterns: "Lamborghini_Revuelto" or "Revuelto")
     const cleanModel = carModel.replace(/_base\.(usdz|reality)$/, "")
     const parts = cleanModel.split("_")
-    
+
     // Common manufacturers to check
     const manufacturers = ["Lamborghini", "Ferrari", "Porsche", "McLaren", "Aston Martin", "Bentley", "Rolls Royce", "Mercedes", "BMW", "Audi"]
-    
+
     // Check if first part is a manufacturer
     const firstPart = parts[0].charAt(0).toUpperCase() + parts[0].slice(1)
     if (manufacturers.includes(firstPart)) {
@@ -698,7 +661,7 @@ function ARExperienceContent() {
         model: parts.slice(1).map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")
       }
     }
-    
+
     // Fallback: return as model only
     return {
       manufacturer: "Luxury Vehicle",
@@ -712,22 +675,22 @@ function ARExperienceContent() {
     return (
       <div className={styles.loadingContainer}>
         <Link href="/" className={styles.chimeraLogoLink}>
-          <Image 
-            src="/chimera-logo.png" 
-            alt="Chimera" 
-            width={200} 
-            height={67} 
+          <Image
+            src="/chimera-logo.png"
+            alt="Chimera"
+            width={200}
+            height={67}
             className={styles.chimeraLogo}
             priority
           />
         </Link>
         <div className={styles.loadingContent}>
           <div className={styles.loadingImageWrapper}>
-            <Image 
-              src="/ar-car-demo.png" 
-              alt="AR Experience Preview" 
-              width={800} 
-              height={600} 
+            <Image
+              src="/ar-car-demo.png"
+              alt="AR Experience Preview"
+              width={800}
+              height={600}
               className={styles.loadingDemoImage}
               priority
             />
@@ -768,18 +731,18 @@ function ARExperienceContent() {
   // Campaign mode: iOS AR button view
   if (campaignCode && campaign && isIOS) {
     const { manufacturer, model } = getManufacturerAndModel(campaign)
-    
+
     return (
       <div className={styles.container}>
         <div className={styles.content}>
           {/* Small logo on top */}
           <div className={styles.logoSection}>
             <Link href="/" className={styles.chimeraLogoLinkSmall}>
-              <Image 
-                src="/chimera-logo.png" 
-                alt="Chimera" 
-                width={120} 
-                height={40} 
+              <Image
+                src="/chimera-logo.png"
+                alt="Chimera"
+                width={120}
+                height={40}
                 className={styles.chimeraLogoSmall}
                 priority
               />
@@ -788,7 +751,7 @@ function ARExperienceContent() {
               View {manufacturer} {model} in your space
             </h1>
           </div>
-          
+
           <main className={styles.mainContent}>
             <div className={styles.arExperienceLayout}>
               {/* Desktop: Image on left, Content on right */}
@@ -800,8 +763,8 @@ function ARExperienceContent() {
                     // Show CTA button if engagement ended and CTA is available
                     <>
                       {campaign.cta_title && campaign.cta_url ? (
-                        <a 
-                          href={campaign.cta_url} 
+                        <a
+                          href={campaign.cta_url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className={styles.arButtonLarge}
@@ -810,7 +773,7 @@ function ARExperienceContent() {
                           {campaign.cta_title}
                         </a>
                       ) : null}
-                      
+
                       {/* Secondary button to reload AR */}
                       <button
                         onClick={() => window.location.reload()}
@@ -823,18 +786,21 @@ function ARExperienceContent() {
                     // Show AR button before engagement
                     <>
                       {campaign.direct_s3_url ? (
-                        <a 
-                          href={buildARUrlWithQuery(campaign.direct_s3_url)} 
+                        <a
+                          href={campaign.direct_s3_url}
                           rel="ar"
                           className={styles.arButtonLarge}
                           onClick={handleARButtonClick}
                         >
-                          <img 
-                            src="/ar-car-demo.png" 
-                            alt="AR Experience Preview" 
-                            style={{ display: 'none' }}
-                            width="1"
-                            height="1"
+                          <img
+                            src="/ar-car-demo.png"
+                            alt="AR Experience Preview"
+                            style={{
+                              width: 1,
+                              height: 1,
+                              opacity: 0,
+                              position: 'absolute'
+                            }}
                           />
                           <Smartphone className={styles.buttonIconLarge} />
                           Click to View
@@ -845,7 +811,7 @@ function ARExperienceContent() {
                           <p>AR model URL not available</p>
                         </div>
                       )}
-                      
+
                       {/* Muted text below button */}
                       <p className={styles.arInstructionText}>
                         Go to an open space, like your Garage or Driveway.
@@ -853,37 +819,37 @@ function ARExperienceContent() {
                     </>
                   )}
                 </div>
-                
+
                 {/* Image Section - Mobile: Below button, Desktop: On left (via CSS) */}
                 <div className={styles.arImageSection}>
-                  <Image 
-                    src="/ar-car-demo.png" 
-                    alt="AR Experience Preview" 
-                    width={500} 
-                    height={500} 
-                    className={styles.arPreviewImage} 
-                    priority 
+                  <Image
+                    src="/ar-car-demo.png"
+                    alt="AR Experience Preview"
+                    width={500}
+                    height={500}
+                    className={styles.arPreviewImage}
+                    priority
                   />
                 </div>
-                
+
                 {/* Dealership and Model Info */}
                 <div className={styles.campaignInfo}>
                   <div className={styles.dealershipInfo}>
-                    <Image 
-                      src={getDealershipLogo(campaign.dealership)} 
-                      alt={`${campaign.dealership} logo`} 
-                      width={32} 
-                      height={32} 
+                    <Image
+                      src={getDealershipLogo(campaign.dealership)}
+                      alt={`${campaign.dealership} logo`}
+                      width={32}
+                      height={32}
                       className={styles.dealershipLogoSmall}
                     />
                     <span className={styles.dealershipName}>{campaign.dealership}</span>
                   </div>
-                  
+
                   <div className={styles.carModelInfo}>
                     <span className={styles.carModelLabel}>Model:</span>
                     <span className={styles.carModelValue}>{manufacturer} {model}</span>
                   </div>
-                  
+
                   {/* Founder info - placeholder for now */}
                   <div className={styles.founderInfo}>
                     <p className={styles.founderText}>
@@ -895,30 +861,30 @@ function ARExperienceContent() {
                   </div>
                 </div>
               </div>
-              
+
               {/* Desktop: Image on left */}
               <div className={styles.arImageSectionDesktop}>
-                <Image 
-                  src="/ar-car-demo.png" 
-                  alt="AR Experience Preview" 
-                  width={500} 
-                  height={500} 
-                  className={styles.arPreviewImage} 
-                  priority 
+                <Image
+                  src="/ar-car-demo.png"
+                  alt="AR Experience Preview"
+                  width={500}
+                  height={500}
+                  className={styles.arPreviewImage}
+                  priority
                 />
               </div>
             </div>
           </main>
-          
+
           {/* Footer */}
           <footer className={styles.footer}>
             <div className={styles.footerContent}>
               <Link href="/" className={styles.footerLogoLink}>
-                <Image 
-                  src="/chimera-logo.png" 
-                  alt="Chimera" 
-                  width={100} 
-                  height={33} 
+                <Image
+                  src="/chimera-logo.png"
+                  alt="Chimera"
+                  width={100}
+                  height={33}
                   className={styles.footerLogo}
                 />
               </Link>
@@ -935,18 +901,18 @@ function ARExperienceContent() {
   // Campaign mode: Show QR code
   if (campaignCode && campaign) {
     const { manufacturer, model } = getManufacturerAndModel(campaign)
-    
+
     return (
       <div className={styles.container}>
         <div className={styles.content}>
           {/* Small logo on top */}
           <div className={styles.logoSection}>
             <Link href="/" className={styles.chimeraLogoLinkSmall}>
-              <Image 
-                src="/chimera-logo.png" 
-                alt="Chimera" 
-                width={120} 
-                height={40} 
+              <Image
+                src="/chimera-logo.png"
+                alt="Chimera"
+                width={120}
+                height={40}
                 className={styles.chimeraLogoSmall}
                 priority
               />
@@ -955,7 +921,7 @@ function ARExperienceContent() {
               View {manufacturer} {model} in your space
             </h1>
           </div>
-          
+
           <main className={styles.mainContent}>
             <div className={styles.arExperienceLayout}>
               {/* Desktop: Image on left, Content on right */}
@@ -980,13 +946,13 @@ function ARExperienceContent() {
                       <Image src={campaign.qr_code_url} alt={`QR code for ${manufacturer} ${model}`} width={280} height={280} className={styles.qrCode} />
                     )}
                   </div>
-                  
+
                   {/* Muted text below QR code */}
                   <p className={styles.arInstructionText}>
                     Go to an open space, like your Garage or Driveway.
                   </p>
                 </div>
-                
+
                 {/* iOS Device Warning - Right below QR code */}
                 <div className={styles.warningCard}>
                   <Smartphone className={styles.warningIcon} />
@@ -995,37 +961,37 @@ function ARExperienceContent() {
                     <p>This AR experience is currently only supported on iPhone, iPad, and Apple Vision Pro.</p>
                   </div>
                 </div>
-                
+
                 {/* Image Section - Mobile: Below warning, Desktop: On left (via CSS) */}
                 <div className={styles.arImageSection}>
-                  <Image 
-                    src="/ar-car-demo.png" 
-                    alt="AR Experience Preview" 
-                    width={500} 
-                    height={500} 
-                    className={styles.arPreviewImage} 
-                    priority 
+                  <Image
+                    src="/ar-car-demo.png"
+                    alt="AR Experience Preview"
+                    width={500}
+                    height={500}
+                    className={styles.arPreviewImage}
+                    priority
                   />
                 </div>
-                
+
                 {/* Dealership and Model Info */}
                 <div className={styles.campaignInfo}>
                   <div className={styles.dealershipInfo}>
-                    <Image 
-                      src={getDealershipLogo(campaign.dealership)} 
-                      alt={`${campaign.dealership} logo`} 
-                      width={32} 
-                      height={32} 
+                    <Image
+                      src={getDealershipLogo(campaign.dealership)}
+                      alt={`${campaign.dealership} logo`}
+                      width={32}
+                      height={32}
                       className={styles.dealershipLogoSmall}
                     />
                     <span className={styles.dealershipName}>{campaign.dealership}</span>
                   </div>
-                  
+
                   <div className={styles.carModelInfo}>
                     <span className={styles.carModelLabel}>Model:</span>
                     <span className={styles.carModelValue}>{manufacturer} {model}</span>
                   </div>
-                  
+
                   {/* Founder info - placeholder for now */}
                   <div className={styles.founderInfo}>
                     <p className={styles.founderText}>
@@ -1037,30 +1003,30 @@ function ARExperienceContent() {
                   </div>
                 </div>
               </div>
-              
+
               {/* Desktop: Image on left */}
               <div className={styles.arImageSectionDesktop}>
-                <Image 
-                  src="/ar-car-demo.png" 
-                  alt="AR Experience Preview" 
-                  width={500} 
-                  height={500} 
-                  className={styles.arPreviewImage} 
-                  priority 
+                <Image
+                  src="/ar-car-demo.png"
+                  alt="AR Experience Preview"
+                  width={500}
+                  height={500}
+                  className={styles.arPreviewImage}
+                  priority
                 />
               </div>
             </div>
           </main>
-          
+
           {/* Footer */}
           <footer className={styles.footer}>
             <div className={styles.footerContent}>
               <Link href="/" className={styles.footerLogoLink}>
-                <Image 
-                  src="/chimera-logo.png" 
-                  alt="Chimera" 
-                  width={100} 
-                  height={33} 
+                <Image
+                  src="/chimera-logo.png"
+                  alt="Chimera"
+                  width={100}
+                  height={33}
                   className={styles.footerLogo}
                 />
               </Link>
@@ -1116,7 +1082,7 @@ function ARExperienceContent() {
                       <div className={styles.iosContent}>
                         {/* Use S3 URL directly from S3 bucket */}
                         {(file.s3Url || file.directS3Url) ? (
-                          <a href={buildARUrlWithQuery(file.s3Url || file.directS3Url)} rel="ar" className={styles.arButton}>
+                          <a href={file.s3Url || file.directS3Url} rel="ar" className={styles.arButton}>
                             <Smartphone className={styles.buttonIcon} />
                             View in AR
                           </a>
