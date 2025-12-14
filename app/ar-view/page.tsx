@@ -764,6 +764,16 @@ function ARExperienceContent() {
                 >
                   Open in Safari
                 </button>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem', marginBottom: '1rem' }}>
+                  <Image
+                    src="/ar-car-demo.png"
+                    alt="AR Experience Preview"
+                    width={400}
+                    height={300}
+                    style={{ borderRadius: '1rem', maxWidth: '100%', height: 'auto' }}
+                    priority
+                  />
+                </div>
                 <p style={{ fontSize: '0.875rem', color: 'rgba(255, 255, 255, 0.7)', textAlign: 'center' }}>
                   Or copy the link and paste it into Safari
                 </p>
