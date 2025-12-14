@@ -307,49 +307,6 @@ function ARExperienceContent() {
     logPageLoad()
   }, [isCollectingMetadata, isLoading, campaign, campaignCode])
 
-  // Prefetch AR file for Chrome iOS to ensure QuickLook opens on first click
-  useEffect(() => {
-    if (!campaign || !isIOS || !campaign.direct_s3_url) return
-
-    const arFileUrl = campaign.direct_s3_url
-
-    // For Chrome iOS, we need to preload the AR file so it's cached before the user clicks
-    // This ensures QuickLook opens immediately on first click instead of downloading first
-    
-    // Method 1: Use link prefetch (browser-level hint)
-    const link = document.createElement('link')
-    link.rel = 'prefetch'
-    link.as = 'fetch'
-    link.href = arFileUrl
-    link.crossOrigin = 'anonymous'
-    document.head.appendChild(link)
-
-    // Method 2: Actually fetch the file to ensure it's cached
-    // Use a small delay to avoid blocking the initial page load
-    const fetchTimer = setTimeout(() => {
-      // Fetch with GET to actually download and cache the file
-      fetch(arFileUrl, {
-        method: 'GET',
-        mode: 'cors',
-        cache: 'default',
-        credentials: 'omit'
-      }).then(() => {
-        console.log('AR file prefetched successfully')
-      }).catch((err) => {
-        // Ignore errors - prefetch is best effort
-        console.warn('AR file prefetch failed (non-critical):', err)
-      })
-    }, 1000) // Delay to not interfere with page load
-
-    return () => {
-      // Cleanup
-      clearTimeout(fetchTimer)
-      if (document.head.contains(link)) {
-        document.head.removeChild(link)
-      }
-    }
-  }, [campaign, isIOS])
-
   // Track previous visibility state to detect transitions
   const wasHiddenRef = useRef<boolean>(false)
 
