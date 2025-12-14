@@ -90,6 +90,8 @@ function ARExperienceContent() {
   }
 
   const [isIOS, setIsIOS] = useState<boolean | null>(null)
+  const [isChrome, setIsChrome] = useState<boolean | null>(null)
+  const [showSafariRedirect, setShowSafariRedirect] = useState(false)
   const [arData, setArData] = useState<ARData | null>(null)
   const [campaign, setCampaign] = useState<CampaignData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -193,7 +195,7 @@ function ARExperienceContent() {
     }
   }, [persistentUserId])
 
-  // Detect iOS device
+  // Detect iOS device and Chrome browser, auto-redirect to Safari
   useEffect(() => {
     const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera
     const isIOSDevice =
@@ -201,6 +203,52 @@ function ARExperienceContent() {
       (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) ||
       /Vision/.test(userAgent)
     setIsIOS(isIOSDevice)
+
+    // Detect Chrome browser on iOS
+    // Chrome on iOS uses "CriOS" in user agent
+    // Safari on iOS contains "Safari" but NOT "CriOS" or "FxiOS"
+    const isChromeOnIOS = /CriOS/.test(userAgent)
+    setIsChrome(isChromeOnIOS)
+
+    // Automatically redirect to Safari if on iOS and using Chrome
+    if (isIOSDevice && isChromeOnIOS) {
+      const currentUrl = window.location.href
+      
+      // Try to open in Safari using x-safari-https:// URL scheme
+      // Note: This may not work on all iOS versions due to security restrictions
+      const safariUrl = `x-safari-https://${currentUrl.replace(/^https?:\/\//, '')}`
+      
+      // Attempt automatic redirect immediately using multiple methods
+      const attemptRedirect = () => {
+        try {
+          // Method 1: Try window.location (most direct)
+          window.location.href = safariUrl
+        } catch (e) {
+          // Method 2: Try creating and clicking a link (sometimes more reliable)
+          try {
+            const link = document.createElement('a')
+            link.href = safariUrl
+            link.style.display = 'none'
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+          } catch (e2) {
+            console.error('Error redirecting to Safari:', e2)
+          }
+        }
+      }
+      
+      // Attempt redirect immediately
+      attemptRedirect()
+      
+      // Fallback: if redirect doesn't work, show manual redirect UI after a delay
+      // This gives the redirect time to work before showing the overlay
+      setTimeout(() => {
+        // If we're still on the page, the redirect likely didn't work
+        // Show the manual redirect overlay as fallback
+        setShowSafariRedirect(true)
+      }, 2000)
+    }
 
     if (campaignCode) {
       const deviceMetadata = {
@@ -611,6 +659,33 @@ function ARExperienceContent() {
     }
   }
 
+  const handleOpenInSafari = () => {
+    const currentUrl = window.location.href
+    // Try to open in Safari using the x-safari-https URL scheme
+    // This may not work on all iOS versions, so we also show the URL for manual copy
+    try {
+      // Try the Safari URL scheme
+      const safariUrl = `x-safari-https://${currentUrl.replace(/^https?:\/\//, '')}`
+      window.location.href = safariUrl
+      
+      // Fallback: if the URL scheme doesn't work, the user can copy the URL manually
+      // The UI already shows the URL for copying
+    } catch (e) {
+      console.error('Error opening in Safari:', e)
+    }
+  }
+
+  const handleCopyUrl = async () => {
+    const currentUrl = window.location.href
+    try {
+      await navigator.clipboard.writeText(currentUrl)
+      // You could show a toast notification here if desired
+      alert('URL copied to clipboard! Paste it into Safari.')
+    } catch (e) {
+      console.error('Error copying URL:', e)
+    }
+  }
+
   const getCarName = (filename: string) => {
     return filename
       .replace(/_base\.(usdz|reality)$/, "")
@@ -669,6 +744,65 @@ function ARExperienceContent() {
     }
   }
 
+
+  // Show Safari redirect overlay if Chrome is detected on iOS
+  if (showSafariRedirect && isIOS && isChrome) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.content}>
+          <div className={styles.safariRedirectOverlay}>
+            <div className={styles.safariRedirectCard}>
+              <h2 className={styles.heroTitle} style={{ marginBottom: '1rem' }}>Open in Safari</h2>
+              <p style={{ fontSize: '1.1rem', color: 'rgba(255, 255, 255, 0.9)', marginBottom: '2rem', textAlign: 'center', maxWidth: '500px' }}>
+                We are still adding support for Chrome. Please click the button below to open this page in Safari.
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '400px' }}>
+                <button
+                  onClick={handleOpenInSafari}
+                  className={styles.arButtonLarge}
+                  style={{ width: '100%' }}
+                >
+                  Open in Safari
+                </button>
+                <p style={{ fontSize: '0.875rem', color: 'rgba(255, 255, 255, 0.7)', textAlign: 'center' }}>
+                  Or copy the link and paste it into Safari
+                </p>
+                <div style={{ 
+                  display: 'flex',
+                  gap: '0.5rem',
+                  width: '100%'
+                }}>
+                  <div style={{ 
+                    flex: 1,
+                    backgroundColor: 'rgba(0, 0, 0, 0.3)', 
+                    padding: '0.875rem', 
+                    borderRadius: '8px',
+                    wordBreak: 'break-all',
+                    fontSize: '0.875rem',
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    overflow: 'hidden'
+                  }}>
+                    {typeof window !== 'undefined' ? window.location.href : ''}
+                  </div>
+                  <button
+                    onClick={handleCopyUrl}
+                    className={styles.arButtonSecondary}
+                    style={{ 
+                      padding: '0.875rem 1.5rem',
+                      minWidth: 'auto',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   // Campaign mode: Loading campaign data only (not blocking for metadata)
   if (campaignCode && (isLoading || !minLoadTimeElapsed)) {
@@ -789,6 +923,7 @@ function ARExperienceContent() {
                         <a
                           href={campaign.direct_s3_url}
                           rel="ar"
+                          target="_blank"
                           className={styles.arButtonLarge}
                           onClick={handleARButtonClick}
                         >
@@ -796,11 +931,10 @@ function ARExperienceContent() {
                             src="/ar-car-demo.png"
                             alt="AR Experience Preview"
                             style={{
-                              width: 1,
-                              height: 1,
-                              opacity: 0,
-                              position: 'absolute'
+                              display: 'none'
                             }}
+                            width="1"
+                            height="1"
                           />
                           <Smartphone className={styles.buttonIconLarge} />
                           Click to View

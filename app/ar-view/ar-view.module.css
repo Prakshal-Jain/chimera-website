@@ -956,6 +956,7 @@
     justify-content: center;
     gap: 1rem;
     padding: 1.5rem 3rem;
+    margin-bottom: 2rem;
     background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
     color: #0a0a0a;
     font-size: 1.5rem;
@@ -1291,8 +1292,29 @@
       font-size: 0.9375rem;
     }
 
-    .founderText {
-      font-size: 0.875rem;
-    }
+  .founderText {
+    font-size: 0.875rem;
   }
+}
+
+/* Safari Redirect Overlay */
+.safariRedirectOverlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 2rem;
+  position: relative;
+  margin: -2rem -2rem 0 -2rem;
+  padding-top: 4rem;
+}
+
+.safariRedirectCard {
+  max-width: 600px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
   
