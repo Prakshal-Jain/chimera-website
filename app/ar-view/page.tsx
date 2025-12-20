@@ -210,44 +210,10 @@ function ARExperienceContent() {
     const isChromeOnIOS = /CriOS/.test(userAgent)
     setIsChrome(isChromeOnIOS)
 
-    // Automatically redirect to Safari if on iOS and using Chrome
+    // Show Safari redirect page if on iOS and using Chrome
+    // Don't auto-redirect - only navigate when user clicks the button
     if (isIOSDevice && isChromeOnIOS) {
-      const currentUrl = window.location.href
-      
-      // Try to open in Safari using x-safari-https:// URL scheme
-      // Note: This may not work on all iOS versions due to security restrictions
-      const safariUrl = `x-safari-https://${currentUrl.replace(/^https?:\/\//, '')}`
-      
-      // Attempt automatic redirect immediately using multiple methods
-      const attemptRedirect = () => {
-        try {
-          // Method 1: Try window.location (most direct)
-          window.location.href = safariUrl
-        } catch (e) {
-          // Method 2: Try creating and clicking a link (sometimes more reliable)
-          try {
-            const link = document.createElement('a')
-            link.href = safariUrl
-            link.style.display = 'none'
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-          } catch (e2) {
-            console.error('Error redirecting to Safari:', e2)
-          }
-        }
-      }
-      
-      // Attempt redirect immediately
-      attemptRedirect()
-      
-      // Fallback: if redirect doesn't work, show manual redirect UI after a delay
-      // This gives the redirect time to work before showing the overlay
-      setTimeout(() => {
-        // If we're still on the page, the redirect likely didn't work
-        // Show the manual redirect overlay as fallback
-        setShowSafariRedirect(true)
-      }, 2000)
+      setShowSafariRedirect(true)
     }
 
     if (campaignCode) {
