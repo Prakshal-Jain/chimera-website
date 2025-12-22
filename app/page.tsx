@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, ExternalLink, Mail, Phone, CheckCircle, Sparkles, TrendingUp, Award, Play, ChevronDown, Menu, X } from "lucide-react"
+import { ArrowRight, ExternalLink, Mail, Phone, CheckCircle, Sparkles, TrendingUp, Award, Play, ChevronDown, Menu, X, Eye, Clock } from "lucide-react"
 import styles from "./page.module.css"
 import { DEALERSHIPS } from "./utils/dealerships"
 
@@ -150,7 +150,7 @@ export default function Home() {
 
         <div className={styles.heroContent}>
           <h1 className={styles.heroTitle}>
-            AI driven immersive experiences for
+            Data driven immersive experiences for
             <br />
             <span className={styles.animatedWord} key={currentWord}>
               {words[currentWord]}
@@ -194,6 +194,45 @@ export default function Home() {
         <button onClick={scrollToContent} className={styles.scrollDownArrow} aria-label="Scroll to content">
           <ChevronDown className={styles.arrowIcon} />
         </button>
+      </section>
+
+      {/* Metrics Section */}
+      <section className={styles.metricsSection}>
+        <div className={styles.metricsHeader}>
+          <h2 className={styles.metricsTitle}>Results at Lamborghini Newport Beach</h2>
+          <p className={styles.metricsSubtitle}>Buyers engaged from 64 regions nationwide — extending a local dealership’s reach to a national audience</p>
+        </div>
+        <div className={styles.metricsGrid}>
+          <div className={styles.metricCard}>
+            <div className={styles.metricContent}>
+              <span className={styles.metricNumber}>21</span>
+              <span className={styles.metricLabel}>High-Intent Leads</span>
+            </div>
+            <div className={`${styles.metricIconContainer} ${styles.metricIconGreen}`}>
+              <CheckCircle className={styles.metricIcon} />
+            </div>
+          </div>
+          <div className={styles.metricCard}>
+            <div className={styles.metricContent}>
+              <span className={styles.metricNumber}>202</span>
+              <span className={styles.metricLabel}>Customers Engaged</span>
+            </div>
+            <div className={`${styles.metricIconContainer} ${styles.metricIconBlue}`}>
+              <Eye className={styles.metricIcon} />
+            </div>
+          </div>
+          <div className={styles.metricCard}>
+            <div className={styles.metricContent}>
+              <span className={styles.metricSubLabel}>Max. AR Engagement</span>
+              <span className={styles.metricNumber}>9m 26s</span>
+              <span className={styles.metricSubValue}>113s Avg. Engagement time</span>
+            </div>
+            <div className={`${styles.metricIconContainer} ${styles.metricIconGold}`}>
+              <Clock className={styles.metricIcon} />
+            </div>
+          </div>
+        </div>
+        <p className={styles.metricsFootnote}>Similar results for Prestige Imports, Lotus Boardwalk, and other dealerships</p>
       </section>
 
       <section id="difference-section" className={styles.differenceSection}>
